@@ -3,7 +3,6 @@ using Application.Abstractions.Services;
 using Application.Shared.Dtos;
 using Application.Shared.Dtos.Users;
 using AutoMapper;
-using Domain.Abstractions.Exceptions.Base;
 using Domain.Users;
 using MediatR;
 using System.Net;
