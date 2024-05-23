@@ -1,0 +1,11 @@
+﻿using Domain.Abstractions.Exceptions.Base;
+
+namespace Domain.Users;
+
+public class UserNotFoundException : MyException
+{
+    public UserNotFoundException(string id) 
+        : base(400, $"Can not found user has id: {id}")
+    {
+    }
+}

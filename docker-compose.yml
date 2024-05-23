@@ -1,0 +1,49 @@
+version: "3.4"
+
+networks:
+  capstone-backend:
+
+services:
+  postgres:
+    container_name: postgres-capstone
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - capstone-backend
+
+  pgadmin:
+    container_name: pgadmin-capstone
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 8001
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+    networks:
+      - capstone-backend
+
+  # capstone:
+  #   image: dihson103/capstone:latest
+  #   container_name: capstone
+  #   build:
+  #     context: .
+  #     dockerfile: src/WebApi/Dockerfile
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Server=postgres:5432;User Id=postgres;Password=postgres;Database=CapstoneProject
+  #   ports:
+  #     - 5050:8080
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - capstone-backend
+
+volumes:
+  pgdata:
