@@ -5,6 +5,7 @@ using Persistence;
 using WebApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using WebApi.InitialData;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,17 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<CheckTokenMiddleware>();
+
 app.MapCarter();
+
+try
+{
+    DbInitializer.InitDb(app);
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+}
 
 app.Run();

@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Domain.Roles;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -16,6 +16,13 @@ internal class RoleRepository : IRoleRepository
     public void AddRole(Role role)
     {
         _context.Roles.Add(role);
+    }
+
+    public async Task<List<Role>> GetAllRolesAsync()
+    {
+        return await _context.Roles
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<bool> IsRoleExisted(string roleName)

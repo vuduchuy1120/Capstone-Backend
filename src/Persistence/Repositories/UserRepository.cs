@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Data;
-using Application.Users.GetUsers;
-using Domain.Users;
+using Contract.Services.User.GetUsers;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -19,10 +19,18 @@ internal class UserRepository : IUserRepository
         _context.Users.Add(user);
     }
 
+    public async Task<User?> GetUserActiveByIdAsync(string id)
+    {
+        return await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
+    }
+
     public async Task<User?> GetUserByIdAsync(string id)
     {
         return await _context.Users
             .AsNoTracking()
+            .Include(user => user.Role)
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
@@ -51,5 +59,10 @@ internal class UserRepository : IUserRepository
             .ToListAsync();
 
         return (users, totalPages);
+    }
+
+    public void Update(User user)
+    {
+        _context.Users.Update(user);
     }
 }

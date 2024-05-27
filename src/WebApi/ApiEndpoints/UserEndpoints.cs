@@ -1,9 +1,13 @@
-﻿using Application.Users.Create;
-using Application.Users.GetById;
-using Application.Users.Login;
-using Carter;
+﻿using Carter;
+using Contract.Services.User.BanUser;
+using Contract.Services.User.Command;
+using Contract.Services.User.CreateUser;
+using Contract.Services.User.GetUserById;
+using Contract.Services.User.UpdateUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 
 namespace WebApi.ApiEndpoints;
 
@@ -17,37 +21,50 @@ public class UserEndpoints : CarterModule
     {
         app.MapGet("/{id}", async (ISender sender,  string id) =>
         {
-            var result = await sender.Send(new GetByIdQuery() { Id = id });
+            var result = await sender.Send(new GetUserByIdQuery(id));
 
             return Results.Ok(result);
-        }).RequireAuthorization();
-
-        app.MapPost("", async (ISender sender, [FromBody] CreateUserRequest userRequest) =>
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
-            var createUserCommand = new CreateUserCommand()
-            {
-                Id = userRequest.Id,
-                Fullname = userRequest.Fullname,
-                Phone = userRequest.Phone,
-                Password = userRequest.Password,   
-                Address = userRequest.Address,
-                RoleId = userRequest.RoleId
-            };
-            var result = await sender.Send(createUserCommand);
-
-            return Results.Ok(result);  
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        app.MapPost("/login", async (ISender sender, [FromBody] LoginRequest loginRequest) =>
+        app.MapPost(string.Empty, async (ISender sender, ClaimsPrincipal claim, [FromBody] CreateUserRequest userRequest) =>
         {
-            var loginCommand = new LoginCommand()
-            {
-                Id = loginRequest.Id,
-                Password = loginRequest.Password,
-            };
-            var result = await sender.Send(loginCommand);
+            var userId = claim.FindFirst("UserID").Value;
+            var createUserCommand = new CreateUserCommand(userRequest, userId);
+            var result = await sender.Send(createUserCommand);
 
             return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
+
+        app.MapPut(string.Empty, async (ISender sender, ClaimsPrincipal claim, [FromBody] UpdateUserRequest updateUserRequest) =>
+        {
+            var userId = claim.FindFirst("UserID").Value;
+            var updateUserCommandHandler = new UpdateUserCommand(updateUserRequest, userId);
+
+            var result = await sender.Send(updateUserCommandHandler);
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
+
+        app.MapPut("/{id}/status/{isActive}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id, [FromRoute] bool isActive) =>
+        {
+            var userId = claim.FindFirst("UserID").Value;
+            var changeUserStatusCommand = new ChangeUserStatusCommand(userId, id, isActive);
+
+            var result = await sender.Send(changeUserStatusCommand);
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
     }
 }

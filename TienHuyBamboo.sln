@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "src\Persiste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "test\Application.UnitTests\Application.UnitTests.csproj", "{EDE528E1-31BA-44C2-B637-DB075A8DD435}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.UnitTests", "test\Persistence.UnitTests\Persistence.UnitTests.csproj", "{7AD71E73-5916-4145-9FB4-34DF343BA18A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence.UnitTests", "test\Persistence.UnitTests\Persistence.UnitTests.csproj", "{7AD71E73-5916-4145-9FB4-34DF343BA18A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "src\Contract\Contract.csproj", "{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{7AD71E73-5916-4145-9FB4-34DF343BA18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AD71E73-5916-4145-9FB4-34DF343BA18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AD71E73-5916-4145-9FB4-34DF343BA18A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{7ABB6A60-EEC2-400A-89A2-25A935795D17} = {D69F4315-08E3-4E26-9FD0-0AAB335B68C9}
 		{EDE528E1-31BA-44C2-B637-DB075A8DD435} = {505B2C83-FDB1-47CC-952E-F76F2DB844DF}
 		{7AD71E73-5916-4145-9FB4-34DF343BA18A} = {505B2C83-FDB1-47CC-952E-F76F2DB844DF}
+		{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0} = {D69F4315-08E3-4E26-9FD0-0AAB335B68C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAF3F411-EE32-422D-A1EB-97A37C09886D}

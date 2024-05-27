@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Services;
-using Domain.Users;
+using Domain.Entities;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -21,12 +21,23 @@ internal class JwtService : IJwtService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string GenerateToken(User user)
+    public async Task<string> CreateAccessToken(User user)
     {
-        var claims = new Claim[] 
+        return await GenerateToken(user, Access_Token_Time_In_Minutes);
+    }
+
+    public async Task<string> CreateRefreshToken(User user)
+    {
+        return await GenerateToken(user, Refresh_Token_Time_In_Minutes);
+    }
+
+    private async Task<string> GenerateToken(User user, int time)
+    {
+        var claims = new Claim[]
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
-            new(JwtRegisteredClaimNames.Name, user.Fullname)
+            new Claim("UserID", user.Id),
+            new Claim("UserName", user.FirstName + " " + user.LastName),
+            new Claim("Role", user.Role.RoleName)
         };
 
         var signingCredentials = new SigningCredentials(
@@ -38,11 +49,12 @@ internal class JwtService : IJwtService
             _jwtOptions.Audience,
             claims,
             null,
-            DateTime.Now.AddMinutes(Access_Token_Time_In_Minutes),
+            DateTime.Now.AddMinutes(time),
             signingCredentials);
 
         var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return tokenValue;
+        return await Task.FromResult(tokenValue);
     }
+
 }

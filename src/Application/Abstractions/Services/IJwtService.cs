@@ -1,9 +1,10 @@
 ﻿
-using Domain.Users;
+using Domain.Entities;
 
 namespace Application.Abstractions.Services;
 
 public interface IJwtService
 {
-    string GenerateToken(User user);
+    Task<string> CreateAccessToken(User user);
+    Task<string> CreateRefreshToken(User user);
 }

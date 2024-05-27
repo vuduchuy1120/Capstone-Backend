@@ -5,6 +5,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace Infrastructure;
@@ -35,6 +36,18 @@ public static class DependencyInjection
                  };
              });
         services.AddAuthorization();
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy("Require-Admin", policy => policy.RequireClaim("Role", "MAIN_ADMIN"));
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            var connection = configuration.GetConnectionString("Redis");
+            options.Configuration = connection;
+
+        });
+
+        services.AddScoped<IRedisService, RedisService>();
 
         services.ConfigureOptions<JwtOptionsSetup>();
 

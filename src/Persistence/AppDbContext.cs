@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Domain.Roles;
-using Domain.Users;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;
@@ -16,7 +15,7 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().ToTable("users");
+        modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Role>()
             .HasIndex(role => role.RoleName)
             .IsUnique(true);
