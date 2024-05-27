@@ -1,5 +1,6 @@
 ﻿using Carter;
 using Contract.Services.User.BanUser;
+using Contract.Services.User.ChangePassword;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
 using Contract.Services.User.GetUserById;
@@ -63,6 +64,19 @@ public class UserEndpoints : CarterModule
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
+
+        app.MapPut("/change-password", async (ISender sender, ClaimsPrincipal claim, [FromBody] ChangePasswordRequest request) =>
+        {
+            var userId = claim.FindFirst("UserID").Value;
+            var changePasswordCommand = new ChangePasswordCommand(request, userId);
+
+            var result = await sender.Send(changePasswordCommand);
+
+            return Results.Ok(result);
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
