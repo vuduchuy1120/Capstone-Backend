@@ -63,6 +63,11 @@ public class User : EntityAuditBase<string>
         UpdatedDate = DateTime.UtcNow;
     }
 
+    public void UpdatePassword(string password)
+    {
+        Password = password;
+    }
+
     private static DateOnly CovertStringToDateTimeOnly(string dateString)
     {
         string format = "dd/MM/yyyy";

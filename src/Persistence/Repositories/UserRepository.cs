@@ -23,6 +23,7 @@ internal class UserRepository : IUserRepository
     {
         return await _context.Users
             .AsNoTracking()
+            .Include(user => user.Role)
             .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
     }
 
