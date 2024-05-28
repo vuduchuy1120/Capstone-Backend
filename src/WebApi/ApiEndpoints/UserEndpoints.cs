@@ -1,4 +1,5 @@
-﻿using Carter;
+﻿using Application.Utils;
+using Carter;
 using Contract.Services.User.BanUser;
 using Contract.Services.User.ChangePassword;
 using Contract.Services.User.Command;
@@ -30,9 +31,12 @@ public class UserEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        app.MapPost(string.Empty, async (ISender sender, ClaimsPrincipal claim, [FromBody] CreateUserRequest userRequest) =>
+        app.MapPost(string.Empty, async (
+            ISender sender, 
+            ClaimsPrincipal claim,
+            [FromBody] CreateUserRequest userRequest) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var createUserCommand = new CreateUserCommand(userRequest, userId);
             var result = await sender.Send(createUserCommand);
 
@@ -42,9 +46,12 @@ public class UserEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        app.MapPut(string.Empty, async (ISender sender, ClaimsPrincipal claim, [FromBody] UpdateUserRequest updateUserRequest) =>
+        app.MapPut(string.Empty, async (
+            ISender sender, 
+            ClaimsPrincipal claim, 
+            [FromBody] UpdateUserRequest updateUserRequest) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var updateUserCommandHandler = new UpdateUserCommand(updateUserRequest, userId);
 
             var result = await sender.Send(updateUserCommandHandler);
@@ -55,9 +62,13 @@ public class UserEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        app.MapPut("/{id}/status/{isActive}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id, [FromRoute] bool isActive) =>
+        app.MapPut("/{id}/status/{isActive}", async (
+            ISender sender, 
+            ClaimsPrincipal claim, 
+            [FromRoute] string id, 
+            [FromRoute] bool isActive) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var changeUserStatusCommand = new ChangeUserStatusCommand(userId, id, isActive);
 
             var result = await sender.Send(changeUserStatusCommand);
@@ -68,9 +79,12 @@ public class UserEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        app.MapPut("/change-password", async (ISender sender, ClaimsPrincipal claim, [FromBody] ChangePasswordRequest request) =>
+        app.MapPut("/change-password", async (
+            ISender sender, 
+            ClaimsPrincipal claim, 
+            [FromBody] ChangePasswordRequest request) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var changePasswordCommand = new ChangePasswordCommand(request, userId);
 
             var result = await sender.Send(changePasswordCommand);

@@ -5,7 +5,7 @@ using Contract.Services.Role.Create;
 using Domain.Entities;
 using Domain.Exceptions.Roles;
 
-namespace Application.UserCases.Commands.Roles;
+namespace Application.UserCases.Commands.Roles.CreateRole;
 
 internal sealed class CreateRoleCommandHandler(IRoleRepository _roleRepository, IUnitOfWork _unitOfWork)
     : ICommandHandler<CreateRoleCommand>

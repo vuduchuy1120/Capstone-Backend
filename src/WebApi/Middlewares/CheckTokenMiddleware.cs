@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Services;
-using Application.UserCases.Commands.Users;
+using Application.UserCases.Commands.Users.Login;
 using Contract.Services.User.Login;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;

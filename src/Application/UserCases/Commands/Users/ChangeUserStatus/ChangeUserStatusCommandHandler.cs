@@ -5,14 +5,14 @@ using Contract.Services.User.BanUser;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 
-namespace Application.UserCases.Commands.Users;
+namespace Application.UserCases.Commands.Users.ChangeUserStatus;
 
 internal sealed class ChangeUserStatusCommandHandler(IUserRepository _userRepository, IUnitOfWork _unitOfWork)
     : ICommandHandler<ChangeUserStatusCommand>
 {
     public async Task<Result.Success> Handle(ChangeUserStatusCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserByIdAsync(request.userId) 
+        var user = await _userRepository.GetUserByIdAsync(request.userId)
             ?? throw new UserNotFoundException(request.userId);
 
         user.UpdateStatus(request);

@@ -5,6 +5,7 @@ using MediatR;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Application.Utils;
 
 namespace WebApi.ApiEndpoints;
 
@@ -27,7 +28,7 @@ public class AuthEndpoints : CarterModule
 
         app.MapPost("/logout/{id}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var logoutCommand = new LogoutCommand(userId, id);
 
             var result = await sender.Send(logoutCommand);
