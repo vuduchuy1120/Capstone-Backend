@@ -4,11 +4,11 @@ public class ForgetPasswordRedis
 {
     private ForgetPasswordRedis() { }
 
-    public string UserId { get; private set; }
-    public string VerifyCode { get; private set; }
-    public int NumberUse { get; private set; }
-    public DateTime CreatedDate { get; private set; }
-    public DateTime ExpireDate { get; private set; }
+    public string UserId { get; set; }
+    public string VerifyCode { get; set; }
+    public int NumberUse { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime ExpireDate { get; set; }
 
     public static ForgetPasswordRedis Create(string userId)
     {
@@ -41,6 +41,7 @@ public class ForgetPasswordRedis
 
     public bool IsExpired()
     {
+        var isExpire = DateTime.Now > ExpireDate;
         return DateTime.Now > ExpireDate;
     }
 }

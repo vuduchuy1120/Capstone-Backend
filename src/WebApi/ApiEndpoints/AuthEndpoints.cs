@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Application.Utils;
+using Contract.Services.User.ForgetPassword;
 
 namespace WebApi.ApiEndpoints;
 
@@ -32,6 +33,19 @@ public class AuthEndpoints : CarterModule
             var logoutCommand = new LogoutCommand(userId, id);
 
             var result = await sender.Send(logoutCommand);
+
+            return Results.Ok(result);
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("/forget-password/{id}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var forgetPasswordCommand = new ForgetPasswordCommand(id, userId);
+
+            var result = await sender.Send(forgetPasswordCommand);
 
             return Results.Ok(result);
         }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)

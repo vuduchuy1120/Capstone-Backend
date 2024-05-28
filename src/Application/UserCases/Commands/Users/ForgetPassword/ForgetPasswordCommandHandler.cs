@@ -44,7 +44,7 @@ internal sealed class ForgetPasswordCommandHandler(
         var forgetPasswordRedis = await _redisService.GetAsync<ForgetPasswordRedis>(
             ConstantUtil.ForgetPassword_Prefix + userId, 
             cancellationToken);
-        if (forgetPasswordRedis?.IsExpired() ?? true)
+        if (forgetPasswordRedis is null || forgetPasswordRedis.IsExpired())
         {
             return ForgetPasswordRedis.Create(userId);
         }
@@ -58,5 +58,10 @@ internal sealed class ForgetPasswordCommandHandler(
         CancellationToken cancellationToken)
     {
         await _redisService.SetAsync(ConstantUtil.ForgetPassword_Prefix + userId, forgetPasswordRedis, cancellationToken);
+    }
+
+    private async Task SendVerifyCodeToUser(string verifyCode)
+    {
+
     }
 }

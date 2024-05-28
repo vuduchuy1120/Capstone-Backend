@@ -38,7 +38,7 @@ public class Result
         public static Success RequestForgetPassword() => new Success()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action logout success",
+            message = "Action forget password request success",
             isSuccess = true
         };
     }
