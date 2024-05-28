@@ -34,6 +34,13 @@ public class Result
             message = "Action logout success",
             isSuccess = true
         };
+
+        public static Success RequestForgetPassword() => new Success()
+        {
+            status = (int)HttpStatusCode.OK,
+            message = "Action forget password request success",
+            isSuccess = true
+        };
     }
 
     public class Success<TData> : IResult

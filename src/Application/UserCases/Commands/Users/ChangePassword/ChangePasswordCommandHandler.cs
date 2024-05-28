@@ -5,9 +5,8 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.ChangePassword;
 using Domain.Entities;
 using Domain.Exceptions.Users;
-using MediatR;
 
-namespace Application.UserCases.Commands.Users;
+namespace Application.UserCases.Commands.Users.ChangePassword;
 
 internal sealed class ChangePasswordCommandHandler(
     IUserRepository _userRepository,

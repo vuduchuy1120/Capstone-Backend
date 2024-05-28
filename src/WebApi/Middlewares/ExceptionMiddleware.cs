@@ -21,10 +21,12 @@ public class ExceptionMiddleware
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = excepion.StatusCode;
+
             var error = new
             {
                 Status = excepion.StatusCode,
-                Message = excepion.Message
+                Message = excepion.Message,
+                Error = excepion.Error
             };
 
             await context.Response.WriteAsJsonAsync(error);

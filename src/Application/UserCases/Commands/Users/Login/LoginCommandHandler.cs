@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Services;
+using Application.Utils;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
@@ -8,19 +9,18 @@ using Contract.Services.User.SharedDto;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 
-namespace Application.UserCases.Commands.Users;
+namespace Application.UserCases.Commands.Users.Login;
 
-public sealed class LoginCommandHandler(
+internal sealed class LoginCommandHandler(
     IUserRepository _userRepository,
     IJwtService _jwtService,
     IPasswordService _passwordService,
-    IMapper _mapper, 
+    IMapper _mapper,
     IRedisService _redisService)
     : ICommandHandler<LoginCommand, LoginResponse>
 {
-    public static readonly string User_Redis_Prefix = "USER-";
     public async Task<Result.Success<LoginResponse>> Handle(
-        LoginCommand request, 
+        LoginCommand request,
         CancellationToken cancellationToken)
     {
         var user = await GetUserAndVerifyPasswordAsync(request.Id, request.Password);
@@ -56,6 +56,6 @@ public sealed class LoginCommandHandler(
 
     private async Task CacheLoginResponseAsync(string userId, LoginResponse loginResponse, CancellationToken cancellationToken)
     {
-        await _redisService.SetAsync<LoginResponse>($"{User_Redis_Prefix}{userId}", loginResponse, cancellationToken);
+        await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, cancellationToken);
     }
 }

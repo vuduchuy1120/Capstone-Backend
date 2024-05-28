@@ -35,6 +35,11 @@ internal class UserRepository : IUserRepository
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
+    public async Task<bool> IsUserActiveAsync(string id)
+    {
+        return await _context.Users.AnyAsync(u => u.Id.Equals(id) && u.IsActive == true);
+    }
+
     public async Task<bool> IsUserExistAsync(string id)
     {
         return await _context.Users.AnyAsync(user => user.Id.Equals(id));
