@@ -50,7 +50,7 @@ internal class UserRepository : IUserRepository
         var query = _context.Users
             .Where(user => user.IsActive == request.IsActive && user.RoleId == request.RoleId);
 
-        if (string.IsNullOrWhiteSpace(request.SearchTerm))
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(user => user.Id.Contains(request.SearchTerm));
         }

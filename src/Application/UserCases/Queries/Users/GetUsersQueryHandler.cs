@@ -12,14 +12,16 @@ namespace Application.UserCases.Queries.Users;
 internal sealed class GetUsersQueryHandler(IUserRepository _userRepository, IMapper _mapper)
     : IQueryHandler<GetUsersQuery, SearchResponse<List<UserResponse>>>
 {
-    public async Task<Result.Success<SearchResponse<List<UserResponse>>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Result.Success<SearchResponse<List<UserResponse>>>> Handle(
+        GetUsersQuery request, 
+        CancellationToken cancellationToken)
     {
         var searchResult = await _userRepository.SearchUsersAsync(request);
 
         var users = searchResult.Item1;
         var totalPage = searchResult.Item2;
 
-        if (users is null || users.Count > 0 || totalPage > 0)
+        if (users is null || users.Count <= 0 || totalPage <= 0)
         {
             throw new UserNotFoundException();
         }
