@@ -47,10 +47,12 @@ internal class UserRepository : IUserRepository
 
     public async Task<(List<User>?, int)> SearchUsersAsync(GetUsersQuery request)
     {
-        var query = _context.Users.AsQueryable();
+        var query = _context.Users
+            .Where(user => user.IsActive == request.IsActive && user.RoleId == request.RoleId);
+
         if (string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = _context.Users.Where(user => user.Id.Contains(request.SearchTerm));
+            query = query.Where(user => user.Id.Contains(request.SearchTerm));
         }
 
         var totalItems = await query.CountAsync();

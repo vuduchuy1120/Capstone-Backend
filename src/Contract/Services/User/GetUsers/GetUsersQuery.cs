@@ -6,5 +6,7 @@ namespace Contract.Services.User.GetUsers;
 
 public record GetUsersQuery(
     string SearchTerm,
+    int RoleId,
+    bool IsActive,
     int PageIndex = 1,
     int PageSize = 10) : IQuery<SearchResponse<List<UserResponse>>>;

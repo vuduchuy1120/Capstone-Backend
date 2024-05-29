@@ -2,4 +2,4 @@
 
 namespace Contract.Services.User.ForgetPassword;
 
-public record ForgetPasswordCommand(string userId, string loggedInUserId) : ICommand;
+public record ForgetPasswordCommand(string userId) : ICommand;
