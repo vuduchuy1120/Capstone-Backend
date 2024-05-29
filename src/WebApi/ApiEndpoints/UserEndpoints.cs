@@ -32,15 +32,15 @@ public class UserEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
 
-        //app.MapGet(string.Empty, async (ISender sender, [FromQuery] GetUsersQuery getUsersQuery) =>
-        //{
-        //    var result = await sender.Send(getUsersQuery);
+        app.MapGet(string.Empty, async (ISender sender, [AsParameters] GetUsersQuery getUsersQuery) =>
+        {
+            var result = await sender.Send(getUsersQuery);
 
-        //    return Results.Ok(result);
-        //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        //{
-        //    Tags = new List<OpenApiTag> { new() { Name = "User api" } }
-        //});
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
 
         app.MapPost(string.Empty, async (
             ISender sender, 
