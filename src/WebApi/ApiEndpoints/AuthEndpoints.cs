@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Application.Utils;
 using Contract.Services.User.ForgetPassword;
+using Contract.Services.User.ConfirmVerifyCode;
 
 namespace WebApi.ApiEndpoints;
 
@@ -40,15 +41,25 @@ public class AuthEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });
 
-        app.MapPost("/forget-password/{id}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id) =>
+        app.MapPost("/forget-password/{id}", async (ISender sender, [FromRoute] string id) =>
         {
-            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var forgetPasswordCommand = new ForgetPasswordCommand(id, userId);
+            //var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var forgetPasswordCommand = new ForgetPasswordCommand(id);
 
             var result = await sender.Send(forgetPasswordCommand);
 
             return Results.Ok(result);
-        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("/confirm/forgetpassword", async (ISender sender, [FromBody] ConfirmVerifyCodeCommand confirmVerifyCodeCommand) =>
+        {
+            var result = await sender.Send(confirmVerifyCodeCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });

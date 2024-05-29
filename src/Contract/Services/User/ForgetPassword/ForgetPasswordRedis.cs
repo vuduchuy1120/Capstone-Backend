@@ -35,7 +35,6 @@ public class ForgetPasswordRedis
             return false;
         }
 
-        NumberUse++;
         return true;
     }
 
@@ -43,5 +42,10 @@ public class ForgetPasswordRedis
     {
         var isExpire = DateTime.Now > ExpireDate;
         return DateTime.Now > ExpireDate;
+    }
+
+    public void UpdateVerifyCodeNumberUse()
+    {
+        NumberUse = NumberUse + 1;
     }
 }

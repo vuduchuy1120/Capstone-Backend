@@ -5,6 +5,7 @@ using Contract.Services.User.ChangePassword;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
 using Contract.Services.User.GetUserById;
+using Contract.Services.User.GetUsers;
 using Contract.Services.User.UpdateUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,16 @@ public class UserEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });
+
+        //app.MapGet(string.Empty, async (ISender sender, [FromQuery] GetUsersQuery getUsersQuery) =>
+        //{
+        //    var result = await sender.Send(getUsersQuery);
+
+        //    return Results.Ok(result);
+        //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        //{
+        //    Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        //});
 
         app.MapPost(string.Empty, async (
             ISender sender, 

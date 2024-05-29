@@ -25,11 +25,6 @@ internal sealed class ForgetPasswordCommandHandler(
 
     private async Task ValidateUserId(ForgetPasswordCommand request)
     {
-        if (request.userId != request.loggedInUserId)
-        {
-            throw new UserIdConflictException();
-        }
-
         var isUserActive = await _userRepository.IsUserActiveAsync(request.userId);
         if (!isUserActive)
         {
