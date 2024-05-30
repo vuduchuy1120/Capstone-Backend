@@ -14,12 +14,16 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options =>
         {
+            //TODO
+            //options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+
         });
 
         services.AddScoped<IUnitOfWork>(option => option.GetRequiredService<AppDbContext>());
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<ISlotRepository, SlotRepository>();
 
         return services;
     }

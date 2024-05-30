@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Contract.Services.Role.Create;
+using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
 using Persistence;
@@ -29,6 +30,11 @@ public class DbInitializer
             var passwordService = provider.GetService<IPasswordService>();
             SeedUserData(context, passwordService);
         }
+
+        if(!context.Slots.Any())
+        {
+            SeedSlotData(context);
+        }
     }
 
     public static void SeedRoleData(AppDbContext context)
@@ -44,6 +50,18 @@ public class DbInitializer
         context.SaveChanges();
     }
 
+    public static void SeedSlotData(AppDbContext context)
+    {
+        var slots = new List<Slot>
+        {
+            Slot.Create(new CreateSlotCommand("Morning")),
+            Slot.Create(new CreateSlotCommand("Afternoon")),
+            Slot.Create(new CreateSlotCommand("OverTime"))
+        };
+
+        context.Slots.AddRange(slots);
+        context.SaveChanges();
+    }
     public static void SeedUserData(AppDbContext context, IPasswordService passwordService)
     {
         var adminRole = context.Roles.FirstOrDefault();
