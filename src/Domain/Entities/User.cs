@@ -48,7 +48,7 @@ public class User : EntityAuditBase<string>
         Address = request.Address;
         RoleId = request.RoleId;
         SalaryByDay = request.SalaryByDay;
-        DOB = request.DOB;
+        DOB = CovertStringToDateTimeOnly(request.DOB);
         LastName = request.LastName;
         FirstName = request.FirstName;
         Gender = request.Gender;

@@ -8,6 +8,8 @@ using Microsoft.OpenApi.Models;
 using Application.Utils;
 using Contract.Services.User.ForgetPassword;
 using Contract.Services.User.ConfirmVerifyCode;
+using Infrastructure.Services;
+using Application.Abstractions.Services;
 
 namespace WebApi.ApiEndpoints;
 
@@ -43,7 +45,6 @@ public class AuthEndpoints : CarterModule
 
         app.MapPost("/forget-password/{id}", async (ISender sender, [FromRoute] string id) =>
         {
-            //var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var forgetPasswordCommand = new ForgetPasswordCommand(id);
 
             var result = await sender.Send(forgetPasswordCommand);
@@ -59,6 +60,20 @@ public class AuthEndpoints : CarterModule
             var result = await sender.Send(confirmVerifyCodeCommand);
 
             return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("test", async (ISmsService smsService) =>
+        {
+            var from = "14142613150";
+            var to = "84976099351";
+            var message = "Hello nguyen dinh son";
+            
+            await smsService.SendSmsAsync(from, to, message);
+
+            return Results.Ok("Send sms request ok");
         }).WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }

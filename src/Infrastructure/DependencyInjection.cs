@@ -5,7 +5,6 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace Infrastructure;
@@ -48,6 +47,11 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IRedisService, RedisService>();
+
+        var apiKeySid = "SK.0.DjKijVdL1BKmr4ktbhuk84ugDaBWb498";
+        var apiKeySecret = "MVZtVzh1TWhpZTZuY2cwV3g2WmZyZjZxbnFFTnJCcFE=";
+
+        services.AddSingleton<ISmsService>(new SmsService(apiKeySid, apiKeySecret));
 
         services.ConfigureOptions<JwtOptionsSetup>();
 

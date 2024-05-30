@@ -41,6 +41,8 @@ public class ExceptionMiddleware
                 Message = "Internal Server Error"
             };
 
+            Console.WriteLine(ex.Message);
+
             await context.Response.WriteAsJsonAsync(error);
         }
     }
