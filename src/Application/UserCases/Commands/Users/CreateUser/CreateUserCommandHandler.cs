@@ -6,10 +6,7 @@ using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
-using Domain.Exceptions.Users;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Commands.Users.CreateUser;
 
@@ -30,14 +27,7 @@ internal sealed class CreateUserCommandHandler(
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        //var isUserExisted = await _userRepository.IsUserExistAsync(createUserRequest.Id);
-
-        //if (isUserExisted)
-        //{
-        //    throw new UserAlreadyExistedException(createUserRequest.Id);
-        //}
-
-        string hashPassword = _passwordService.Hash(request.CreateUserRequest.Password);
+        string hashPassword = _passwordService.Hash(createUserRequest.Password);
         var user = User.Create(createUserRequest, hashPassword, request.CreatedBy);
 
         _userRepository.AddUser(user);
