@@ -28,6 +28,18 @@ public class ForgetPasswordRedis
         };
     }
 
+    public static ForgetPasswordRedis CreateInstacneForTest(int numberUse, DateTime expireDate, string code)
+    {
+        return new()
+        {
+            UserId = "UserId",
+            VerifyCode = code,
+            NumberUse = numberUse,
+            CreatedDate = DateTime.Now,
+            ExpireDate = expireDate
+        };
+    }
+
     public bool IsVerifyCodeValid(string code)
     {
         if (NumberUse >= 3 || DateTime.Now > ExpireDate || VerifyCode != code)
