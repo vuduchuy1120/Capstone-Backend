@@ -2,7 +2,6 @@
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.BanUser;
-using Domain.Entities;
 using Domain.Exceptions.Users;
 
 namespace Application.UserCases.Commands.Users.ChangeUserStatus;
