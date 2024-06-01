@@ -34,7 +34,7 @@ namespace Domain.Entities
             };
         }
 
-        public void Update(UpdateAttendanceRequest updateAttendanceRequest, string updatedBy)
+        public void Update(UpdateAttendanceWithoutSlotIdRequest updateAttendanceRequest, string updatedBy)
         {
             HourOverTime = updateAttendanceRequest.HourOverTime;
             IsAttendance = updateAttendanceRequest.IsAttendance;

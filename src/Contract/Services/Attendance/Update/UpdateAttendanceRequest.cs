@@ -8,11 +8,6 @@ namespace Contract.Services.Attendance.Update;
 
 public record UpdateAttendanceRequest
 (
-    string UserId,
     int SlotId,
-    string Date,
-    double HourOverTime,
-    bool IsAttendance,
-    bool IsOverTime,
-    bool IsSalaryByProduct
+    List<UpdateAttendanceWithoutSlotIdRequest> UpdateAttendances
     );
