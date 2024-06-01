@@ -19,6 +19,7 @@ internal sealed class CreateUserCommandHandler(
     IPasswordService _passwordService,
     IValidator<CreateUserRequest> _validator) : ICommandHandler<CreateUserCommand>
 {
+    
     public async Task<Result.Success> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var createUserRequest = request.CreateUserRequest;

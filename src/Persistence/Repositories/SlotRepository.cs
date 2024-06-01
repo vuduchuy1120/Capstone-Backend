@@ -29,4 +29,9 @@ public class SlotRepository : ISlotRepository
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<bool> IsSlotExisted(int slotId)
+    {
+        return await _context.Slots.AnyAsync(slot => slot.Id == slotId);
+    }
 }
