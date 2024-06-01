@@ -3,20 +3,29 @@ using Application.Abstractions.Services;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.ChangePassword;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
+using FluentValidation;
 
 namespace Application.UserCases.Commands.Users.ChangePassword;
 
 internal sealed class ChangePasswordCommandHandler(
     IUserRepository _userRepository,
     IUnitOfWork _unitOfWork,
-    IPasswordService _passwordService) : ICommandHandler<ChangePasswordCommand>
+    IPasswordService _passwordService,
+    IValidator<ChangePasswordRequest> _validator) : ICommandHandler<ChangePasswordCommand>
 {
     public async Task<Result.Success> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         var changePasswordRequest = request.ChangePasswordRequest;
         var user = await GetUserAndVeriryPassword(request.LoggedInUserId, changePasswordRequest);
+
+        var validationResult = _validator.Validate(changePasswordRequest);
+        if (!validationResult.IsValid)
+        {
+            throw new MyValidationException(validationResult.ToDictionary());
+        }
 
         var hashPassword = _passwordService.Hash(changePasswordRequest.newPassword);
         user.UpdatePassword(hashPassword);

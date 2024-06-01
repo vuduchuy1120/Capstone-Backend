@@ -69,7 +69,7 @@ public class AddUserTest : IDisposable
 
         var duplicateUser = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
 
-        await Assert.ThrowsAsync<Exception>(async () =>
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
             _userRepository.AddUser(duplicateUser);
             await _context.SaveChangesAsync();

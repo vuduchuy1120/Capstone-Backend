@@ -10,6 +10,7 @@ using Contract.Services.User.ForgetPassword;
 using Contract.Services.User.ConfirmVerifyCode;
 using Infrastructure.Services;
 using Application.Abstractions.Services;
+using Contract.Services.User.RefreshToken;
 
 namespace WebApi.ApiEndpoints;
 
@@ -70,7 +71,7 @@ public class AuthEndpoints : CarterModule
             var from = "14142613150";
             var to = "84976099351";
             var message = "Hello nguyen dinh son";
-            
+
             await smsService.SendSmsAsync(from, to, message);
 
             return Results.Ok("Send sms request ok");
@@ -78,5 +79,18 @@ public class AuthEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });
+
+        app.MapPost("refresh-token", async (ISender sender, [FromBody] RefreshTokenCommand refreshTokenCommand) =>
+        {
+            var result = await sender.Send(refreshTokenCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+
+
     }
 }

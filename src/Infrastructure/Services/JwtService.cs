@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Domain.Entities;
+using Domain.Exceptions.Users;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +30,16 @@ internal class JwtService : IJwtService
     public async Task<string> CreateRefreshToken(User user)
     {
         return await GenerateToken(user, Refresh_Token_Time_In_Minutes);
+    }
+
+    public string? GetUserIdFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(token);
+
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+
+        return userIdClaim?.Value;
     }
 
     private async Task<string> GenerateToken(User user, int time)
