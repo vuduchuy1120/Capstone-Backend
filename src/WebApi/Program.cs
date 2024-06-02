@@ -45,9 +45,7 @@ builder.Services
 
 builder.Services.AddCors(p => p.AddPolicy("corspolicy", build =>
 {
-    build.AllowAnyMethod()
-             .AllowAnyHeader()
-             .AllowCredentials();
+    build.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
 }));
 
 builder.Services.AddCarter();
