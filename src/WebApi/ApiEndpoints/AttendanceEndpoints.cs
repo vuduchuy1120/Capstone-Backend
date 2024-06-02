@@ -1,8 +1,10 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.Attendance.Create;
+using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.Update;
 using Contract.Services.User.CreateUser;
+using Contract.Services.User.GetUsers;
 using Contract.Services.User.UpdateUser;
 using MediatR;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -34,7 +36,7 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
             });
 
-            app.MapPost("batch", async(
+            app.MapPost("batch", async (
                 ISender sender,
                 ClaimsPrincipal claim,
                 [FromBody] CreateAttendanceDefaultRequest attendanceDefaultRequest) =>
@@ -45,17 +47,17 @@ namespace WebApi.ApiEndpoints
                 return Results.Ok(result);
             }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
             {
-                Tags= new List<OpenApiTag> { new() { Name = "Attendance api" } }
+                Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
             });
 
             //update
             app.MapPut(string.Empty, async (
             ISender sender,
             ClaimsPrincipal claim,
-            [FromBody] UpdateAttendanceRequest updateAttendanceRequest) =>
+            [FromBody] UpdateAttendancesRequest updateAttendanceRequest) =>
             {
                 var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-                var updateAttendanceCommandHandler = new UpdateAttendanceCommand(updateAttendanceRequest, userId);
+                var updateAttendanceCommandHandler = new UpdateAttendancesCommand(updateAttendanceRequest, userId);
 
                 var result = await sender.Send(updateAttendanceCommandHandler);
 
@@ -67,6 +69,17 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
             });
 
+            // get Attendances by Date
+            app.MapGet(string.Empty, async (
+                ISender sender,
+                [AsParameters] GetAttendancesQuery getAttendancesQuery) =>
+            {
+                var result = await sender.Send(getAttendancesQuery);
+                return Results.Ok(result);
+            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            {
+                Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
+            });
         }
     }
 }

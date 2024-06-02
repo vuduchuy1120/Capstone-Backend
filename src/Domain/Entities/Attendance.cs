@@ -1,13 +1,13 @@
 ﻿using Contract.Services.Attendance.Create;
 using Contract.Services.Attendance.Update;
 using Domain.Abstractions.Entities;
+using Domain.Exceptions.Attendances;
 using Domain.Exceptions.Users;
 
 namespace Domain.Entities
 {
     public class Attendance : EntityAuditBaseWithoutId
     {
-        private Attendance() { }
         public int SlotId { get; set; }
         public string UserId { get; set; }
         public DateOnly Date { get; set; }
@@ -55,7 +55,7 @@ namespace Domain.Entities
             }
             else
             {
-                throw new WrongFormatDobException();
+                throw new WrongFormatDateException();
             }
         }
     }

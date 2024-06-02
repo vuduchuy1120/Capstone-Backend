@@ -3,17 +3,13 @@ using Application.Utils;
 using Contract.Services.Attendance.Update;
 using Domain.Entities;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
-public sealed class UpdateAttendanceRequestValidator : AbstractValidator<UpdateAttendanceRequest>
+public sealed class UpdateAttendancesRequestValidator : AbstractValidator<UpdateAttendancesRequest>
 {
-    public UpdateAttendanceRequestValidator(IUserRepository userRepository, ISlotRepository slotRepository, IAttendanceRepository attendanceRepository)
+    public UpdateAttendancesRequestValidator(IUserRepository userRepository, ISlotRepository slotRepository, IAttendanceRepository attendanceRepository)
     {
         RuleFor(x => x.SlotId)
         .NotEmpty().WithMessage("SlotID is required!")
@@ -23,7 +19,21 @@ public sealed class UpdateAttendanceRequestValidator : AbstractValidator<UpdateA
             return slot;
         }).WithMessage("SlotID invalad or notfound!");
 
+
         RuleFor(x => x.UpdateAttendances).NotEmpty();
+        RuleFor(x => x.UpdateAttendances).Must(attendances =>
+        {
+            foreach (var attendance in attendances)
+            {
+                var date = attendance.Date;
+                if (string.IsNullOrEmpty(date) || !System.Text.RegularExpressions.Regex.IsMatch(date, @"^\d{2}/\d{2}/\d{4}$") ||
+                    !DateTime.TryParseExact(date, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }).WithMessage("Date must be a valid date in the format dd/MM/yyyy");
         // validate each attendance with user, date, hourOverTIme
         RuleForEach(x => x.UpdateAttendances)
             .NotEmpty().WithMessage("Attendance is required!")
@@ -32,12 +42,12 @@ public sealed class UpdateAttendanceRequestValidator : AbstractValidator<UpdateA
                  var user = await userRepository.IsUserExistAsync(attendance.UserId);
                  return user;
              }).WithMessage("User not found!")
-            .MustAsync(async (request, attendance, _) =>
-            {
-                var formattedDate = DateUtil.ConvertStringToDateTimeOnly(attendance.Date);
-                var attendanceEntity = await attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync(attendance.UserId, request.SlotId, formattedDate);
-                return attendanceEntity != null;
-            }).WithMessage("Attendance not found!")
+        .MustAsync(async (request, attendance, _) =>
+        {
+            var formattedDate = DateUtil.ConvertStringToDateTimeOnly(attendance.Date);
+            var attendanceEntity = await attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync(attendance.UserId, request.SlotId, formattedDate);
+            return attendanceEntity != null;
+        }).WithMessage("Attendance not found!")
             .Must(attendance =>
             {
                 return attendance.HourOverTime >= 0;
@@ -48,12 +58,12 @@ public sealed class UpdateAttendanceRequestValidator : AbstractValidator<UpdateA
             }).WithMessage("HourOverTime must be less than or equal to 10!")
             .Must(attendance =>
             {
-               //if attendance = false then all ields must be false
-               if (!attendance.IsAttendance)
+                //if attendance = false then all ields must be false
+                if (!attendance.IsAttendance)
                 {
-                     return attendance.IsOverTime == false && attendance.IsSalaryByProduct == false && attendance.HourOverTime == 0;
+                    return attendance.IsOverTime == false && attendance.IsSalaryByProduct == false && attendance.HourOverTime == 0;
                 }
-               return true; // This condition is not applicable when IsAttendance is true
+                return true; // This condition is not applicable when IsAttendance is true
             }).WithMessage("IsAttendance must be true")
              .Must(attendance =>
              {
@@ -74,15 +84,11 @@ public sealed class UpdateAttendanceRequestValidator : AbstractValidator<UpdateA
             .Must(attendance =>
             {
                 return attendance.IsSalaryByProduct == false || attendance.IsSalaryByProduct == true;
-            }).WithMessage("IsSalaryByProduct must be true or false!")
-            .Must(attendance =>
-            {
-                var date = attendance.Date;
-                return DateTime.TryParseExact(date, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
-            }).WithMessage("Date must be a valid date in the format dd/MM/yyyy");
+            }).WithMessage("IsSalaryByProduct must be true or false!");
+
+        //RuleFor Date must be a valid date in the format dd/MM/yyyy in each attendance
 
     }
-
 }
 
 

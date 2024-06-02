@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Contract.Services.Attendance.Update;
 
-public record UpdateAttendanceRequest
+public record UpdateAttendancesRequest
 (
     int SlotId,
     List<UpdateAttendanceWithoutSlotIdRequest> UpdateAttendances

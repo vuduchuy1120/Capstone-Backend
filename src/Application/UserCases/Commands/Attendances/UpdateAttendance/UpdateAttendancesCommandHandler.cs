@@ -1,24 +1,21 @@
-﻿
-using Application.Abstractions.Data;
+﻿using Application.Abstractions.Data;
 using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;
 using Domain.Abstractions.Exceptions;
 using Domain.Exceptions.Attendances;
-using Domain.Exceptions.Users;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
-internal sealed class UpdateAttendanceCommandHandler(
+internal sealed class UpdateAttendancesCommandHandler(
     IAttendanceRepository _attendanceRepository,
     IUnitOfWork _unitOfWork,
-    IValidator<UpdateAttendanceRequest> _validator)
-    : ICommandHandler<UpdateAttendanceCommand>
+    IValidator<UpdateAttendancesRequest> _validator)
+    : ICommandHandler<UpdateAttendancesCommand>
 {
-    public async Task<Result.Success> Handle(UpdateAttendanceCommand request, CancellationToken cancellationToken)
+    public async Task<Result.Success> Handle(UpdateAttendancesCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request.UpdateAttendanceRequest, cancellationToken);
         if (!validationResult.IsValid)

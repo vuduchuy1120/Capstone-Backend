@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions.Users;
+﻿using Domain.Abstractions.Exceptions;
+using Domain.Exceptions.Users;
 
 namespace Application.Utils;
 
@@ -15,7 +16,7 @@ public class DateUtil
         }
         else
         {
-            throw new WrongFormatDobException();
+            throw new MyValidationException("Date is wrong format");
         }
     }
 }
