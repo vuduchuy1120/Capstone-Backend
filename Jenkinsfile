@@ -15,10 +15,10 @@ pipeline {
             }
         }
 
-        stage('Run docker compose build') {
+        stage('Remove old capstone project') {
             steps {
                 script {
-                    sh 'docker compose build'
+                    sh 'docker rm -f capstone'
                 }
             }
         }
