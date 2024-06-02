@@ -18,7 +18,10 @@ pipeline {
         stage('Remove old capstone project') {
             steps {
                 script {
-                    sh 'docker rm -f capstone'
+                    sh '''
+                        docker rm -f capstone || true
+                        docker image rm dihson103/capstone || true
+                    '''
                 }
             }
         }
