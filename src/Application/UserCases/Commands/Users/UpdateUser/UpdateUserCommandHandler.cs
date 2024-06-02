@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
-using Contract.Services.User.CreateUser;
 using Contract.Services.User.UpdateUser;
 using Domain.Abstractions.Exceptions;
 using Domain.Exceptions.Users;
