@@ -15,19 +15,6 @@ pipeline {
             }
         }
 
-        stage('Access Jenkins Docker Container') {
-            steps {
-                script {
-                    // Access the Jenkins Docker container and change directory
-                    docker.image('khaliddinh/jenkins:latest').inside {
-                        dir('/var/jenkins_home/workspace/TienHuyBamboo') {
-                            sh 'pwd'  // Optional: Just to confirm the directory
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Run docker compose build') {
             steps {
                 script {
