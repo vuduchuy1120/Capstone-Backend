@@ -34,12 +34,10 @@ pipeline {
         stage('Update database') {
             steps {
                 script {
-                    // Check if dotnet-ef is already installed
-                    sh 'dotnet tool list --global | grep dotnet-ef || dotnet tool install --global dotnet-ef'
                     // Change directory to src/Persistence and update the database
                     sh '''
                         cd src/Persistence
-                        dotnet ef database update --startup-project ../WebApi
+                        /var/jenkins_home/.dotnet/tools/dotnet-ef database update --startup-project ../WebApi
                     '''
                 }
             }
