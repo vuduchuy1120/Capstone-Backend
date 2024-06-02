@@ -66,15 +66,9 @@ public class AuthEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });
 
-        app.MapPost("test", async (ISmsService smsService) =>
+        app.MapPost("test", () =>
         {
-            var from = "14142613150";
-            var to = "84976099351";
-            var message = "Hello nguyen dinh son";
-
-            await smsService.SendSmsAsync(from, to, message);
-
-            return Results.Ok("Send sms request ok");
+            return Results.Ok("Hello Nguyen Dinh Son");
         }).WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
