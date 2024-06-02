@@ -1,13 +1,11 @@
 pipeline {
     agent any
+
+    tools {
+        dotnetsdk "DotNet8"
+    }
     
     stages {
-        stage('Clone project') {
-            steps {
-                // Clone the repository with branch specified
-                git branch: 'main', url: 'https://github.com/dihson103/dotnet-cicd.git'
-            }
-        }
 
         stage('Run unit test') {
             steps {
@@ -17,21 +15,13 @@ pipeline {
             }
         }
 
-        // stage('Access Jenkins Docker Container') {
-        //     steps {
-        //         script {
-        //             // Access the Jenkins Docker container and change directory
-        //             docker.image('khaliddinh/jenkins:latest').inside {
-        //                 sh 'cd /var/jenkins_home/workspace/DotnetTestCiCd'
-        //             }
-        //         }
-        //     }
-        // }
-
-        stage('Run docker compose build') {
+        stage('Remove old capstone project') {
             steps {
                 script {
-                    sh 'docker compose build'
+                    sh '''
+                        docker rm -f capstone || true
+                        docker image rm dihson103/capstone || true
+                    '''
                 }
             }
         }
@@ -50,7 +40,7 @@ pipeline {
                     // Change directory to src/Persistence and update the database
                     sh '''
                         cd src/Persistence
-                        dotnet ef database update --startup-project ../WebApi
+                        /var/jenkins_home/.dotnet/tools/dotnet-ef database update --startup-project ../WebApi
                     '''
                 }
             }
