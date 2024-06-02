@@ -92,7 +92,7 @@ public class CreateUserCommandHandlerTest
     }
 
     [Theory]
-    [InlineData("001201011091", "John123", "Doe", "0976099351", "123 Main St, Anytown, USA", 
+    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
         "SecurePassword123", "Male", "10/03/2001", 150, 2)] //firstName contains number or specification character is not valid
     [InlineData("001201011091", "", "Doe", "0976099351", "123 Main St, Anytown, USA",
         "SecurePassword123", "Male", "10/03/2001", 150, 2)] //firstName empty is not valid

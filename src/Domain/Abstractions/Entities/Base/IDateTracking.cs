@@ -3,5 +3,5 @@
 internal interface IDateTracking
 {
     DateTime CreatedDate { get; set; }
-    DateTime UpdatedDate { get; set; }
+    DateTime? UpdatedDate { get; set; }
 }
