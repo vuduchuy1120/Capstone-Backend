@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
+using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Query;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,26 @@ public class AttendanceRepository : IAttendanceRepository
                                         a.SlotId == (slotId) &&
                                         a.Date == (date));
         return attendance;
+    }
+
+    public Task<bool> IsCanUpdateAttendance(string userId, int slotId, DateOnly date)
+    {
+        var attendance = _context.Attendances
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.SlotId == (slotId) && a.Date == (date));
+        if (attendance == null)
+        {
+            return Task.FromResult(false);
+        }
+        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (attendance.Result.UpdatedDate.HasValue)
+        {
+            var updatedDateOnly = DateOnly.FromDateTime(attendance.Result.UpdatedDate.Value);
+            var differenceInDays = (currentDate.ToDateTime(new TimeOnly(0)) - updatedDateOnly.ToDateTime(new TimeOnly(0))).TotalDays;
+            return Task.FromResult(differenceInDays <= 2);
+        }
+        return Task.FromResult(true);
     }
 
     public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request)

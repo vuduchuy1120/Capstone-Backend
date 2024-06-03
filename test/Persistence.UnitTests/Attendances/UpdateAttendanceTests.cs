@@ -46,7 +46,6 @@ public class UpdateAttendanceTests : IDisposable
         var formatedDate = DateUtil.ConvertStringToDateTimeOnly(updateAttendanceRequest.Date);
         var attendance = await _context.Attendances.FirstOrDefaultAsync(
                        a => a.UserId == updateAttendanceRequest.UserId && a.Date == formatedDate && a.SlotId == 1);
-
         attendance.Update(updateAttendanceRequest, "001201011091");
         _attendanceRepository.UpdateAttendance(attendance);
         await _context.SaveChangesAsync();
