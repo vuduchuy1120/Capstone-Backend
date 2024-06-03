@@ -46,7 +46,7 @@ public class UpdateAttendanceTests : IDisposable
 
         var updateAttendanceRequest = new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001937",
-                    Date: "02/06/2024",
+                    Date: DateTime.UtcNow.ToString("dd/MM/yyyy"),
                     HourOverTime: 2,
                     IsAttendance: true,
                     IsOverTime: true,
