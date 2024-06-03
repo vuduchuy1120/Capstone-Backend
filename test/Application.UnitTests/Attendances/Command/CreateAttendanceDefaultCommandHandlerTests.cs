@@ -23,7 +23,10 @@ namespace Application.UnitTests.Attendances.Command
             _attendanceRepositoryMock = new Mock<IAttendanceRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _slotRepositoryMock = new Mock<ISlotRepository>();
-            _validator = new CreateAttendancesValidator(_userRepositoryMock.Object, _slotRepositoryMock.Object, _attendanceRepositoryMock.Object);
+            _validator = new CreateAttendancesValidator(
+                _userRepositoryMock.Object,
+                _slotRepositoryMock.Object, 
+                _attendanceRepositoryMock.Object);
             _unitOfWorkMock = new Mock<IUnitOfWork>();
 
             _handler = new CreateAttendanceDefaultCommandHandler(
