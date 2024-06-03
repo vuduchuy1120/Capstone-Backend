@@ -2,18 +2,9 @@
 using Application.Utils;
 using Contract.Services.Attendance.Create;
 using Contract.Services.Attendance.Update;
-using Contract.Services.Role.Create;
-using Contract.Services.Slot.Create;
-using Contract.Services.User.BanUser;
-using Contract.Services.User.CreateUser;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.UnitTests.Attendances;
 
