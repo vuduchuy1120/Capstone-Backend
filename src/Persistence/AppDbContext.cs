@@ -13,7 +13,11 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
-
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<ProductUnit> ProductUnits { get; set; }
+    public DbSet<Pharse> Pharses { get; set; }
+    public DbSet<ProductPharse> ProductPhases { get; set; }
     public DbSet<Slot> Slots { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,14 +49,14 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasKey(pu => new { pu.ProductId, pu.SubProductId });
 
         modelBuilder.Entity<ProductUnit>()
-            .HasOne(pc => pc.Product)
-            .WithMany(pc => pc.ProductUnits)
+            .HasOne(pu => pu.Product)
+            .WithMany(p => p.ProductUnits)
             .HasForeignKey(pc => pc.ProductId);
 
         modelBuilder.Entity<ProductUnit>()
-            .HasOne(pc => pc.SubProduct)
-            .WithMany(pc => pc.SubProductUnits)
-            .HasForeignKey(pc => pc.SubProductId);
+            .HasOne(pu => pu.SubProduct)
+            .WithMany(p => p.SubProductUnits)
+            .HasForeignKey(pu => pu.SubProductId);
 
         modelBuilder.Entity<ProductPharse>()
             .HasKey(ph => new {ph.PharseId, ph.ProductId});
