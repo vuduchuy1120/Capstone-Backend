@@ -27,11 +27,9 @@ internal class ProductImageRepository : IProductImageRepository
         _context.ProductImages.Remove(productImage);
     }
 
-    public async Task<ProductImage> GetByIdAsync(Guid id)
+    public void DeleteRange(List<ProductImage> productImages)
     {
-        return await _context.ProductImages
-            .AsNoTracking()
-            .SingleOrDefaultAsync(p => p.Id.Equals(id));
+        _context.ProductImages.RemoveRange(productImages);
     }
 
     public async Task<List<ProductImage>> GetByProductIdAsync(Guid productId)
@@ -42,8 +40,11 @@ internal class ProductImageRepository : IProductImageRepository
             .ToListAsync();
     }
 
-    public void Update(ProductImage productImage)
+    public async Task<List<ProductImage>> GetProductImageIdsAsync(List<Guid> productImageIds)
     {
-        _context.ProductImages.Update(productImage);
+        return await _context.ProductImages
+            .AsNoTracking()
+            .Where(productImage => productImageIds.Contains(productImage.Id))
+            .ToListAsync();
     }
 }

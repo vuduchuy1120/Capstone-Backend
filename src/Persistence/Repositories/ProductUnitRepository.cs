@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
@@ -24,6 +25,20 @@ internal class ProductUnitRepository : IProductUnitRepository
     public void Delete(ProductUnit productUnit)
     {
         _context.ProductUnits.Remove(productUnit);
+    }
+
+    public void DeleteRange(List<ProductUnit> productUnits)
+    {
+        _context.ProductUnits.RemoveRange(productUnits);
+    }
+
+    public async Task<List<ProductUnit>> GetBySubProductIdsAsync(Guid productId, List<Guid> subProductIds)
+    {
+        return await _context.ProductUnits
+            .AsNoTracking()
+            .Where(productUnit => productUnit.ProductId.Equals(productId) 
+                        && subProductIds.Contains(productUnit.SubProductId))
+            .ToListAsync();
     }
 
     public void Update(ProductUnit productUnit)

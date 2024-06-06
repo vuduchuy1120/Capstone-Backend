@@ -6,7 +6,7 @@ namespace Infrastructure.Services;
 
 internal class FileService : IFileService
 {
-    private const string MainFilePath = "D:\\";
+    private const string MainFilePath = "D://";
 
     public void Delete(string fileName)
     {

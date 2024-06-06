@@ -2,4 +2,7 @@
 
 namespace Contract.Services.Product.UpdateProduct;
 
-public record UpdateProductCommand(UpdateProductRequest UpdateProductRequest, string UpdatedBy) : ICommand;
+public record UpdateProductCommand(
+    UpdateProductRequest UpdateProductRequest, 
+    string UpdatedBy,
+    Guid ProductId) : ICommand;

@@ -1,4 +1,5 @@
 ﻿using Contract.Services.Product.CreateProduct;
+using Contract.Services.Product.UpdateProduct;
 using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
@@ -12,10 +13,10 @@ public class Product : EntityAuditBase<Guid>
     public string Description { get; private set; }
     public bool IsGroup { get; private set; }
     public bool IsInProcessing { get; private set; }
-    public List<ProductImage> Images { get; private set; }
-    public List<ProductUnit> ProductUnits { get; private set; }
-    public List<ProductUnit> SubProductUnits { get; private set; }
-    public List<ProductPharse> ProductPharses { get; private set; }
+    public List<ProductImage>? Images { get; private set; }
+    public List<ProductUnit>? ProductUnits { get; private set; }
+    public List<ProductUnit>? SubProductUnits { get; private set; }
+    public List<ProductPharse>? ProductPharses { get; private set; }
     private Product()
     {
     }
@@ -35,6 +36,19 @@ public class Product : EntityAuditBase<Guid>
             CreatedBy = createdBy,
             CreatedDate = DateTime.UtcNow
         };
+    }
+
+    public void Update(UpdateProductRequest request, string updatedBy)
+    {
+        Code = request.Code;
+        Name = request.Name;
+        Price = request.Price;
+        IsGroup = request.IsGroup;
+        Size = request.Size;
+        Description = request.Description;
+        IsInProcessing = request.IsInProcessing;
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
     }
 
     // Cart             ( Id, GroupName, Size )

@@ -20,4 +20,9 @@ public class ProductUnit
             QuantityPerUnit = QuantityPerUnit
         };
     }
+
+    public void Update(int quantityPerUnit)
+    {
+        QuantityPerUnit = quantityPerUnit;
+    }
 }

@@ -28,10 +28,14 @@ public class ProductEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
         });
 
-        app.MapPut(string.Empty, async (ISender sender, [FromBody] UpdateProductRequest request, ClaimsPrincipal claim) =>
+        app.MapPut("{productId}", async (
+            ISender sender, 
+            [FromBody] UpdateProductRequest request,
+            [FromRoute] Guid productId,
+            ClaimsPrincipal claim) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var updateProductCommand = new UpdateProductCommand(request, userId);
+            var updateProductCommand = new UpdateProductCommand(request, userId, productId);
             var result = await sender.Send(updateProductCommand);
 
             return Results.Ok(result);

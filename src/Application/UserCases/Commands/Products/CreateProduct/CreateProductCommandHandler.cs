@@ -48,23 +48,27 @@ internal sealed class CreateProductCommandHandler(
         return product.Id;
     }
 
-    private void AddProductUnits(List<ProductUnitRequest> productUnitRequests, Guid productId)
+    private void AddProductUnits(List<ProductUnitRequest>? productUnitRequests, Guid productId)
     {
-        var productUnits = productUnitRequests.Select(productUnitRequest => ProductUnit.Create(
+        var productUnits = productUnitRequests?.Select(productUnitRequest => ProductUnit.Create(
                 productId,
                 productUnitRequest.SubProductId,
                 productUnitRequest.QuantityPerUnit))
             .ToList();
 
+        if (productUnits is null) return;
+
         _productUnitRepository.AddRange(productUnits);
     }
 
-    private void AddProductImages(List<ImageRequest> imageRequests, Guid productId)
+    private void AddProductImages(List<ImageRequest>? imageRequests, Guid productId)
     {
-        var productImages = imageRequests
+        var productImages = imageRequests?
             .Select(imageRequest => ProductImage.Create(productId, imageRequest))
             .ToList();
         
+        if (productImages is null) return;
+
         _productImageRepository.AddRange(productImages);
     }
 }

@@ -7,5 +7,5 @@ public record CreateProductRequest(
     string Description, 
     bool IsGroup,
     string Name,
-    List<ProductUnitRequest> ProductUnitRequests,
-    List<ImageRequest> ImageRequests);
+    List<ProductUnitRequest>? ProductUnitRequests,
+    List<ImageRequest>? ImageRequests);

@@ -6,8 +6,8 @@ public interface IProductImageRepository
 {
     void Add(ProductImage productImage);
     void AddRange(List<ProductImage> productImages);
-    void Update(ProductImage productImage);
     void Delete(ProductImage productImage);
-    Task<ProductImage> GetByIdAsync(Guid id);
+    void DeleteRange(List<ProductImage> productImages);
     Task<List<ProductImage>> GetByProductIdAsync(Guid productId);
+    Task<List<ProductImage>> GetProductImageIdsAsync(List<Guid> productImageIds);
 }

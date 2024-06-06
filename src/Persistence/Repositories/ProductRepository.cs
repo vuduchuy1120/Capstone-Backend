@@ -33,7 +33,9 @@ internal sealed class ProductRepository: IProductRepository
 
     public async Task<bool> IsHaveGroupInSubProductIds(List<Guid> SubProductIds)
     {
-        return !await _context.Products.AnyAsync(p => SubProductIds.Contains(p.Id) && p.IsGroup);
+        return await _context.Products
+            .AnyAsync(p => SubProductIds.Contains(p.Id) 
+                && p.IsGroup == true);
     }
 
     public async Task<bool> IsProductCodeExist(string code)
