@@ -1,12 +1,26 @@
-﻿using Domain.Abstractions.Entities;
+﻿using Contract.Services.Product.CreateProduct;
+using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
 
 public class ProductImage : EntityBase<Guid>
 {
-    public string ImageUrl { get; set; }
-    public bool IsBluePrint { get; set; }
-    public bool IsMainImage { get; set; }
-    public Guid ProductId { get; set; }
-    public Product Product { get; set; } 
+    public string ImageUrl { get; private set; }
+    public bool IsBluePrint { get; private set; }
+    public bool IsMainImage { get; private set; }
+    public Guid ProductId { get; private set; }
+    public Product Product { get; private set; }
+    private ProductImage()
+    {
+    }
+    public static ProductImage Create(Guid productId, ImageRequest request)
+    {
+        return new()
+        {
+            ProductId = productId,
+            ImageUrl = request.ImageUrl,
+            IsBluePrint = request.IsBluePrint,
+            IsMainImage = request.IsMainImage,
+        };
+    }
 }
