@@ -11,4 +11,6 @@ public interface IAttendanceRepository
     Task<List<Attendance>> GetAttendanceByDate(DateOnly date);
     Task<List<Attendance>> GetAttendanceByDateAndSlotId(DateOnly date, int slotId);
     Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request);
+
+    Task<bool> IsCanUpdateAttendance(string userId, int slotId, DateOnly date);
 }

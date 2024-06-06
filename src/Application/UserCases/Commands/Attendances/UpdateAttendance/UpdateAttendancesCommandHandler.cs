@@ -34,7 +34,12 @@ internal sealed class UpdateAttendancesCommandHandler(
                  request.UpdateAttendanceRequest.SlotId,
                  formattedDate)
                 ?? throw new AttendanceNotFoundException();
-
+            // check is can update
+            var isCanUpdateAttendance = await _attendanceRepository.IsCanUpdateAttendance(attendance.UserId, request.UpdateAttendanceRequest.SlotId, formattedDate);
+            if (!isCanUpdateAttendance)
+            {
+                throw new MyValidationException("Can not update because over 2 days!");
+            }
             attendanceEntity.Update(attendance, request.UpdatedBy);
 
             _attendanceRepository.UpdateAttendance(attendanceEntity);
