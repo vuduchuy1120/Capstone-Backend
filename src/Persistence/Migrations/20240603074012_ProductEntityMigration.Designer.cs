@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence;
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240603074012_ProductEntityMigration")]
+    partial class ProductEntityMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,78 +67,23 @@ namespace Persistence.Migrations
 
                     b.ToTable("Attendances", (string)null);
                 });
-            modelBuilder.Entity("Domain.Entities.Material", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-                    b.Property<string>("Image")
-                        .HasColumnType("text");
-                        b.Property<string>("NameUnaccent")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double?>("QuantityPerUnit")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Materials", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateOnly>("ImportDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
-                });
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
-                    b.HasOne("Domain.Entities.Material", "Material")
-                        .WithMany("MaterialHistories")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Material");
-                });
-                    modelBuilder.Entity("Domain.Entities.Material", b =>
-                {
-                    b.Navigation("MaterialHistories");
-                });
-                    modelBuilder.Entity("Domain.Entities.Material", b =>
-                {
-                    b.Navigation("MaterialHistories");
-                });
             modelBuilder.Entity("Domain.Entities.Pharse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Pharses");
+                    b.ToTable("Pharse");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -168,8 +116,10 @@ namespace Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
                     b.Property<string>("Size")
                         .IsRequired()
                         .HasColumnType("text");
@@ -182,7 +132,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductImage", b =>
@@ -208,7 +158,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImage");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductPharse", b =>
@@ -229,7 +179,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPhases");
+                    b.ToTable("ProductPharse");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductUnit", b =>
@@ -247,7 +197,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("SubProductId");
 
-                    b.ToTable("ProductUnits");
+                    b.ToTable("ProductUnit");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>

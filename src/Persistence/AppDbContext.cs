@@ -13,6 +13,11 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<ProductUnit> ProductUnits { get; set; }
+    public DbSet<Pharse> Pharses { get; set; }
+    public DbSet<ProductPharse> ProductPhases { get; set; }
     public DbSet<Slot> Slots { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<MaterialHistory> MaterialHistories { get; set; }
@@ -55,5 +60,30 @@ public class AppDbContext : DbContext, IUnitOfWork
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
         });
+        modelBuilder.Entity<ProductUnit>()
+            .HasKey(pu => new { pu.ProductId, pu.SubProductId });
+
+        modelBuilder.Entity<ProductUnit>()
+            .HasOne(pu => pu.Product)
+            .WithMany(p => p.ProductUnits)
+            .HasForeignKey(pc => pc.ProductId);
+
+        modelBuilder.Entity<ProductUnit>()
+            .HasOne(pu => pu.SubProduct)
+            .WithMany(p => p.SubProductUnits)
+            .HasForeignKey(pu => pu.SubProductId);
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasKey(ph => new {ph.PharseId, ph.ProductId});
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasOne(ph => ph.Pharse)
+            .WithMany(ph => ph.ProductPharses)
+            .HasForeignKey(pc => pc.PharseId);
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasOne(ph => ph.Product)
+            .WithMany(ph => ph.ProductPharses)
+            .HasForeignKey(pc => pc.ProductId);
     }
 }
