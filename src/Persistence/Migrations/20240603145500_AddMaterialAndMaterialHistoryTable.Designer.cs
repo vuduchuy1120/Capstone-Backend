@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence;
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240603145500_AddMaterialAndMaterialHistoryTable")]
+    partial class AddMaterialAndMaterialHistoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,18 +80,15 @@ namespace Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Image")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("NameUnaccent")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double?>("QuantityPerUnit")
-                        .HasColumnType("double precision");
+                    b.Property<int>("QuantityPerUnit")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -109,8 +109,8 @@ namespace Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("ImportDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("ImportDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("integer");
@@ -118,14 +118,8 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<double>("Quantity")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityInStock")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityPerUnit")
-                        .HasColumnType("double precision");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

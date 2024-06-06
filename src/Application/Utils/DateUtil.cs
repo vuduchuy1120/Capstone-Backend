@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions.Exceptions;
-using Domain.Exceptions.Users;
 
 namespace Application.Utils;
 
