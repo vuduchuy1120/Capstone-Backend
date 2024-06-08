@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence.UnitTests", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "src\Contract\Contract.csproj", "{CE00F3E0-4E62-434F-8E2D-7F35E92AD0A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.UnitTests", "test\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{88161CAE-57CE-4D92-9E8B-5429E7DA12B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.UnitTests", "test\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{88161CAE-57CE-4D92-9E8B-5429E7DA12B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

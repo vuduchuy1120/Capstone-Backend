@@ -13,8 +13,14 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
-
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<SetProduct> SetProducts { get; set; }
+    public DbSet<Pharse> Pharses { get; set; }
+    public DbSet<ProductPharse> ProductPhases { get; set; }
     public DbSet<Slot> Slots { get; set; }
+    public DbSet<Material> Materials { get; set; }
+    public DbSet<MaterialHistory> MaterialHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,5 +47,44 @@ public class AppDbContext : DbContext, IUnitOfWork
 
         modelBuilder.Entity<Slot>().ToTable("Slots");
 
+        modelBuilder.Entity<Material>().ToTable("Materials");
+
+        modelBuilder.Entity<MaterialHistory>().ToTable("MaterialHistories");
+
+        modelBuilder.Entity<MaterialHistory>()
+            .HasOne(m => m.Material)
+            .WithMany(m => m.MaterialHistories)
+            .HasForeignKey(m => m.MaterialId);
+        modelBuilder.Entity<MaterialHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
+        });
+
+        modelBuilder.Entity<SetProduct>()
+            .HasKey(pu => new { pu.ProductId, pu.SetId });
+
+        modelBuilder.Entity<SetProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.SetProducts)
+            .HasForeignKey(sp => sp.ProductId);
+
+        modelBuilder.Entity<SetProduct>()
+            .HasOne(sp => sp.Set)
+            .WithMany(p => p.SetProducts)
+            .HasForeignKey(sp => sp.SetId);
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasKey(ph => new {ph.PharseId, ph.ProductId});
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasOne(ph => ph.Pharse)
+            .WithMany(ph => ph.ProductPharses)
+            .HasForeignKey(pc => pc.PharseId);
+
+        modelBuilder.Entity<ProductPharse>()
+            .HasOne(ph => ph.Product)
+            .WithMany(ph => ph.ProductPharses)
+            .HasForeignKey(pc => pc.ProductId);
     }
 }

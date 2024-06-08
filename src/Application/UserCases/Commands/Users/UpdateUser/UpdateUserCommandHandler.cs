@@ -29,6 +29,7 @@ internal sealed class UpdateUserCommandHandler(
         user.Update(updateRequest, request.UpdatedBy);
 
         _userRepository.Update(user);
+
         await _unitOfWork.SaveChangesAsync();
 
         return Result.Success.Update();

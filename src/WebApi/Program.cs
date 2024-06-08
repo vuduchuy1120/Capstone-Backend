@@ -6,6 +6,7 @@ using WebApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using WebApi.InitialData;
+using MinimalHelpers.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,8 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
+
+    options.AddFormFile();
 });
 
 

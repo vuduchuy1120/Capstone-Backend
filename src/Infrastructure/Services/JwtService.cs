@@ -12,7 +12,8 @@ namespace Infrastructure.Services;
 
 internal class JwtService : IJwtService
 {
-    private const int Access_Token_Time_In_Minutes = 5;
+    //TODO change 5 to 50
+    private const int Access_Token_Time_In_Minutes = 50;
     private const int Refresh_Token_Time_In_Minutes = 10;
 
     private readonly JwtOptions _jwtOptions;

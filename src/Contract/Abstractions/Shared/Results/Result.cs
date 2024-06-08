@@ -62,6 +62,14 @@ public class Result
             data = tData,
             isSuccess = true
         };
+
+        public static Success<TData> Upload(TData tData) => new Success<TData>()
+        {
+            status = (int)HttpStatusCode.Created,
+            message = "Action upload file success",
+            data = tData,
+            isSuccess = true
+        };
     }
 
     public class Failure : IResult
