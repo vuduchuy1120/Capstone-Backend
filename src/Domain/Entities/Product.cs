@@ -11,14 +11,10 @@ public class Product : EntityAuditBase<Guid>
     public decimal Price { get; private set; }
     public string Size { get; private set; }
     public string Description { get; private set; }
-    public bool IsGroup { get; private set; }
     public bool IsInProcessing { get; private set; }
     public List<ProductImage>? Images { get; private set; }
     public List<SetProduct>? SetProducts { get; private set; }
     public List<ProductPharse>? ProductPharses { get; private set; }
-    private Product()
-    {
-    }
 
     public static Product Create(CreateProductRequest request, string createdBy)
     {
@@ -30,7 +26,6 @@ public class Product : EntityAuditBase<Guid>
             Size = request.Size,
             Description = request.Description,
             Price = request.Price,
-            IsGroup = request.IsGroup,
             IsInProcessing = true,
             CreatedBy = createdBy,
             CreatedDate = DateTime.UtcNow
@@ -42,7 +37,6 @@ public class Product : EntityAuditBase<Guid>
         Code = request.Code;
         Name = request.Name;
         Price = request.Price;
-        IsGroup = request.IsGroup;
         Size = request.Size;
         Description = request.Description;
         IsInProcessing = request.IsInProcessing;

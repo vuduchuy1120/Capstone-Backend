@@ -25,7 +25,7 @@ public class GetProductByIdTest : IDisposable
     {
         // Arrange
         var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
-            false, "Name", null, null);
+            "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
@@ -40,7 +40,6 @@ public class GetProductByIdTest : IDisposable
         Assert.Equal(3434, result.Price);
         Assert.Equal("Size", result.Size);
         Assert.Equal("Description", result.Description);
-        Assert.Equal(false, result.IsGroup);
         Assert.Equal("Name", result.Name);
     }
 
