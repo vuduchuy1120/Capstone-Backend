@@ -1,3 +1,5 @@
-﻿namespace Contract.Services.Product.UpdateProduct;
+﻿using Contract.Services.Product.SharedDto;
 
-public record ActionAddRequest(List<AddProductImageRequest>? Images, List<AddProductUnitRequest>? ProductUnits);
+namespace Contract.Services.Product.UpdateProduct;
+
+public record ActionAddRequest(List<ImageRequest>? Images, List<ProductUnitRequest>? ProductUnits);

@@ -1,4 +1,4 @@
-﻿using Contract.Services.Product.CreateProduct;
+﻿using Contract.Services.Product.SharedDto;
 using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;

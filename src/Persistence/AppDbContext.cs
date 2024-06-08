@@ -15,7 +15,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
-    public DbSet<ProductUnit> ProductUnits { get; set; }
+    public DbSet<SetProduct> SetProducts { get; set; }
     public DbSet<Pharse> Pharses { get; set; }
     public DbSet<ProductPharse> ProductPhases { get; set; }
     public DbSet<Slot> Slots { get; set; }
@@ -60,18 +60,19 @@ public class AppDbContext : DbContext, IUnitOfWork
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
         });
-        modelBuilder.Entity<ProductUnit>()
-            .HasKey(pu => new { pu.ProductId, pu.SubProductId });
 
-        modelBuilder.Entity<ProductUnit>()
-            .HasOne(pu => pu.Product)
-            .WithMany(p => p.ProductUnits)
-            .HasForeignKey(pc => pc.ProductId);
+        modelBuilder.Entity<SetProduct>()
+            .HasKey(pu => new { pu.ProductId, pu.SetId });
 
-        modelBuilder.Entity<ProductUnit>()
-            .HasOne(pu => pu.SubProduct)
-            .WithMany(p => p.SubProductUnits)
-            .HasForeignKey(pu => pu.SubProductId);
+        modelBuilder.Entity<SetProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.SetProducts)
+            .HasForeignKey(sp => sp.ProductId);
+
+        modelBuilder.Entity<SetProduct>()
+            .HasOne(sp => sp.Set)
+            .WithMany(p => p.SetProducts)
+            .HasForeignKey(sp => sp.SetId);
 
         modelBuilder.Entity<ProductPharse>()
             .HasKey(ph => new {ph.PharseId, ph.ProductId});

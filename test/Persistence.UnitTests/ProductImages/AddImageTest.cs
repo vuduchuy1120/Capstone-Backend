@@ -2,7 +2,7 @@
 using Domain.Entities;
 using Persistence.Repositories;
 using Application.Abstractions.Data;
-using Contract.Services.Product.CreateProduct;
+using Contract.Services.Product.SharedDto;
 
 namespace Persistence.UnitTests.ProductImages
 {

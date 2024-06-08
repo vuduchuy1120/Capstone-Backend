@@ -1,3 +1,3 @@
-﻿namespace Contract.Services.Product.CreateProduct;
+﻿namespace Contract.Services.Product.SharedDto;
 
 public record ImageRequest(string ImageUrl, bool IsBluePrint, bool IsMainImage);

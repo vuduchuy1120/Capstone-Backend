@@ -14,8 +14,7 @@ public class Product : EntityAuditBase<Guid>
     public bool IsGroup { get; private set; }
     public bool IsInProcessing { get; private set; }
     public List<ProductImage>? Images { get; private set; }
-    public List<ProductUnit>? ProductUnits { get; private set; }
-    public List<ProductUnit>? SubProductUnits { get; private set; }
+    public List<SetProduct>? SetProducts { get; private set; }
     public List<ProductPharse>? ProductPharses { get; private set; }
     private Product()
     {
@@ -50,9 +49,4 @@ public class Product : EntityAuditBase<Guid>
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
     }
-
-    // Cart             ( Id, GroupName, Size )
-    // Cart_Detail      ( CartId, ProductId, QuantityPerGroup) 
-    // Product          ( Id, Price, Size) 
-    // ProductImage     ( Id, ProductId, FileName, IsMainImage, Issdfdsf)
 }

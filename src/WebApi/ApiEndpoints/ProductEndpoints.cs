@@ -1,6 +1,7 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.Product.CreateProduct;
+using Contract.Services.Product.GetProduct;
 using Contract.Services.Product.UpdateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,14 @@ public class ProductEndpoints : CarterModule
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
+        });
+
+        app.MapGet("{id}", async (ISender sender, [FromRoute] Guid id) =>
+        {
+            var getProductQuery = new GetProductQuery(id);
+            var result = await sender.Send(getProductQuery);
+
+            return Results.Ok(result);
         });
     }
 }

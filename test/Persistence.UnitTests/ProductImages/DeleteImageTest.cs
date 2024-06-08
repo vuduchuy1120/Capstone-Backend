@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Contract.Services.Product.CreateProduct;
+using Contract.Services.Product.SharedDto;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories;

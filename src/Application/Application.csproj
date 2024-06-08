@@ -23,4 +23,9 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="UserCases\Commands\Sets\CreateSet\" />
+	  <Folder Include="UserCases\Commands\Sets\UpdateSet\" />
+	</ItemGroup>
+
 </Project>

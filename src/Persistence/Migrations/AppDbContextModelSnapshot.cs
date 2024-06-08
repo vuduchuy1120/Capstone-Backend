@@ -64,6 +64,7 @@ namespace Persistence.Migrations
 
                     b.ToTable("Attendances", (string)null);
                 });
+
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
                     b.Property<int>("Id")
@@ -71,9 +72,18 @@ namespace Persistence.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("Image")
                         .HasColumnType("text");
-                        b.Property<string>("NameUnaccent")
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameUnaccent")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -104,35 +114,39 @@ namespace Persistence.Migrations
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("integer");
-                });
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
-                    b.HasOne("Domain.Entities.Material", "Material")
-                        .WithMany("MaterialHistories")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
-                    b.Navigation("Material");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<double>("Quantity")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("QuantityInStock")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("QuantityPerUnit")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("MaterialHistories", (string)null);
                 });
-                    modelBuilder.Entity("Domain.Entities.Material", b =>
-                {
-                    b.Navigation("MaterialHistories");
-                });
-                    modelBuilder.Entity("Domain.Entities.Material", b =>
-                {
-                    b.Navigation("MaterialHistories");
-                });
+
             modelBuilder.Entity("Domain.Entities.Pharse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Pharses");
@@ -168,8 +182,10 @@ namespace Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
                     b.Property<string>("Size")
                         .IsRequired()
                         .HasColumnType("text");
@@ -232,24 +248,6 @@ namespace Persistence.Migrations
                     b.ToTable("ProductPhases");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProductUnit", b =>
-                {
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SubProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("QuantityPerUnit")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProductId", "SubProductId");
-
-                    b.HasIndex("SubProductId");
-
-                    b.ToTable("ProductUnits");
-                });
-
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -272,6 +270,64 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Set", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Set");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SetProduct", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProductId", "SetId");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("SetProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>
@@ -371,6 +427,17 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
+                {
+                    b.HasOne("Domain.Entities.Material", "Material")
+                        .WithMany("MaterialHistories")
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Material");
+                });
+
             modelBuilder.Entity("Domain.Entities.ProductImage", b =>
                 {
                     b.HasOne("Domain.Entities.Product", "Product")
@@ -401,23 +468,23 @@ namespace Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProductUnit", b =>
+            modelBuilder.Entity("Domain.Entities.SetProduct", b =>
                 {
                     b.HasOne("Domain.Entities.Product", "Product")
-                        .WithMany("ProductUnits")
+                        .WithMany("SetProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Product", "SubProduct")
-                        .WithMany("SubProductUnits")
-                        .HasForeignKey("SubProductId")
+                    b.HasOne("Domain.Entities.Set", "Set")
+                        .WithMany("SetProducts")
+                        .HasForeignKey("SetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
 
-                    b.Navigation("SubProduct");
+                    b.Navigation("Set");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -431,6 +498,11 @@ namespace Persistence.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Material", b =>
+                {
+                    b.Navigation("MaterialHistories");
+                });
+
             modelBuilder.Entity("Domain.Entities.Pharse", b =>
                 {
                     b.Navigation("ProductPharses");
@@ -442,14 +514,17 @@ namespace Persistence.Migrations
 
                     b.Navigation("ProductPharses");
 
-                    b.Navigation("ProductUnits");
-
-                    b.Navigation("SubProductUnits");
+                    b.Navigation("SetProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Set", b =>
+                {
+                    b.Navigation("SetProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>

@@ -1,4 +1,6 @@
-﻿namespace Contract.Services.Product.CreateProduct;
+﻿using Contract.Services.Product.SharedDto;
+
+namespace Contract.Services.Product.CreateProduct;
 
 public record CreateProductRequest(
     string Code, 

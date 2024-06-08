@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-internal sealed class ProductRepository: IProductRepository
+internal sealed class ProductRepository : IProductRepository
 {
     private readonly AppDbContext _context;
 
@@ -18,9 +18,13 @@ internal sealed class ProductRepository: IProductRepository
         _context.Products.Add(product);
     }
 
-    public async Task<Product> GetProductById(Guid id)
+    public async Task<Product?> GetProductById(Guid id)
     {
-        return await _context.Products.AsNoTracking().SingleOrDefaultAsync(p => p.Id.Equals(id));
+        return await _context.Products
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(p => p.Images)
+            .SingleOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<bool> IsAllSubProductIdsExist(List<Guid> SubProductIds)
