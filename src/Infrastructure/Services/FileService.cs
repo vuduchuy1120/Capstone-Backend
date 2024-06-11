@@ -6,7 +6,7 @@ namespace Infrastructure.Services;
 
 internal class FileService : IFileService
 {
-    private const string MainFilePath = "/root/dihson103";
+    private const string MainFilePath = "/var/home/dihson103";
 
     public void Delete(string fileName)
     {
@@ -38,7 +38,7 @@ internal class FileService : IFileService
     {
         if (file == null || file.Length == 0)
         {
-            throw new UploadFileException();
+            throw new UploadFileException("File is null");
         }
 
         var fileName = string.Empty;
@@ -63,7 +63,7 @@ internal class FileService : IFileService
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            throw new UploadFileException();
+            throw new UploadFileException(ex.Message);
         }
     }
 }
