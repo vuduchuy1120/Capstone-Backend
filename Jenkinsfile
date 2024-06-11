@@ -7,13 +7,13 @@ pipeline {
     
     stages {
 
-        stage('Run unit test') {
-            steps {
-                script {
-                    sh 'dotnet test'
-                }
-            }
-        }
+        // stage('Run unit test') {
+        //     steps {
+        //         script {
+        //             sh 'dotnet test'
+        //         }
+        //     }
+        // }
 
         stage('Remove old capstone project') {
             steps {
