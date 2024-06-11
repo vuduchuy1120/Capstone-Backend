@@ -10,9 +10,7 @@ public class ProductImage : EntityBase<Guid>
     public bool IsMainImage { get; private set; }
     public Guid ProductId { get; private set; }
     public Product Product { get; private set; }
-    private ProductImage()
-    {
-    }
+    
     public static ProductImage Create(Guid productId, ImageRequest request)
     {
         return new()

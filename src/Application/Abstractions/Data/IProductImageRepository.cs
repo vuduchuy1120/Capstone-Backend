@@ -10,4 +10,5 @@ public interface IProductImageRepository
     void DeleteRange(List<ProductImage> productImages);
     Task<List<ProductImage>> GetByProductIdAsync(Guid productId);
     Task<List<ProductImage>> GetProductImageIdsAsync(List<Guid> productImageIds);
+    Task<bool> IsAllImageIdExist(List<Guid> productImageIds, Guid productId);
 }

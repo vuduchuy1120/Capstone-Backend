@@ -25,7 +25,7 @@ public class IsProductCodeExistTest : IDisposable
     {
         // Arrange
         var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
-                false, "Name", null, null);
+                "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
         _context.Products.Add(product);

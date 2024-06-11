@@ -26,14 +26,14 @@ public class UpdateProductTest : IDisposable
     {
         // Arrange
         var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
-                false, "Name", null, null);
+                "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 
         // Act
         var updateProductRequest = new UpdateProductRequest(product.Id, "UpdatedCode",
-            999, "UpdatedSize", "UpdatedDescription", false, "UpdatedName", true, null, null);
+            999, "UpdatedSize", "UpdatedDescription", "UpdatedName", true, null, null);
         product.Update(updateProductRequest, "001201012123");
 
         _productRepository.Update(product);
@@ -54,7 +54,7 @@ public class UpdateProductTest : IDisposable
     {
         // Arrange
         var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
-                false, "Name", null, null);
+                "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
         // Act & Assert

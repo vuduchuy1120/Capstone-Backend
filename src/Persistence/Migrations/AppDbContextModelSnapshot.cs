@@ -173,9 +173,6 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsGroup")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsInProcessing")
                         .HasColumnType("boolean");
 
@@ -309,7 +306,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Set");
+                    b.ToTable("Sets");
                 });
 
             modelBuilder.Entity("Domain.Entities.SetProduct", b =>

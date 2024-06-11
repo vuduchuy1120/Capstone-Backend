@@ -47,4 +47,10 @@ internal class ProductImageRepository : IProductImageRepository
             .Where(productImage => productImageIds.Contains(productImage.Id))
             .ToListAsync();
     }
+
+    public async Task<bool> IsAllImageIdExist(List<Guid> productImageIds, Guid productId)
+    {
+        return await _context.ProductImages
+            .AnyAsync(image => image.ProductId == productId && productImageIds.Contains(image.Id));
+    }
 }

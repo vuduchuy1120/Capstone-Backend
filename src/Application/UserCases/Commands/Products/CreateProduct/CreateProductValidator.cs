@@ -23,32 +23,18 @@ namespace Application.UserCases.Commands.Products.CreateProduct
             RuleFor(req => req.Description)
                 .NotEmpty().WithMessage("Product's description cannot be empty");
 
+            RuleFor(req => req.Name)
+                .NotEmpty().WithMessage("Name's description cannot be empty");
+
             RuleFor(req => req.ImageRequests)
                 .Must(imageRequests =>
                 {
-                    return imageRequests.Count(image => image.IsMainImage == true) == 1;
-                }).WithMessage("Must have one main image");
-
-            RuleFor(req => req.ProductUnitRequests)
-                .MustAsync(async (req, productUnitRequests, _) =>
-                {
-                    if (!req.IsGroup)
-                    {
-                        return productUnitRequests == null || productUnitRequests.Count == 0;
-                    }
-
-                    if (productUnitRequests == null || productUnitRequests.Count == 0)
+                    if (imageRequests is null || imageRequests.Count == 0)
                     {
                         return true;
                     }
-
-                    var subProductIds = productUnitRequests.Select(r => r.SubProductId).ToList();
-
-                    return !await _productRepository.IsHaveGroupInSubProductIds(subProductIds);
-                })
-                .WithMessage(req => req.IsGroup
-                    ? "If product is a group, sub-products cannot be groups."
-                    : "If product is not a group, it should not have any sub-products.");
+                    return imageRequests.Count(image => image.IsMainImage == true) == 1;
+                }).WithMessage("Must have one main image");
         }
     }
 }

@@ -7,7 +7,5 @@ public record CreateProductRequest(
     decimal Price, 
     string Size, 
     string Description, 
-    bool IsGroup,
     string Name,
-    List<ProductUnitRequest>? ProductUnitRequests,
     List<ImageRequest>? ImageRequests);

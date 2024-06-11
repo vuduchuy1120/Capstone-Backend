@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Product.GetProducts;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -27,6 +29,13 @@ internal sealed class ProductRepository : IProductRepository
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task<Product?> GetProductByIdWithoutImages(Guid id)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == id);
+    }
+
     public async Task<bool> IsAllSubProductIdsExist(List<Guid> SubProductIds)
     {
         var existingSubProductCount = await _context.Products
@@ -35,16 +44,35 @@ internal sealed class ProductRepository : IProductRepository
         return existingSubProductCount == SubProductIds.Count;
     }
 
-    public async Task<bool> IsHaveGroupInSubProductIds(List<Guid> SubProductIds)
-    {
-        return await _context.Products
-            .AnyAsync(p => SubProductIds.Contains(p.Id) 
-                && p.IsGroup == true);
-    }
-
     public async Task<bool> IsProductCodeExist(string code)
     {
         return await _context.Products.AnyAsync(p => p.Code == code);
+    }
+
+    public async Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery)
+    {
+        var query = _context.Products.Where(p => p.IsInProcessing == getProductsQuery.IsInProcessing);
+
+        var searchTerm = getProductsQuery.SearchTerm;
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(p => p.Name.Contains(searchTerm) || p.Code.Contains(searchTerm));
+        }
+
+        var totalItems = await query.CountAsync();
+
+        int totalPages = (int)Math.Ceiling((double)totalItems / getProductsQuery.PageSize);
+
+        var products = await query
+            .OrderBy(p => p.CreatedDate)
+            .Skip((getProductsQuery.PageIndex - 1) * getProductsQuery.PageSize)
+            .Take(getProductsQuery.PageSize)
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .AsSingleQuery()
+            .ToListAsync();
+
+        return (products, totalPages);
     }
 
     public void Update(Product product)

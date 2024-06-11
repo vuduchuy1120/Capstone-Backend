@@ -12,7 +12,6 @@ namespace Application.UserCases.Commands.Products.CreateProduct;
 
 internal sealed class CreateProductCommandHandler(
     IProductRepository _productRepository,
-    //IProductUnitRepository _productUnitRepository,
     IProductImageRepository _productImageRepository,
     IUnitOfWork _unitOfWork, 
     IValidator<CreateProductRequest> _validator) : ICommandHandler<CreateProductCommand>
@@ -23,9 +22,8 @@ internal sealed class CreateProductCommandHandler(
 
         await ValidateRequest(createProductRequest);
 
-        //var productId = AddProduct(createProductRequest, request.CreatedBy);
-        //AddProductUnits(createProductRequest.ProductUnitRequests, productId);
-        //AddProductImages(createProductRequest.ImageRequests, productId);
+        var productId = AddProduct(createProductRequest, request.CreatedBy);
+        AddProductImages(createProductRequest.ImageRequests, productId);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -42,34 +40,21 @@ internal sealed class CreateProductCommandHandler(
         }
     }
 
-    //private Guid AddProduct(CreateProductRequest createProductRequest, string CreatedBy)
-    //{
-    //    var product = Product.Create(createProductRequest, CreatedBy);
-    //    _productRepository.Add(product);
-    //    return product.Id;
-    //}
+    private Guid AddProduct(CreateProductRequest createProductRequest, string CreatedBy)
+    {
+        var product = Product.Create(createProductRequest, CreatedBy);
+        _productRepository.Add(product);
+        return product.Id;
+    }
 
-    //private void AddProductUnits(List<ProductUnitRequest>? productUnitRequests, Guid productId)
-    //{
-    //    var productUnits = productUnitRequests?.Select(productUnitRequest => ProductUnit.Create(
-    //            productId,
-    //            productUnitRequest.SubProductId,
-    //            productUnitRequest.QuantityPerUnit))
-    //        .ToList();
+    private void AddProductImages(List<ImageRequest>? imageRequests, Guid productId)
+    {
+        var productImages = imageRequests?
+            .Select(imageRequest => ProductImage.Create(productId, imageRequest))
+            .ToList();
 
-    //    if (productUnits is null) return;
+        if (productImages is null) return;
 
-    //    _productUnitRepository.AddRange(productUnits);
-    //}
-
-    //private void AddProductImages(List<ImageRequest>? imageRequests, Guid productId)
-    //{
-    //    var productImages = imageRequests?
-    //        .Select(imageRequest => ProductImage.Create(productId, imageRequest))
-    //        .ToList();
-        
-    //    if (productImages is null) return;
-
-    //    _productImageRepository.AddRange(productImages);
-    //}
+        _productImageRepository.AddRange(productImages);
+    }
 }
