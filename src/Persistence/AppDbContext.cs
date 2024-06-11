@@ -15,6 +15,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<Set> Sets { get; set; }
     public DbSet<SetProduct> SetProducts { get; set; }
     public DbSet<Pharse> Pharses { get; set; }
     public DbSet<ProductPharse> ProductPhases { get; set; }

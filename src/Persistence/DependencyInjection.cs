@@ -16,7 +16,10 @@ public static class DependencyInjection
         {
             //TODO
             //options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            options.UseNpgsql(
+                configuration.GetConnectionString("DefaultConnection"),
+                option  => option.MaxBatchSize(100)
+            );
 
         });
 
@@ -26,10 +29,11 @@ public static class DependencyInjection
         services.AddScoped<ISlotRepository, SlotRepository>();
         services.AddScoped<IAttendanceRepository, AttendanceRepository>();  
         services.AddScoped<IProductRepository, ProductRepository>();
-        //services.AddScoped<IProductUnitRepository, ProductUnitRepository>();
         services.AddScoped<IProductImageRepository, ProductImageRepository>();
         services.AddScoped<IMaterialRepository, MaterialRepository>();
         services.AddScoped<IMaterialHistoryRepository, MaterialHistoryRepository>();
+        services.AddScoped<ISetProductRepository, SetProductRepository>();
+        services.AddScoped<ISetRepository, SetRepository>();
 
         return services;
     }
