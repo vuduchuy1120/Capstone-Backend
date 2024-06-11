@@ -6,7 +6,7 @@ namespace Infrastructure.Services;
 
 internal class FileService : IFileService
 {
-    private const string MainFilePath = "/var/home/dihson103";
+    private const string MainFilePath = "/var/app/capstone-backend";
 
     public void Delete(string fileName)
     {
