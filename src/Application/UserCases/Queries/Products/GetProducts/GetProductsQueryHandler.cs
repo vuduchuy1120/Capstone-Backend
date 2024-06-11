@@ -28,7 +28,7 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
 
         var data = products.ConvertAll(p => _mapper.Map<ProductResponse>(p));
 
-        var searchResponse = new SearchResponse<List<ProductResponse>>(totalPage, request.PageIndex, data);
+        var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
 
         return Result.Success<SearchResponse<List<ProductResponse>>>.Get(searchResponse);
     }
