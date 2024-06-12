@@ -14,7 +14,7 @@ public class Product : EntityAuditBase<Guid>
     public bool IsInProcessing { get; private set; }
     public List<ProductImage>? Images { get; private set; }
     public List<SetProduct>? SetProducts { get; private set; }
-    public List<ProductPharse>? ProductPharses { get; private set; }
+    public List<ProductPhase>? ProductPhases { get; private set; }
 
     public static Product Create(CreateProductRequest request, string createdBy)
     {

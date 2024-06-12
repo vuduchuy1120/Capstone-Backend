@@ -17,8 +17,8 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Set> Sets { get; set; }
     public DbSet<SetProduct> SetProducts { get; set; }
-    public DbSet<Pharse> Pharses { get; set; }
-    public DbSet<ProductPharse> ProductPhases { get; set; }
+    public DbSet<Phase> Phases { get; set; }
+    public DbSet<ProductPhase> ProductPhases { get; set; }
     public DbSet<Slot> Slots { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<MaterialHistory> MaterialHistories { get; set; }
@@ -75,17 +75,17 @@ public class AppDbContext : DbContext, IUnitOfWork
             .WithMany(p => p.SetProducts)
             .HasForeignKey(sp => sp.SetId);
 
-        modelBuilder.Entity<ProductPharse>()
-            .HasKey(ph => new {ph.PharseId, ph.ProductId});
+        modelBuilder.Entity<ProductPhase>()
+            .HasKey(ph => new {ph.PhaseId, ph.ProductId});
 
-        modelBuilder.Entity<ProductPharse>()
-            .HasOne(ph => ph.Pharse)
-            .WithMany(ph => ph.ProductPharses)
-            .HasForeignKey(pc => pc.PharseId);
+        modelBuilder.Entity<ProductPhase>()
+            .HasOne(ph => ph.Phase)
+            .WithMany(ph => ph.ProductPhases)
+            .HasForeignKey(pc => pc.PhaseId);
 
-        modelBuilder.Entity<ProductPharse>()
+        modelBuilder.Entity<ProductPhase>()
             .HasOne(ph => ph.Product)
-            .WithMany(ph => ph.ProductPharses)
+            .WithMany(ph => ph.ProductPhases)
             .HasForeignKey(pc => pc.ProductId);
     }
 }
