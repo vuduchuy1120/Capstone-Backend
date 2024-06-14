@@ -65,6 +65,53 @@ namespace Persistence.Migrations
                     b.ToTable("Attendances", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.EmployeeProduct", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PhaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SlotId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsMold")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductId", "UserId", "PhaseId", "SlotId", "Date");
+
+                    b.HasIndex("PhaseId");
+
+                    b.HasIndex("SlotId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmployeeProducts", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
                     b.Property<int>("Id")
@@ -134,7 +181,7 @@ namespace Persistence.Migrations
                     b.ToTable("MaterialHistories", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Pharse", b =>
+            modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +196,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pharses");
+                    b.ToTable("Phases");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -224,9 +271,9 @@ namespace Persistence.Migrations
                     b.ToTable("ProductImages");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProductPharse", b =>
+            modelBuilder.Entity("Domain.Entities.ProductPhase", b =>
                 {
-                    b.Property<Guid>("PharseId")
+                    b.Property<Guid>("PhaseId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
@@ -238,7 +285,7 @@ namespace Persistence.Migrations
                     b.Property<decimal>("SalaryPerProduct")
                         .HasColumnType("numeric");
 
-                    b.HasKey("PharseId", "ProductId");
+                    b.HasKey("PhaseId", "ProductId");
 
                     b.HasIndex("ProductId");
 
@@ -424,6 +471,41 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.EmployeeProduct", b =>
+                {
+                    b.HasOne("Domain.Entities.Phase", "Phase")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("PhaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Slot", "Slot")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("SlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Phase");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Slot");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
                 {
                     b.HasOne("Domain.Entities.Material", "Material")
@@ -446,21 +528,21 @@ namespace Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProductPharse", b =>
+            modelBuilder.Entity("Domain.Entities.ProductPhase", b =>
                 {
-                    b.HasOne("Domain.Entities.Pharse", "Pharse")
-                        .WithMany("ProductPharses")
-                        .HasForeignKey("PharseId")
+                    b.HasOne("Domain.Entities.Phase", "Phase")
+                        .WithMany("ProductPhases")
+                        .HasForeignKey("PhaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Product", "Product")
-                        .WithMany("ProductPharses")
+                        .WithMany("ProductPhases")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pharse");
+                    b.Navigation("Phase");
 
                     b.Navigation("Product");
                 });
@@ -500,16 +582,20 @@ namespace Persistence.Migrations
                     b.Navigation("MaterialHistories");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Pharse", b =>
+            modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
-                    b.Navigation("ProductPharses");
+                    b.Navigation("EmployeeProducts");
+
+                    b.Navigation("ProductPhases");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
                 {
+                    b.Navigation("EmployeeProducts");
+
                     b.Navigation("Images");
 
-                    b.Navigation("ProductPharses");
+                    b.Navigation("ProductPhases");
 
                     b.Navigation("SetProducts");
                 });
@@ -527,11 +613,15 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Slot", b =>
                 {
                     b.Navigation("Attendances");
+
+                    b.Navigation("EmployeeProducts");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Attendances");
+
+                    b.Navigation("EmployeeProducts");
                 });
 #pragma warning restore 612, 618
         }

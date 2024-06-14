@@ -49,6 +49,11 @@ internal sealed class ProductRepository : IProductRepository
         return await _context.Products.AnyAsync(p => p.Code == code);
     }
 
+    public async Task<bool> IsProductIdExist(Guid id)
+    {
+        return await _context.Products.AnyAsync(p => p.Id == id);
+    }
+
     public async Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery)
     {
         var query = _context.Products.Where(p => p.IsInProcessing == getProductsQuery.IsInProcessing);

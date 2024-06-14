@@ -1,8 +1,8 @@
 ﻿using Contract.Services.Attendance.Create;
 using Contract.Services.Attendance.Update;
 using Domain.Abstractions.Entities;
-using Domain.Exceptions.Attendances;
-using Domain.Exceptions.Users;
+using Domain.Exceptions.Common;
+
 
 namespace Domain.Entities
 {
@@ -18,7 +18,7 @@ namespace Domain.Entities
         public bool IsOverTime { get; set; } = false;
         public bool IsSalaryByProduct { get; set; } = false;
 
-        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest,int slot, string CreatedBy)
+        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest, int slot, string CreatedBy)
         {
             return new Attendance()
             {
@@ -41,7 +41,7 @@ namespace Domain.Entities
             IsOverTime = updateAttendanceRequest.IsOverTime;
             IsSalaryByProduct = updateAttendanceRequest.IsSalaryByProduct;
             UpdatedBy = updatedBy;
-            UpdatedDate = DateTime.UtcNow;            
+            UpdatedDate = DateTime.UtcNow;
         }
 
         private static DateOnly ConvertStringToDateTimeOnly(string dateString)

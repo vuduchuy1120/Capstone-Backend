@@ -11,7 +11,7 @@ public class Slot : EntityBase<int>
     public string SlotTitle { get; private set; }
 
     public List<Attendance>? Attendances { get; set; }
-
+    public List<EmployeeProduct>? EmployeeProducts { get; set; }
     public static Slot Create(CreateSlotCommand request)
     {
         return new Slot() { SlotTitle = request.SlotTitle };
