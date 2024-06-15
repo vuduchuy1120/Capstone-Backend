@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Contract.Abstractions.Shared.Utils
+namespace Application.Abstractions.Shared.Utils
 {
     public class StringUtils
     {

@@ -3,7 +3,7 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Set.SharedDto;
 using Contract.Services.Set.UpdateSet;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.SetProducts;
 using Domain.Exceptions.Sets;

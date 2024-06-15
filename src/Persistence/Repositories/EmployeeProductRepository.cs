@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Contract.Abstractions.Shared.Utils;
+using Application.Utils;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +42,7 @@ public class EmployeeProductRepository : IEmployeeProductRepository
     public async Task<List<EmployeeProduct>> GetEmployeeProductsByKeysAsync(List<CompositeKey> keys)
     {
         // Convert keys to lists of individual components
-        var dates = keys.Select(k => DateUtils.ConvertStringToDateTimeOnly(k.Date)).ToList();
+        var dates = keys.Select(k => DateUtil.ConvertStringToDateTimeOnly(k.Date)).ToList();
         var slotIds = keys.Select(k => k.SlotId).ToList();
         var productIds = keys.Select(k => k.ProductId).ToList();
         var phaseIds = keys.Select(k => k.PhaseId).ToList();
@@ -65,7 +65,7 @@ public class EmployeeProductRepository : IEmployeeProductRepository
     {
         var keySets = keys.Select(k => new
         {
-            Date = DateUtils.ConvertStringToDateTimeOnly(k.Date),
+            Date = DateUtil.ConvertStringToDateTimeOnly(k.Date),
             k.SlotId,
             k.ProductId,
             k.PhaseId,

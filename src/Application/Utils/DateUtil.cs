@@ -1,4 +1,4 @@
-﻿using Contract.Abstractions.Exceptions;
+﻿using Domain.Abstractions.Exceptions;
 
 namespace Application.Utils;
 
@@ -17,5 +17,9 @@ public class DateUtil
         {
             throw new MyValidationException("Date is wrong format");
         }
+    }
+    public static DateTime GetNow()
+    {
+        return DateTime.UtcNow.AddHours(7);
     }
 }

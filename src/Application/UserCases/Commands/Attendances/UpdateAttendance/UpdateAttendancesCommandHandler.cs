@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;

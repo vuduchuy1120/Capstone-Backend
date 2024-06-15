@@ -5,7 +5,7 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.ConfirmVerifyCode;
 using Contract.Services.User.ForgetPassword;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Exceptions.Users;
 using FluentValidation;
 

@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.MaterialHistories.Create;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.MaterialHistory.Create;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using FluentAssertions;
 using FluentValidation;
 using Moq;

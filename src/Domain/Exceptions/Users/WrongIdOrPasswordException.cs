@@ -1,4 +1,4 @@
-﻿using Contract.Abstractions.Exceptions.Base;
+﻿using Domain.Abstractions.Exceptions.Base;
 using System.Net;
 
 namespace Domain.Exceptions.Users;

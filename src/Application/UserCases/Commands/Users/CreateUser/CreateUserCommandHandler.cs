@@ -4,7 +4,7 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 

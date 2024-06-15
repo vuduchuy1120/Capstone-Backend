@@ -3,7 +3,7 @@ using Application.Abstractions.Services;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.ChangePassword;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;

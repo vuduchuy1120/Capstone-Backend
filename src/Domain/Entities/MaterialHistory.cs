@@ -1,7 +1,7 @@
 ﻿using Contract.Services.MaterialHistory.Create;
 using Contract.Services.MaterialHistory.Update;
 using Domain.Abstractions.Entities;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 
 namespace Domain.Entities;
 

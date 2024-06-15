@@ -2,7 +2,7 @@
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.MaterialHistory.Update;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using FluentValidation;
 using System.Text.RegularExpressions;
 

@@ -1,7 +1,7 @@
-﻿using Contract.Abstractions.Exceptions.Base;
+﻿using Domain.Abstractions.Exceptions.Base;
 using System.Net;
 
-namespace Contract.Abstractions.Exceptions;
+namespace Domain.Abstractions.Exceptions;
 
 public class MyValidationException : MyException
 {

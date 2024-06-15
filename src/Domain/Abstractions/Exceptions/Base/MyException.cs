@@ -1,4 +1,4 @@
-﻿namespace Contract.Abstractions.Exceptions.Base;
+﻿namespace Domain.Abstractions.Exceptions.Base;
 
 public class MyException : Exception
 {

@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
-using Contract.Abstractions.Shared.Utils;
+using Application.Abstractions.Shared.Utils;
 using Contract.Services.MaterialHistory.Queries;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
