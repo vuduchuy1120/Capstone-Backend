@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.UserCases.Commands.Attendances.CreateAttendance;
 using Contract.Services.Attendance.Create;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;

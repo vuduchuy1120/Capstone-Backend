@@ -2,7 +2,7 @@
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.UpdateUser;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Exceptions.Users;
 using FluentValidation;
 

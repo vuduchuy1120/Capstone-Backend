@@ -3,7 +3,7 @@ using Application.Abstractions.Services;
 using Application.UserCases.Commands.Users.ConfirmVerifyCode;
 using Contract.Services.User.ConfirmVerifyCode;
 using Contract.Services.User.ForgetPassword;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;

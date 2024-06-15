@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.Products.CreateProduct;
 using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.SharedDto;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;

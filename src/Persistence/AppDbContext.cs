@@ -15,6 +15,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<Set> Sets { get; set; }
     public DbSet<SetProduct> SetProducts { get; set; }
     public DbSet<Phase> Phases { get; set; }
     public DbSet<ProductPhase> ProductPhases { get; set; }
@@ -77,6 +78,7 @@ public class AppDbContext : DbContext, IUnitOfWork
 
         modelBuilder.Entity<ProductPhase>()
             .HasKey(ph => new { ph.PhaseId, ph.ProductId });
+
 
         modelBuilder.Entity<ProductPhase>()
             .HasOne(ph => ph.Phase)

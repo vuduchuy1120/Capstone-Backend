@@ -1,8 +1,7 @@
 ﻿using Contract.Services.MaterialHistory.Create;
 using Contract.Services.MaterialHistory.Update;
 using Domain.Abstractions.Entities;
-using Domain.Abstractions.Exceptions;
-using static System.Net.Mime.MediaTypeNames;
+using Contract.Abstractions.Exceptions;
 
 namespace Domain.Entities;
 

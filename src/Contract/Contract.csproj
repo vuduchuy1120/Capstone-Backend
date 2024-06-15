@@ -11,10 +11,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\EmployeeProduct\Updates\" />
-    <Folder Include="Services\EmployeeProduct\ShareDto\" />
-    <Folder Include="Services\EmployeeProduct\Queries\" />
-  </ItemGroup>
-
 </Project>

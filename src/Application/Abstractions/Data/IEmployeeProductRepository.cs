@@ -14,10 +14,14 @@ public interface IEmployeeProductRepository
     Task AddRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
     // Update
     void UpdateEmployeeProduct(EmployeeProduct employeeProduct);
-    // UpdateRange
-    void UpdateRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
     // Delete
     void DeleteEmployeeProduct(EmployeeProduct employeeProduct);
     // DeleteRange
     void DeleteRangeEmployeeProduct(IEnumerable<EmployeeProduct> employeeProducts);
+    // IsAllEmployeeProductExistAsync
+    Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys);
+    Task<List<EmployeeProduct>> GetEmployeeProductsByKeysAsync(List<CompositeKey> keys);
+    void UpdateRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
+    Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(string userId, int slotId, DateOnly date);
+
 }

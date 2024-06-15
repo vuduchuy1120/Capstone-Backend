@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions.Exceptions.Base;
+﻿using Contract.Abstractions.Exceptions.Base;
 
 namespace Domain.Exceptions.MaterialHistories;
 

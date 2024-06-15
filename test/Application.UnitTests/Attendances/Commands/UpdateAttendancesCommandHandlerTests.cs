@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.Attendances.UpdateAttendance;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;

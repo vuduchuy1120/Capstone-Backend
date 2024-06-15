@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions.Exceptions.Base;
+﻿using Contract.Abstractions.Exceptions.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;

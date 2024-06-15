@@ -11,6 +11,6 @@ public interface ISlotRepository
 {
     void AddSlot(Slot slot);
     Task<List<Slot>> GetAllSlotsAsync();
-
     Task<bool> IsSlotExisted(int slotId);
+    Task<bool> IsAllSlotExist(List<int> slotIds);
 }

@@ -9,4 +9,5 @@ public record UserResponse(
         string Gender,
         DateOnly DOB,
         decimal SalaryByDay,
+        bool IsActive,
         int RoleId);

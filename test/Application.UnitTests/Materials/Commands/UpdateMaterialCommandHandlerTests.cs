@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.Materials.Update;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Material.Update;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using FluentAssertions;
 using FluentValidation;
 using Moq;

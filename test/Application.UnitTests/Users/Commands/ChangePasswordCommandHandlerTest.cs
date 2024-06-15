@@ -2,7 +2,7 @@
 using Application.Abstractions.Services;
 using Application.UserCases.Commands.Users.ChangePassword;
 using Contract.Services.User.ChangePassword;
-using Domain.Abstractions.Exceptions;
+using Contract.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;

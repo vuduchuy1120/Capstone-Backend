@@ -28,7 +28,7 @@ internal sealed class GetUsersQueryHandler(IUserRepository _userRepository, IMap
 
         var data = users.ConvertAll(user => _mapper.Map<UserResponse>(user));
 
-        var searchResponse = new SearchResponse<List<UserResponse>>(totalPage, request.PageIndex, data);
+        var searchResponse = new SearchResponse<List<UserResponse>>(request.PageIndex, totalPage, data);
 
         return Result.Success<SearchResponse<List<UserResponse>>>.Get(searchResponse);
     }

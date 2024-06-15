@@ -17,12 +17,12 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
             }).WithMessage("Id already exists");
 
         RuleFor(req => req.FirstName)
-                .NotEmpty().WithMessage("Firstname cannot be empty")
-                .Matches(@"^[a-zA-Z]+$").WithMessage("Firstname must contain only letters");
+            .NotEmpty().WithMessage("First name cannot be empty")
+            .Matches(@"^[a-zA-Z\s]*$").WithMessage("First name can only contain letters and spaces");
 
         RuleFor(req => req.LastName)
-                .NotEmpty().WithMessage("Lastname cannot be empty")
-                .Matches(@"^[a-zA-Z]+$").WithMessage("Lastname must contain only letters");
+            .NotEmpty().WithMessage("Last name cannot be empty")
+            .Matches(@"^[a-zA-Z\s]*$").WithMessage("Last name can only contain letters and spaces");
 
         RuleFor(req => req.Phone)
             .NotEmpty().WithMessage("Phone number cannot be empty")
