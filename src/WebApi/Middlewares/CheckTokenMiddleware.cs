@@ -1,11 +1,7 @@
 ﻿using Application.Abstractions.Services;
-using Application.UserCases.Commands.Users.Login;
 using Application.Utils;
 using Contract.Services.User.Login;
-using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Security.Claims;
 
 namespace WebApi.Middlewares;
 
@@ -37,7 +33,7 @@ public class CheckTokenMiddleware
                 return;
             }
         }
-
+         
         await _next(context);
     }
 }

@@ -3,9 +3,11 @@ using Infrastructure.AuthOptions;
 using Infrastructure.Options;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure;
 
@@ -32,6 +34,17 @@ public static class DependencyInjection
                      ValidAudience = jwtOptions.Audience,
                      IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
                          Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                 };
+
+                 options.Events = new JwtBearerEvents
+                 {
+                     OnAuthenticationFailed = context =>
+                     {
+                         context.Response.StatusCode = 401;
+                         context.Response.ContentType = "application/json";
+                         var result = JsonSerializer.Serialize(new { message = "Authentication failed" });
+                         return context.Response.WriteAsync(result);
+                     }
                  };
              });
         services.AddAuthorization();
