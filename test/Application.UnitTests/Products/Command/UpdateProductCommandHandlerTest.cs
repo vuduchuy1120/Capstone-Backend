@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.Products.UpdateProduct;
 using Contract.Services.Product.SharedDto;
 using Contract.Services.Product.UpdateProduct;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Products;
 using FluentValidation;

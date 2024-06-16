@@ -2,10 +2,11 @@
 using Application.UserCases.Commands.Attendances.UpdateAttendance;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;
+
 
 namespace Application.UnitTests.Attendances.Command;
 

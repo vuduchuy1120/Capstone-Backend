@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.UserCases.Commands.Users.UpdateUser;
 using Contract.Services.User.UpdateUser;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;

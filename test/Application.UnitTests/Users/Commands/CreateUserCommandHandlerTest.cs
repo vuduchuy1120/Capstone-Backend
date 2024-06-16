@@ -3,7 +3,7 @@ using Application.Abstractions.Services;
 using Application.UserCases.Commands.Users.CreateUser;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;

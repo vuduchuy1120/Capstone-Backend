@@ -2,7 +2,7 @@
 using Application.UserCases.Commands.Sets.CreateSet;
 using Contract.Services.Set.CreateSet;
 using Contract.Services.Set.SharedDto;
-using Contract.Abstractions.Exceptions;
+using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
 using Moq;
