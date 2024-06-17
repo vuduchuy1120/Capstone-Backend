@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Data;
-using Application.Utils;
 using Application.Abstractions.Shared.Utils;
+using Application.Utils;
 using Contract.Services.MaterialHistory.Queries;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -28,10 +28,15 @@ public class MaterialHistoryRepository : IMaterialHistoryRepository
             query = query.Where(mh => mh.Material.NameUnaccent.Contains(normalizedSearchTerms));
         }
 
-        if (!string.IsNullOrEmpty(getMaterialHistories.DateImport))
+        if (!string.IsNullOrEmpty(getMaterialHistories.StartDateImport))
         {
-            var formatedDate = DateUtil.ConvertStringToDateTimeOnly(getMaterialHistories.DateImport);
-            query = query.Where(mh => mh.ImportDate == formatedDate);
+            var formatedDate = DateUtil.ConvertStringToDateTimeOnly(getMaterialHistories.StartDateImport);
+            query = query.Where(mh => mh.ImportDate >= formatedDate);
+        }
+        if (!string.IsNullOrEmpty(getMaterialHistories.EndDateImport))
+        {
+            var formatedDate = DateUtil.ConvertStringToDateTimeOnly(getMaterialHistories.EndDateImport);
+            query = query.Where(mh => mh.ImportDate <= formatedDate);
         }
         int totalItems = await query.CountAsync();
         var totalPages = (int)Math.Ceiling((double)totalItems / getMaterialHistories.PageSize);
@@ -45,7 +50,7 @@ public class MaterialHistoryRepository : IMaterialHistoryRepository
 
     public async Task<MaterialHistory?> GetMaterialHistoryByIdAsync(Guid id)
     {
-        return await _context.MaterialHistories.SingleOrDefaultAsync(mh => mh.Id.Equals(id));
+        return await _context.MaterialHistories.Include(mh => mh.Material).SingleOrDefaultAsync(mh => mh.Id.Equals(id));
     }
 
     public Task<bool> IsMaterialHistoryExist(Guid id)

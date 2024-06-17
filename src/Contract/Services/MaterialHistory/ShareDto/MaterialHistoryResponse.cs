@@ -9,5 +9,6 @@ public record MaterialHistoryResponse(
     double? QuantityInStock,
     string? Image,
     string MaterialName,
-    string MaterialUnit
+    string MaterialUnit,
+    DateOnly ImportDate
     );
