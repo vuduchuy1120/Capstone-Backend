@@ -43,23 +43,26 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            Date: "01/06/2024",
+
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
                 new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "001201011091",
-                    Date: "01/06/2024",
                     HourOverTime: 2,
                     IsAttendance: true,
                     IsOverTime: true,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: false,
+                    IsManufacture: true
                 ),
                 new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001936",
-                    Date: "01/06/2024",
                     HourOverTime: 0,
                     IsAttendance: false,
                     IsOverTime: false,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: false,
+                    IsManufacture: false
+
                 )
             }
         );
@@ -67,10 +70,16 @@ public class UpdateAttendancesCommandHandlerTests
         var command = new UpdateAttendancesCommand(request, "001201011091");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-                           It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(new Attendance());
-        _attendanceRepositoryMock.Setup(x => x.IsCanUpdateAttendance(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(x => x.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _attendanceRepositoryMock.Setup(x => x.IsAllAttendancesExist(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<List<string>>())).ReturnsAsync(true);
+        _attendanceRepositoryMock.Setup(x => x.GetAttendancesByKeys(
+                        It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<List<string>>())).ReturnsAsync(new List<Attendance>
+    {
+        new Attendance { UserId = "001201011091" },
+        new Attendance { UserId = "034202001936" }
+    });
+        _attendanceRepositoryMock.Setup(x => x.IsAllCanUpdateAttendance(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
+        //.FirstOrDefault(x => x.UserId == updateRequest.UserId);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -85,23 +94,24 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
                 new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "001201011091",
-                    Date: "01/06/2024",
                     HourOverTime: 2,
                     IsAttendance: true,
                     IsOverTime: true,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: false,
+                    IsManufacture: true
                 ),
                 new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001936",
-                    Date: "01/06/2024",
                     HourOverTime: 0,
                     IsAttendance: false,
                     IsOverTime: false,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: false,
+                    IsManufacture: false
                 )
             }
         );
@@ -119,13 +129,13 @@ public class UpdateAttendancesCommandHandlerTests
 
     // theory and test cases for all the validation rules
     [Theory]
-    [InlineData(1, "001201011091", "01-06-2024", 2, true, true, false, true)] // date is invalid
-    [InlineData(2, "001201011091", "01/06/2024", 2, false, true, false, true)] // slotid invalid, isOverTime invalid
-    [InlineData(3, "001201011091", "01/06/2024", 2, true, false, false, true)]
-    [InlineData(4, "001201011091", "01/06/2024", 2, false, false, true, true)]
-    [InlineData(4, "001201011091", "01/06/2024", -5, false, false, true, true)]
-    [InlineData(4, "001201011091", "01/06/2024", -5, true, false, true, true)]
-    [InlineData(4, "001201011091", "01/06/2024", -5, true, true, true, true)]
+    [InlineData(1, "001201011091", "01-06-2024", 2, true, true, false, true, true)] // date is invalid
+    [InlineData(2, "001201011091", "01/06/2024", 2, false, true, false, false, true)] // slotid invalid, isOverTime invalid
+    [InlineData(3, "001201011091", "01/06/2024", 2, true, false, false, true, true)]
+    [InlineData(4, "001201011091", "01/06/2024", 2, false, false, true, false, true)]
+    [InlineData(4, "001201011091", "01/06/2024", -5, false, false, true, false, true)]
+    [InlineData(4, "001201011091", "01/06/2024", -5, true, false, true, false, true)]
+    [InlineData(4, "001201011091", "01/06/2024", -5, true, true, true, true, true)]
     public async Task Handle_Should_Throw_MyValidationException(
                         int slotId,
                         string userId,
@@ -134,20 +144,22 @@ public class UpdateAttendancesCommandHandlerTests
                         bool isAttendance,
                         bool isOverTime,
                         bool isSalaryByProduct,
+                        bool isManufacture,
                         bool expectException)
     {
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: slotId,
+            Date: date,
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
         new UpdateAttendanceWithoutSlotIdRequest(
             UserId: userId,
-            Date: date,
             HourOverTime: hourOverTime,
             IsAttendance: isAttendance,
             IsOverTime: isOverTime,
-            IsSalaryByProduct: isSalaryByProduct
+            IsSalaryByProduct: isSalaryByProduct,
+            IsManufacture: isManufacture
         )
             }
         );
@@ -178,23 +190,24 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
         new UpdateAttendanceWithoutSlotIdRequest(
             UserId: "001201011091",
-            Date: "01/06/2024",
             HourOverTime: 2,
             IsAttendance: true,
             IsOverTime: true,
-            IsSalaryByProduct: false
+            IsSalaryByProduct: false,
+            IsManufacture: true
         ),
         new UpdateAttendanceWithoutSlotIdRequest(
             UserId: "034202001936",
-            Date: "01/06/2024",
             HourOverTime: 0,
             IsAttendance: false,
             IsOverTime: false,
-            IsSalaryByProduct: false
+            IsSalaryByProduct: false,
+            IsManufacture: false
         )
             }
         );
@@ -219,23 +232,24 @@ public class UpdateAttendancesCommandHandlerTests
     {
         var request = new UpdateAttendancesRequest(
              SlotId: 2,
+             Date: "01/06/2024",
              UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
              {
                     new UpdateAttendanceWithoutSlotIdRequest(
                         UserId: "001201011091",
-                        Date: "01/06/2024",
                         HourOverTime: 2,
                         IsAttendance: true,
                         IsOverTime: true,
-                        IsSalaryByProduct: false
+                        IsSalaryByProduct: false,
+                        IsManufacture: true
                     ),
                     new UpdateAttendanceWithoutSlotIdRequest(
                         UserId: "034202001936",
-                        Date: "01/06/2024",
                         HourOverTime: 0,
                         IsAttendance: false,
                         IsOverTime: false,
-                        IsSalaryByProduct: false
+                        IsSalaryByProduct: false,
+                        IsManufacture: false
                     )
              });
 

@@ -23,28 +23,29 @@ internal sealed class UpdateAttendancesCommandHandler(
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        var attendances = request.UpdateAttendanceRequest.UpdateAttendances;
+        var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateAttendanceRequest.Date);
+        var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
 
-        foreach (var attendance in attendances)
+        var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
+        if (!isCanUpdateAttendance)
         {
-            var formattedDate = DateUtil.ConvertStringToDateTimeOnly(attendance.Date);
-            var attendanceEntity = await _attendanceRepository
-                .GetAttendanceByUserIdSlotIdAndDateAsync(
-                 attendance.UserId,
-                 request.UpdateAttendanceRequest.SlotId,
-                 formattedDate)
-                ?? throw new AttendanceNotFoundException();
-            // check is can update
-            var isCanUpdateAttendance = await _attendanceRepository.IsCanUpdateAttendance(attendance.UserId, request.UpdateAttendanceRequest.SlotId, formattedDate);
-            if (!isCanUpdateAttendance)
-            {
-                throw new MyValidationException("Can not update because over 2 days!");
-            }
-            attendanceEntity.Update(attendance, request.UpdatedBy);
+            throw new MyValidationException("Can not update because over 2 days!");
+        }
+        var attendances = await _attendanceRepository.GetAttendancesByKeys(request.UpdateAttendanceRequest.SlotId, formattedDate, userIds);
 
-            _attendanceRepository.UpdateAttendance(attendanceEntity);
+        var updateRequests = request.UpdateAttendanceRequest.UpdateAttendances;
+
+        foreach (var updateRequest in updateRequests)
+        {
+            var attendance = attendances.FirstOrDefault(x => x.UserId == updateRequest.UserId);
+            if (attendance is null)
+            {
+                throw new AttendanceNotFoundException();
+            }
+            attendance.Update(updateRequest, request.UpdatedBy);
         }
 
+        _attendanceRepository.UpdateRange(attendances);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Update();
     }

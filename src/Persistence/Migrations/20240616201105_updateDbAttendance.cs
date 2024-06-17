@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddEmployeeProductTable : Migration
+    public partial class updateDbAttendance : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,7 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Pharses",
+                name: "Phases",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -40,7 +40,7 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Pharses", x => x.Id);
+                    table.PrimaryKey("PK_Phases", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,7 +79,7 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Set",
+                name: "Sets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -94,7 +94,7 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Set", x => x.Id);
+                    table.PrimaryKey("PK_Sets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -160,17 +160,17 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PharseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhaseId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     SalaryPerProduct = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductPhases", x => new { x.PharseId, x.ProductId });
+                    table.PrimaryKey("PK_ProductPhases", x => new { x.PhaseId, x.ProductId });
                     table.ForeignKey(
-                        name: "FK_ProductPhases_Pharses_PharseId",
-                        column: x => x.PharseId,
-                        principalTable: "Pharses",
+                        name: "FK_ProductPhases_Phases_PhaseId",
+                        column: x => x.PhaseId,
+                        principalTable: "Phases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -230,9 +230,9 @@ namespace Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SetProducts_Set_SetId",
+                        name: "FK_SetProducts_Sets_SetId",
                         column: x => x.SetId,
-                        principalTable: "Set",
+                        principalTable: "Sets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -248,6 +248,7 @@ namespace Persistence.Migrations
                     IsAttendance = table.Column<bool>(type: "boolean", nullable: false),
                     IsOverTime = table.Column<bool>(type: "boolean", nullable: false),
                     IsSalaryByProduct = table.Column<bool>(type: "boolean", nullable: false),
+                    IsManufacture = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -276,7 +277,7 @@ namespace Persistence.Migrations
                 {
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    PharseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhaseId = table.Column<Guid>(type: "uuid", nullable: false),
                     SlotId = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
@@ -288,11 +289,11 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeProducts", x => new { x.ProductId, x.UserId, x.PharseId, x.SlotId, x.Date });
+                    table.PrimaryKey("PK_EmployeeProducts", x => new { x.ProductId, x.UserId, x.PhaseId, x.SlotId, x.Date });
                     table.ForeignKey(
-                        name: "FK_EmployeeProducts_Pharses_PharseId",
-                        column: x => x.PharseId,
-                        principalTable: "Pharses",
+                        name: "FK_EmployeeProducts_Phases_PhaseId",
+                        column: x => x.PhaseId,
+                        principalTable: "Phases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -321,9 +322,9 @@ namespace Persistence.Migrations
                 column: "SlotId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeProducts_PharseId",
+                name: "IX_EmployeeProducts_PhaseId",
                 table: "EmployeeProducts",
-                column: "PharseId");
+                column: "PhaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeProducts_SlotId",
@@ -398,13 +399,13 @@ namespace Persistence.Migrations
                 name: "Materials");
 
             migrationBuilder.DropTable(
-                name: "Pharses");
+                name: "Phases");
 
             migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Set");
+                name: "Sets");
 
             migrationBuilder.DropTable(
                 name: "Roles");

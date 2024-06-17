@@ -22,13 +22,15 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
         }
 
         var emps = request.CreateAttendanceDefaultRequest.CreateAttendances;
+        var attendances = emps
+                        .Select(emp => Attendance
+                        .Create(
+                                    emp,
+                                    request.CreateAttendanceDefaultRequest.slotId,
+                                    request.CreatedBy))
+                        .ToList();
 
-        foreach (var emp in emps)
-        {
-            var attendance = Attendance.Create(emp, request.CreateAttendanceDefaultRequest.slotId, request.CreatedBy);
-            _attendanceRepository.AddAttendance(attendance);
-        }
-
+        await _attendanceRepository.AddRangeAsync(attendances);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Create();
     }

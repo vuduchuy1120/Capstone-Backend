@@ -2,7 +2,6 @@
 using Application.UserCases.Commands.Attendances.CreateAttendance;
 using Contract.Services.Attendance.Create;
 using Domain.Abstractions.Exceptions;
-using Domain.Entities;
 using FluentValidation;
 using Moq;
 
@@ -13,7 +12,6 @@ public class CreateAttendanceDefaultCommandHandlerTests
     private readonly Mock<IAttendanceRepository> _attendanceRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<ISlotRepository> _slotRepositoryMock;
-
     private readonly IValidator<CreateAttendanceDefaultRequest> _validator;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly CreateAttendanceDefaultCommandHandler _handler;
@@ -26,7 +24,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
 
         _validator = new CreateAttendancesValidator(
             _userRepositoryMock.Object,
-            _slotRepositoryMock.Object, 
+            _slotRepositoryMock.Object,
             _attendanceRepositoryMock.Object);
 
         _unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -47,27 +45,27 @@ public class CreateAttendanceDefaultCommandHandlerTests
             {
                 new CreateAttendanceWithoutSlotIdRequest(
                     UserId: "001201011091",
-                    HourOverTime: 2,
-                    IsAttendance: true,
-                    IsOverTime: true,
+                    IsManufacture: true,
                     IsSalaryByProduct: false
                 ),
                 new CreateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001936",
-                    HourOverTime: 0,
-                    IsAttendance: false,
-                    IsOverTime: false,
+                    IsManufacture: true,
                     IsSalaryByProduct: false
                 )
             });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
 
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-            It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .ReturnsAsync((Attendance?)null);
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
+
+        _attendanceRepositoryMock
+        .Setup(x => x.IsAttendanceAlreadyExisted
+            (It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
+        .ReturnsAsync(false);
+
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(x => x.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+
 
         // Act
         var result = await _handler.Handle(command, default);
@@ -77,51 +75,100 @@ public class CreateAttendanceDefaultCommandHandlerTests
         Assert.True(result.isSuccess);
     }
 
-    // write theory and test cases for all the validation rules
-    [Theory]
-    [InlineData(1, "001201011091", 2, false, true, false, true)] // isOverTime invalid
-    [InlineData(-1, "001201011091", 2, false, true, false, true)] // slotid invalid, isOverTime invalid
-    [InlineData(1, "001201011091", 0, false, false, false, false)]
-    [InlineData(1, "001201011091", 2, false, true, false, true)]
-    [InlineData(-1, "001201011091", 2, false, true, false, true)]
-    [InlineData(-1, "001201011091", 2, false, true, false, true)]
-    public async Task Handle_Should_Throw_MyValidationException(int slotId, string userId, int hourOverTime, bool isAttendance, bool isOverTime, bool isSalaryByProduct, bool expectException)
+
+
+    [Fact]
+    //should throw exception if slotId is invalid
+    public async Task Handle_Should_Throw_MyValidationException_If_SlotId_Is_Invalid()
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-            slotId: slotId,
-            CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
-            {
-                new CreateAttendanceWithoutSlotIdRequest(
-                    UserId: userId,
-                    HourOverTime: hourOverTime,
-                    IsAttendance: isAttendance,
-                    IsOverTime: isOverTime,
-                    IsSalaryByProduct: isSalaryByProduct
-                )
-            });
+                        slotId: -1,
+                        CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
+                        {
+                            new CreateAttendanceWithoutSlotIdRequest(
+                                UserId: "001201011091",
+                                IsManufacture: true,
+                                IsSalaryByProduct: false
+                            )
+                        });
 
         var command = new CreateAttendanceDefaultCommand(request, "001201011091");
 
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-            It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .ReturnsAsync((Attendance?)null);
+        _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 
-        _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(slotId > 0);
+        _attendanceRepositoryMock
+        .Setup(x => x.IsAttendanceAlreadyExisted
+                   (It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
+        .ReturnsAsync(false);
 
-        _userRepositoryMock.Setup(x => x.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+        _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(false);
 
         // Act & Assert
-        if (expectException)
-        {
-            await Assert.ThrowsAsync<MyValidationException>(async () =>
-              await _handler.Handle(command, default));
-        }
-        else
-        {
-            var result = await _handler.Handle(command, default);
-            Assert.NotNull(result);
-            Assert.True(result.isSuccess);
-        }
+        await Assert.ThrowsAsync<MyValidationException>(async () =>
+                   await _handler.Handle(command, default));
+    }
+
+    [Fact]
+    //should throw exception if userId is invalid
+    public async Task Handle_Should_Throw_MyValidationException_If_UserId_Is_Invalid()
+    {
+        // Arrange
+        var request = new CreateAttendanceDefaultRequest(
+                                   slotId: 1,
+                                                          CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
+                                                          {
+                            new CreateAttendanceWithoutSlotIdRequest(
+                                                               UserId: "",
+                                                                                              IsManufacture: true,
+                                                                                                                             IsSalaryByProduct: false
+                                                                                                                                                        )
+                        });
+
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+
+        _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(false);
+
+        _attendanceRepositoryMock
+        .Setup(x => x.IsAttendanceAlreadyExisted
+                          (It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
+        .ReturnsAsync(false);
+
+        _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<MyValidationException>(async () =>
+                          await _handler.Handle(command, default));
+    }
+    [Fact]
+    //should throw exception if attendance is already existed
+    public async Task Handle_Should_Throw_MyValidationException_If_Attendance_Is_Already_Existed()
+    {
+        // Arrange
+        var request = new CreateAttendanceDefaultRequest(
+                                              slotId: 1,
+                                                                                                       CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
+                                                                                                       {
+                            new CreateAttendanceWithoutSlotIdRequest(
+                                                                                              UserId: "001201011091",
+                                                                                                                                                                                           IsManufacture: true,
+                                                                                                                                                                                                                                                                                                                       IsSalaryByProduct: false
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              )
+                        });
+
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+
+        _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
+
+        _attendanceRepositoryMock
+        .Setup(x => x.IsAttendanceAlreadyExisted
+                                 (It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
+        .ReturnsAsync(true);
+
+        _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<MyValidationException>(async () =>
+                                 await _handler.Handle(command, default));
     }
 }

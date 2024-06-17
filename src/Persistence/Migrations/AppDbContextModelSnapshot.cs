@@ -46,6 +46,9 @@ namespace Persistence.Migrations
                     b.Property<bool>("IsAttendance")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsManufacture")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsOverTime")
                         .HasColumnType("boolean");
 
@@ -585,6 +588,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
                     b.Navigation("EmployeeProducts");
+
                     b.Navigation("ProductPhases");
                 });
 
