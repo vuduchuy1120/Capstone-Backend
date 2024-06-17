@@ -31,6 +31,7 @@ public class MaterialHistory : EntityBase<Guid>
     }
     public void Update(UpdateMaterialHistoryRequest updateMaterialHistoryRequest)
     {
+        MaterialId = updateMaterialHistoryRequest.MaterialId;
         Quantity = updateMaterialHistoryRequest.Quantity;
         QuantityPerUnit = updateMaterialHistoryRequest.QuantityPerUnit;
         Price = updateMaterialHistoryRequest.Price;
