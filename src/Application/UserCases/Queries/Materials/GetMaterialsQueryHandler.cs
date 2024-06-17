@@ -33,7 +33,7 @@ public sealed class GetMaterialsQueryHandler(
         }
 
         var result = _mapper.Map<List<MaterialResponse>>(materials);
-        var searchResponse = new SearchResponse<List<MaterialResponse>>(totalPage, request.PageIndex, result);
+        var searchResponse = new SearchResponse<List<MaterialResponse>>( request.PageIndex, totalPage, result);
 
         return Result.Success<SearchResponse<List<MaterialResponse>>>.Get(searchResponse);
     }

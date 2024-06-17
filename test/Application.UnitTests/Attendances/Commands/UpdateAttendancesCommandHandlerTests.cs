@@ -260,7 +260,6 @@ public class UpdateAttendancesCommandHandlerTests
                        It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>()
                               )).ReturnsAsync(new Mock<Attendance>().Object);
         _attendanceRepositoryMock.Setup(x => x.IsCanUpdateAttendance(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(false);
-        _attendanceRepositoryMock.Setup(x => x.IsCanUpdateAttendance(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(false);
         _userRepositoryMock.Setup(x => x.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
 
         // Act
