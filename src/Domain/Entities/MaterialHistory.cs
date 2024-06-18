@@ -16,6 +16,7 @@ public class MaterialHistory : EntityBase<Guid>
     public double? QuantityInStock { get; private set; }
     public DateOnly ImportDate { get; private set; }
     public Material? Material { get; private set; }
+    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static MaterialHistory Create(CreateMaterialHistoryRequest createMaterialHistoryRequest)
     {

@@ -19,6 +19,8 @@ public class User : EntityAuditBase<string>
     public bool IsActive { get; private set; }
     public int RoleId { get; private set; }
     public Role Role { get; private set; }
+    public Guid CompanyId { get; private set; }
+    public Company Company { get; private set; }
     public List<Attendance>? Attendances { get; private set; }
 
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
@@ -40,6 +42,7 @@ public class User : EntityAuditBase<string>
             LastName = request.LastName,
             FirstName = request.FirstName,
             Gender = request.Gender,
+            CompanyId = request.CompanyId,
         };
     }
 

@@ -15,6 +15,8 @@ public class Product : EntityAuditBase<Guid>
     public List<ProductImage>? Images { get; private set; }
     public List<SetProduct>? SetProducts { get; private set; }
     public List<ProductPhase>? ProductPhases { get; private set; }
+    public List<OrderDetail>? OrderDetails { get; set; }
+    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static Product Create(CreateProductRequest request, string createdBy)
     {

@@ -33,6 +33,7 @@ public class AddUserTest : IDisposable
             Gender: "Male",
             DOB:"10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 2
         );
 
@@ -60,6 +61,7 @@ public class AddUserTest : IDisposable
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 2
         );
 

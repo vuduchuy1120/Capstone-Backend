@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Services;
+using Contract.Services.Company.Create;
 using Contract.Services.Role.Create;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
@@ -25,6 +26,11 @@ public class DbInitializer
             SeedRoleData(context);
         }
 
+        if(!context.Companies.Any())
+        {
+            SeedCompanyData(context);
+        }
+
         if(!context.Users.Any())
         {
             var passwordService = provider.GetService<IPasswordService>();
@@ -35,6 +41,7 @@ public class DbInitializer
         {
             SeedSlotData(context);
         }
+
     }
 
     public static void SeedRoleData(AppDbContext context)
@@ -62,9 +69,25 @@ public class DbInitializer
         context.Slots.AddRange(slots);
         context.SaveChanges();
     }
+
+    public static void SeedCompanyData(AppDbContext context)
+    {
+        var companies = new List<Company>
+        {
+            Company.Create(new CreateCompanyCommand("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", "FACTORY_01")),
+            Company.Create(new CreateCompanyCommand("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", "FACTORY_02")),
+        };
+
+        context.Companies.AddRange(companies);
+        context.SaveChanges();
+    }
+
     public static void SeedUserData(AppDbContext context, IPasswordService passwordService)
     {
         var adminRole = context.Roles.FirstOrDefault();
+        var companyId = context.Companies.FirstOrDefault(c => c.CompanyType == "FACTORY_01").Id;
         var userCreateRequest = new CreateUserRequest(
             "001201011091",
             "Son",
@@ -75,6 +98,7 @@ public class DbInitializer
             "Male",
             "10/03/2001",
             200000,
+            companyId,
             adminRole.Id
             );
         var hash = passwordService.Hash(userCreateRequest.Password);

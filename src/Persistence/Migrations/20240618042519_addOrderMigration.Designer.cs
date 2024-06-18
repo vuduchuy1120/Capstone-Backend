@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence;
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240618042519_addOrderMigration")]
+    partial class addOrderMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("Domain.Entities.Material", b =>
@@ -199,7 +202,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
@@ -228,7 +231,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("SetId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetail");
                 });
 
             modelBuilder.Entity("Domain.Entities.Phase", b =>
@@ -342,38 +345,6 @@ namespace Persistence.Migrations
                     b.ToTable("ProductPhases");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Report", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Reports");
-                });
-
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -482,7 +453,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ShipOrders");
+                    b.ToTable("ShipOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
@@ -512,7 +483,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Shipments");
+                    b.ToTable("Shipment");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
@@ -559,7 +530,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ShipmentId");
 
-                    b.ToTable("ShipmentDetails");
+                    b.ToTable("ShipmentDetail");
                 });
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>
@@ -587,9 +558,6 @@ namespace Persistence.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<Guid>("CompanyId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -637,8 +605,6 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("RoleId");
 
@@ -808,19 +774,11 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
-                    b.HasOne("Domain.Entities.Company", "Company")
-                        .WithMany("Users")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Company");
 
                     b.Navigation("Role");
                 });
@@ -828,8 +786,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
                     b.Navigation("Order");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Entities.Material", b =>

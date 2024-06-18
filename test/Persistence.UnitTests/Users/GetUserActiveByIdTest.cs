@@ -67,6 +67,7 @@ public class GetUserActiveByIdTest : IDisposable
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 1
         );
         var user = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
@@ -81,6 +82,7 @@ public class GetUserActiveByIdTest : IDisposable
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 1
         );
         var user_2 = User.Create(createUserRequest_2, createUserRequest_2.Password, createUserRequest.Id);

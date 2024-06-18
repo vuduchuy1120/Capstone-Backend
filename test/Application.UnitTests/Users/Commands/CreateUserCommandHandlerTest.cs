@@ -39,6 +39,7 @@ public class CreateUserCommandHandlerTest
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 2
         );
         var command = new CreateUserCommand(createUserRequest, createUserRequest.Id);
@@ -75,6 +76,7 @@ public class CreateUserCommandHandlerTest
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDay: 150,
+            Guid.NewGuid(),
             RoleId: 2
         );
         var command = new CreateUserCommand(createUserRequest, createUserRequest.Id);
@@ -129,6 +131,7 @@ public class CreateUserCommandHandlerTest
             Gender: gender,
             DOB: dob,
             SalaryByDay: salaryByDay,
+            Guid.NewGuid(),
             RoleId: roleId
         );
         var command = new CreateUserCommand(createUserRequest, createUserRequest.Id);
