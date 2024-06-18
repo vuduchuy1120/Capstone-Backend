@@ -17,11 +17,11 @@ public interface IEmployeeProductRepository
     // Delete
     void DeleteEmployeeProduct(EmployeeProduct employeeProduct);
     // DeleteRange
-    void DeleteRangeEmployeeProduct(IEnumerable<EmployeeProduct> employeeProducts);
+    void DeleteRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
     // IsAllEmployeeProductExistAsync
     Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys);
     Task<List<EmployeeProduct>> GetEmployeeProductsByKeysAsync(List<CompositeKey> keys);
     void UpdateRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
     Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(string userId, int slotId, DateOnly date);
-
+    Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date);
 }

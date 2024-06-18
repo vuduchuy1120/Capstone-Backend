@@ -27,9 +27,16 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         _context.EmployeeProducts.Remove(employeeProduct);
     }
 
-    public void DeleteRangeEmployeeProduct(IEnumerable<EmployeeProduct> employeeProducts)
+    public void DeleteRangeEmployeeProduct(List<EmployeeProduct> employeeProducts)
     {
         _context.EmployeeProducts.RemoveRange(employeeProducts);
+    }
+
+    public async Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date)
+    {
+        return await _context.EmployeeProducts.Include(ep => ep.Phase).Include(ep => ep.Product).ThenInclude(p => p.Images)
+            .Where(ep => ep.SlotId == slotId && ep.Date == date)
+            .ToListAsync();
     }
 
     public Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(string userId, int slotId, DateOnly date)

@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.EmployeeProduct.Creates;
@@ -20,6 +21,13 @@ public sealed class CreateEmployeeProductCommandHandler
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }
+        var slotId = request.createEmployeeProductRequest.SlotId;
+        var date = DateUtil.ConvertStringToDateTimeOnly(request.createEmployeeProductRequest.Date);
+        var empProDeletes = await _employeeProductRepository.GetEmployeeProductsByDateAndSlotId(slotId, date);
+        if (empProDeletes.Count > 0)
+        {
+            _employeeProductRepository.DeleteRangeEmployeeProduct(empProDeletes);
+        }
         var quantityProducts = request.createEmployeeProductRequest.CreateQuantityProducts;
         var employeeProducts = new List<EmployeeProduct>();
 
@@ -31,7 +39,6 @@ public sealed class CreateEmployeeProductCommandHandler
         await _employeeProductRepository.AddRangeEmployeeProduct(employeeProducts);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success.Create();
-
 
     }
 }

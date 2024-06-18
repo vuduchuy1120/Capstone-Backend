@@ -16,7 +16,7 @@ public static class DependencyInjection
         {
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
-                option  => option.MaxBatchSize(100)
+                option => option.MaxBatchSize(100)
             );
         });
 
@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IPhaseRepository, PhaseRepository>();
         services.AddScoped<ISetProductRepository, SetProductRepository>();
         services.AddScoped<ISetRepository, SetRepository>();
+        services.AddScoped<IProductPhaseRepository, ProductPhaseRepository>();
 
         return services;
     }

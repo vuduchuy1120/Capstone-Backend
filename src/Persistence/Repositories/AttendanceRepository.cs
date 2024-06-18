@@ -71,7 +71,7 @@ public class AttendanceRepository : IAttendanceRepository
         var totalRecords = await query.CountAsync();
 
         var attendances = await query
-            .OrderBy(a => a.Date)
+            .OrderByDescending(a => a.Date)
             .ThenBy(a => a.SlotId)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
