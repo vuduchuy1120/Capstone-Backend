@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.EmployeeProduct.Creates;
+using Domain.Abstractions.Exceptions;
 using FluentValidation;
 
 namespace Application.UserCases.Commands.EmployeeProducts.Creates
@@ -11,7 +12,8 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
             RuleFor(req => req.Date)
                 .NotEmpty().WithMessage("Date is required")
                 .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Date must be in the format dd/MM/yyyy")
-                .Must(BeAValidDate).WithMessage("Date must be a valid date in the format dd/MM/yyyy");
+                .Must(BeAValidDate).WithMessage("Date must be a valid date in the format dd/MM/yyyy")
+                ;
             RuleFor(req => req.SlotId)
                 .NotEmpty().WithMessage("SlotId is required")
                 .MustAsync(async (slotId, cancellationToken) =>
@@ -47,7 +49,15 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
 
         private bool BeAValidDate(string date)
         {
-            return DateTime.TryParseExact(date, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
+            try
+            {
+                return DateTime.TryParseExact(date, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
+            }
+            catch (ArgumentException)
+            {
+                throw new MyValidationException("Date must be a valid date in the format dd/MM/yyyy");
+            }
+
         }
     }
 

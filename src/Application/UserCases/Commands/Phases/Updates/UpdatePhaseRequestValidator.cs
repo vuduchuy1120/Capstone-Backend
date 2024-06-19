@@ -16,5 +16,8 @@ public sealed class UpdatePhaseRequestValidator : AbstractValidator<UpdatePhaseR
                 return await _phaseRepository.IsExistById(id);
             })
             .WithMessage("Phase not found");
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required");
     }
 }
