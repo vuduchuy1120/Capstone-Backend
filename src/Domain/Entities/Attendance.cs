@@ -1,8 +1,9 @@
-﻿using Contract.Services.Attendance.Create;
+﻿using Contract.Abstractions.Shared.Utils;
+using Contract.Services.Attendance.Create;
 using Contract.Services.Attendance.Update;
 using Domain.Abstractions.Entities;
-using Domain.Exceptions.Attendances;
-using Domain.Exceptions.Users;
+using Domain.Exceptions.Common;
+
 
 namespace Domain.Entities
 {
@@ -17,20 +18,22 @@ namespace Domain.Entities
         public bool IsAttendance { get; set; } = false;
         public bool IsOverTime { get; set; } = false;
         public bool IsSalaryByProduct { get; set; } = false;
+        public bool IsManufacture { get; set; } = false;
 
-        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest,int slot, string CreatedBy)
+        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest, int slotId, string CreatedBy)
         {
             return new Attendance()
             {
-                SlotId = slot,
+                SlotId = slotId,
                 UserId = createAttendanceRequest.UserId,
-                Date = ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy")),
-                HourOverTime = createAttendanceRequest.HourOverTime,
-                IsAttendance = createAttendanceRequest.IsAttendance,
-                IsOverTime = createAttendanceRequest.IsOverTime,
+                Date = ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.AddHours(7).ToString("dd/MM/yyyy")),
+                HourOverTime = 0,
+                IsAttendance = false,
+                IsOverTime = false,
                 IsSalaryByProduct = createAttendanceRequest.IsSalaryByProduct,
+                IsManufacture = createAttendanceRequest.IsManufacture,
                 CreatedBy = CreatedBy,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateUtils.GetNow(),
             };
         }
 
@@ -39,9 +42,10 @@ namespace Domain.Entities
             HourOverTime = updateAttendanceRequest.HourOverTime;
             IsAttendance = updateAttendanceRequest.IsAttendance;
             IsOverTime = updateAttendanceRequest.IsOverTime;
+            IsManufacture = updateAttendanceRequest.IsManufacture;
             IsSalaryByProduct = updateAttendanceRequest.IsSalaryByProduct;
             UpdatedBy = updatedBy;
-            UpdatedDate = DateTime.UtcNow;            
+            UpdatedDate = DateTime.UtcNow;
         }
 
         private static DateOnly ConvertStringToDateTimeOnly(string dateString)

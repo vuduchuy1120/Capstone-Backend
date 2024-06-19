@@ -26,24 +26,23 @@ public class UpdateAttendanceTests : IDisposable
     {
         var CreateAttendanceDefaultRequest = new CreateAttendanceWithoutSlotIdRequest(
                                                    UserId: "034202001937",
-                                                   HourOverTime: 0,
-                                                   IsAttendance: true,
-                                                   IsOverTime: false,
+                                                   IsManufacture : true,
                                                    IsSalaryByProduct: false);
 
         var att = Attendance.Create(CreateAttendanceDefaultRequest, 1, "001201011091");
         _attendanceRepository.AddAttendance(att);
         await _context.SaveChangesAsync();
+        var Date = DateTime.UtcNow.ToString("dd/MM/yyyy");
+        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(Date);
 
         var updateAttendanceRequest = new UpdateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001937",
-                    Date: DateTime.UtcNow.ToString("dd/MM/yyyy"),
                     HourOverTime: 2,
                     IsAttendance: true,
                     IsOverTime: true,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: false,
+                    IsManufacture: true
                 );
-        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(updateAttendanceRequest.Date);
         var attendance = await _context.Attendances.FirstOrDefaultAsync(
                        a => a.UserId == updateAttendanceRequest.UserId && a.Date == formatedDate && a.SlotId == 1);
         attendance.Update(updateAttendanceRequest, "001201011091");

@@ -2,7 +2,6 @@
 using Contract.Services.MaterialHistory.Update;
 using Domain.Abstractions.Entities;
 using Domain.Abstractions.Exceptions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Entities;
 
@@ -33,6 +32,7 @@ public class MaterialHistory : EntityBase<Guid>
     }
     public void Update(UpdateMaterialHistoryRequest updateMaterialHistoryRequest)
     {
+        MaterialId = updateMaterialHistoryRequest.MaterialId;
         Quantity = updateMaterialHistoryRequest.Quantity;
         QuantityPerUnit = updateMaterialHistoryRequest.QuantityPerUnit;
         Price = updateMaterialHistoryRequest.Price;

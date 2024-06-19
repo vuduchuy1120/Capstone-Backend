@@ -30,6 +30,12 @@ public class SlotRepository : ISlotRepository
             .ToListAsync();
     }
 
+    public async Task<bool> IsAllSlotExist(List<int> slotIds)
+    {
+        var query = await _context.Slots.CountAsync(slot => slotIds.Contains(slot.Id));
+        return query == slotIds.Count;
+    }
+
     public async Task<bool> IsSlotExisted(int slotId)
     {
         return await _context.Slots.AnyAsync(slot => slot.Id == slotId);

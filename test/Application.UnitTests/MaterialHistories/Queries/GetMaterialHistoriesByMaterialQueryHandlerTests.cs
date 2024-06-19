@@ -28,7 +28,7 @@ public class GetMaterialHistoriesByMaterialQueryHandlerTests
     [Fact]
     public async Task Handler_ShouldReturnSuccess_WhenReceivedMaterialHistoriesIsNotNull()
     {
-        var getMaterialHistoriesByMaterialQuery = new GetMaterialHistoriesByMaterialQuery("", "");
+        var getMaterialHistoriesByMaterialQuery = new GetMaterialHistoriesByMaterialQuery("","", "");
         var getMaterialHistoriesByMaterialQueryHandler = new GetMaterialHistoriesByMaterialQueryHandler(_materialHistoryRepositoryMock.Object, _mapperMock.Object);
 
         _materialHistoryRepositoryMock.Setup(repo => repo.GetMaterialHistoriesByMaterialNameAndDateAsync(getMaterialHistoriesByMaterialQuery)).ReturnsAsync((new List<Domain.Entities.MaterialHistory>() { new Domain.Entities.MaterialHistory() }, 1));

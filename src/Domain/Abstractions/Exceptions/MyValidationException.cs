@@ -6,7 +6,7 @@ namespace Domain.Abstractions.Exceptions;
 public class MyValidationException : MyException
 {
     public MyValidationException(object error) : base(
-        (int) HttpStatusCode.BadRequest, 
+        (int)HttpStatusCode.BadRequest,
         "Validation error",
         error)
     {

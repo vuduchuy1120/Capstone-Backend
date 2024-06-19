@@ -18,6 +18,7 @@ public class Product : EntityAuditBase<Guid>
     public List<OrderDetail>? OrderDetails { get; set; }
     public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
+    public List<EmployeeProduct>? EmployeeProducts { get; private set; }
     public static Product Create(CreateProductRequest request, string createdBy)
     {
         return new()

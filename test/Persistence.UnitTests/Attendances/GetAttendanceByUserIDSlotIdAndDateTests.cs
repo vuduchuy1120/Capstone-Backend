@@ -48,9 +48,7 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                                    UserId: "001201011091",
-                                   HourOverTime: 2,
-                                   IsAttendance: true,
-                                   IsOverTime: true,
+                                  IsManufacture: true,
                                    IsSalaryByProduct: false);
 
         var attendance = Attendance.Create(createAttendanceRequest, 1, "001201011091");

@@ -35,6 +35,12 @@ internal class UserRepository : IUserRepository
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
+    public async Task<bool> IsAllUserActiveAsync(List<string> userIds)
+    {
+        var countUsers = await _context.Users.CountAsync(user => userIds.Contains(user.Id) && user.IsActive == true);
+        return countUsers == userIds.Count;
+    }
+
     public async Task<bool> IsUserActiveAsync(string id)
     {
         return await _context.Users.AnyAsync(u => u.Id.Equals(id) && u.IsActive == true);
