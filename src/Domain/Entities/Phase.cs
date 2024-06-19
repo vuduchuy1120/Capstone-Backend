@@ -10,6 +10,7 @@ public class Phase : EntityBase<Guid>
     public string? Description { get; set; }
     public List<ProductPhase>? ProductPhases { get; set; }
     public List<EmployeeProduct>? EmployeeProducts { get; set; }
+    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static Phase Create(CreatePhaseRequest createPhaseRequest)
     {

@@ -1,4 +1,5 @@
-﻿using Contract.Services.MaterialHistory.Create;
+﻿using Contract.Services.Material.Create;
+using Contract.Services.MaterialHistory.Create;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories;
@@ -53,9 +54,21 @@ namespace Persistence.UnitTests.MaterialHistories
 
         private MaterialHistory InitDB()
         {
+            var createMaterialRequest = new CreateMaterialRequest
+            (
+                Name: "Material 1",
+                Description: "Description 1",
+                Unit: "Unit 1",
+                QuantityPerUnit: 10,
+                Image: "Image 1"
+            );
+            var material = Material.Create(createMaterialRequest);
+            _context.Materials.Add(material);
+            _context.SaveChanges();
+
             var createMaterialHistoryRequest = new CreateMaterialHistoryRequest
             (
-                MaterialId: 1,
+                MaterialId: material.Id,
                 Quantity: 10,
                 QuantityPerUnit: 10,
                 Price: 10,

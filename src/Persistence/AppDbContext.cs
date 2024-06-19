@@ -22,6 +22,13 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Slot> Slots { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<MaterialHistory> MaterialHistories { get; set; }
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+    public DbSet<ShipOrder> ShipOrders { get; set; }
+    public DbSet<ShipmentDetail> ShipmentDetails { get; set; }
+    public DbSet<Shipment> Shipments { get; set; }
+    public DbSet<Report> Reports { get; set; }
     public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -68,6 +68,41 @@ namespace Persistence.Migrations
                     b.ToTable("Attendances", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DirectorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DirectorPhone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Companies");
+                });
+
             modelBuilder.Entity("Domain.Entities.EmployeeProduct", b =>
                 {
                     b.Property<Guid>("ProductId")
@@ -184,6 +219,68 @@ namespace Persistence.Migrations
                     b.ToTable("MaterialHistories", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SetId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -295,6 +392,38 @@ namespace Persistence.Migrations
                     b.ToTable("ProductPhases");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -377,6 +506,112 @@ namespace Persistence.Migrations
                     b.ToTable("SetProducts");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("ShipOrders");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Shipment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FromId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ToId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Shipments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("MaterialHistoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PhaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReturnQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ShipOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ShipmentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterialHistoryId");
+
+                    b.HasIndex("PhaseId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("ShipOrderId");
+
+                    b.HasIndex("ShipmentId");
+
+                    b.ToTable("ShipmentDetails");
+                });
+
             modelBuilder.Entity("Domain.Entities.Slot", b =>
                 {
                     b.Property<int>("Id")
@@ -402,6 +637,9 @@ namespace Persistence.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -449,6 +687,8 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("RoleId");
 
@@ -520,6 +760,38 @@ namespace Persistence.Migrations
                     b.Navigation("Material");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("Order")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Domain.Entities.Set", "Set")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("SetId");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Set");
+                });
+
             modelBuilder.Entity("Domain.Entities.ProductImage", b =>
                 {
                     b.HasOne("Domain.Entities.Product", "Product")
@@ -569,15 +841,80 @@ namespace Persistence.Migrations
                     b.Navigation("Set");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrder", b =>
+                {
+                    b.HasOne("Domain.Entities.Order", "Order")
+                        .WithMany("ShipOrders")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.MaterialHistory", "MaterialHistory")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("MaterialHistoryId");
+
+                    b.HasOne("Domain.Entities.Phase", "Phase")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("PhaseId");
+
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Domain.Entities.Set", "Set")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("SetId");
+
+                    b.HasOne("Domain.Entities.ShipOrder", "ShipOrder")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("ShipOrderId");
+
+                    b.HasOne("Domain.Entities.Shipment", "Shipment")
+                        .WithMany("ShipmentDetails")
+                        .HasForeignKey("ShipmentId");
+
+                    b.Navigation("MaterialHistory");
+
+                    b.Navigation("Phase");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Set");
+
+                    b.Navigation("ShipOrder");
+
+                    b.Navigation("Shipment");
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("Users")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Company");
+
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Company", b =>
+                {
+                    b.Navigation("Order");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Entities.Material", b =>
@@ -585,11 +922,25 @@ namespace Persistence.Migrations
                     b.Navigation("MaterialHistories");
                 });
 
+            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
+                {
+                    b.Navigation("ShipmentDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("ShipOrders");
+                });
+
             modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
                     b.Navigation("EmployeeProducts");
 
                     b.Navigation("ProductPhases");
+
+                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -598,9 +949,13 @@ namespace Persistence.Migrations
 
                     b.Navigation("Images");
 
+                    b.Navigation("OrderDetails");
+
                     b.Navigation("ProductPhases");
 
                     b.Navigation("SetProducts");
+
+                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -610,7 +965,21 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Set", b =>
                 {
+                    b.Navigation("OrderDetails");
+
                     b.Navigation("SetProducts");
+
+                    b.Navigation("ShipmentDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ShipOrder", b =>
+                {
+                    b.Navigation("ShipmentDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Shipment", b =>
+                {
+                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Slot", b =>

@@ -7,11 +7,28 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class updateDbAttendance : Migration
+    public partial class UpdateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    DirectorName = table.Column<string>(type: "text", nullable: false),
+                    DirectorPhone = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    CompanyType = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Materials",
                 columns: table => new
@@ -65,6 +82,23 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reports", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -98,6 +132,23 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shipments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FromId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ToId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shipments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Slots",
                 columns: table => new
                 {
@@ -108,6 +159,29 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Slots", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,6 +270,7 @@ namespace Persistence.Migrations
                     SalaryByDay = table.Column<decimal>(type: "numeric", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
+                    CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -204,6 +279,12 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,
@@ -233,6 +314,58 @@ namespace Persistence.Migrations
                         name: "FK_SetProducts_Sets_SetId",
                         column: x => x.SetId,
                         principalTable: "Sets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SetId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Sets_SetId",
+                        column: x => x.SetId,
+                        principalTable: "Sets",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShipOrders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShipOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShipOrders_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -316,6 +449,55 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ShipmentDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ShipmentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ShipOrderId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PhaseId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SetId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MaterialHistoryId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    ReturnQuantity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShipmentDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_MaterialHistories_MaterialHistoryId",
+                        column: x => x.MaterialHistoryId,
+                        principalTable: "MaterialHistories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_Phases_PhaseId",
+                        column: x => x.PhaseId,
+                        principalTable: "Phases",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_Sets_SetId",
+                        column: x => x.SetId,
+                        principalTable: "Sets",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_ShipOrders_ShipOrderId",
+                        column: x => x.ShipOrderId,
+                        principalTable: "ShipOrders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShipmentDetails_Shipments_ShipmentId",
+                        column: x => x.ShipmentId,
+                        principalTable: "Shipments",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Attendances_SlotId",
                 table: "Attendances",
@@ -342,6 +524,26 @@ namespace Persistence.Migrations
                 column: "MaterialId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_OrderId",
+                table: "OrderDetails",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_ProductId",
+                table: "OrderDetails",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_SetId",
+                table: "OrderDetails",
+                column: "SetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CompanyId",
+                table: "Orders",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_ProductId",
                 table: "ProductImages",
                 column: "ProductId");
@@ -363,6 +565,46 @@ namespace Persistence.Migrations
                 column: "SetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_MaterialHistoryId",
+                table: "ShipmentDetails",
+                column: "MaterialHistoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_PhaseId",
+                table: "ShipmentDetails",
+                column: "PhaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_ProductId",
+                table: "ShipmentDetails",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_SetId",
+                table: "ShipmentDetails",
+                column: "SetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_ShipmentId",
+                table: "ShipmentDetails",
+                column: "ShipmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipmentDetails_ShipOrderId",
+                table: "ShipmentDetails",
+                column: "ShipOrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipOrders_OrderId",
+                table: "ShipOrders",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_CompanyId",
+                table: "Users",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
@@ -378,7 +620,7 @@ namespace Persistence.Migrations
                 name: "EmployeeProducts");
 
             migrationBuilder.DropTable(
-                name: "MaterialHistories");
+                name: "OrderDetails");
 
             migrationBuilder.DropTable(
                 name: "ProductImages");
@@ -387,7 +629,13 @@ namespace Persistence.Migrations
                 name: "ProductPhases");
 
             migrationBuilder.DropTable(
+                name: "Reports");
+
+            migrationBuilder.DropTable(
                 name: "SetProducts");
+
+            migrationBuilder.DropTable(
+                name: "ShipmentDetails");
 
             migrationBuilder.DropTable(
                 name: "Slots");
@@ -396,7 +644,7 @@ namespace Persistence.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Materials");
+                name: "MaterialHistories");
 
             migrationBuilder.DropTable(
                 name: "Phases");
@@ -408,7 +656,22 @@ namespace Persistence.Migrations
                 name: "Sets");
 
             migrationBuilder.DropTable(
+                name: "ShipOrders");
+
+            migrationBuilder.DropTable(
+                name: "Shipments");
+
+            migrationBuilder.DropTable(
                 name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Materials");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
         }
     }
 }

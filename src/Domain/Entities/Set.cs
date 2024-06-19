@@ -11,6 +11,8 @@ public class Set : EntityAuditBase<Guid>
     public string ImageUrl { get; private set; }
     public string Description { get; private set; }
     public List<SetProduct>? SetProducts { get; private set; }
+    public List<OrderDetail>? OrderDetails { get; set; }
+    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static Set Create(CreateSetCommand request)
     {
