@@ -104,9 +104,14 @@ namespace Application.UnitTests.EmployeeProducts.Commands
         }
 
         [Theory]
-        [InlineData("01/01/2024", 0)] // SlotId is invalid
-        [InlineData("invalid-date", 1)] // Date is invalid
-        public async Task Handler_Should_Throw_MyValidationException_WhenInputNotValid(string date, int slotId)
+        [InlineData("01/01/2024", 10, 0)] // SlotId is invalid
+        [InlineData("invalid-quantity", 10, 1)] // Invalid Quantity
+        [InlineData("01/01/2024", -10, 2)] // UserIds are invalid
+
+        public async Task Handler_Should_Throw_MyValidationException_WhenInputNotValid(
+            string date,
+            int quantity,
+            int slotId)
         {
             // Arrange
             var createEmployeeProductRequest = new CreateEmployeeProductRequest(
@@ -114,7 +119,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: slotId,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1", true)
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin");
 
@@ -123,14 +128,140 @@ namespace Application.UnitTests.EmployeeProducts.Commands
               .ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
                 .ReturnsAsync(true);
-            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
 
-            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
 
-            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(It.IsAny<int>(), It.IsAny<DateOnly>()))
+            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(
+                It.IsAny<int>(),
+                It.IsAny<DateOnly>()))
                 .ReturnsAsync(new List<EmployeeProduct>());
             // Act & Assert
-             await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
+            await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
+        }
+
+        [Fact]
+        public async Task Handler_Should_Throw_MyValidationException_WhenSlotIdNotFound()
+        {
+            // Arrange
+            var createEmployeeProductRequest = new CreateEmployeeProductRequest(
+                    Date: "01/01/2024",
+                    SlotId: 1,
+                    CreateQuantityProducts: new List<CreateQuantityProductRequest>
+                    {
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    });
+            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin");
+
+            _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))
+              .ReturnsAsync(false);
+            _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
+                .ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(
+                It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(new List<EmployeeProduct>());
+            // Act & Assert
+            await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
+        }
+
+        [Fact]
+        public async Task Handler_Should_Throw_MyValidationException_WhenUserNotFound()
+        {
+            // Arrange
+            var createEmployeeProductRequest = new CreateEmployeeProductRequest(
+                    Date: "01/01/2024",
+                    SlotId: 1,
+                    CreateQuantityProducts: new List<CreateQuantityProductRequest>
+                    {
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    });
+            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin");
+
+            _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))
+              .ReturnsAsync(true);
+            _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
+                .ReturnsAsync(false);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(
+                It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(
+                It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(
+                It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(new List<EmployeeProduct>());
+            // Act & Assert
+            await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
+        }
+
+        [Fact]
+        public async Task Handler_Should_Throw_MyValidationException_WhenPhaseIdNotFound()
+        {
+            // Arrange
+            var createEmployeeProductRequest = new CreateEmployeeProductRequest(
+                            Date: "01/01/2024",
+                            SlotId: 1,
+                            CreateQuantityProducts: new List<CreateQuantityProductRequest>
+                            {
+                                new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                            });
+            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin");
+
+            _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))
+              .ReturnsAsync(true);
+            _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
+                .ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(false);
+
+            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(
+                It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(new List<EmployeeProduct>());
+            // Act & Assert
+            await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
+        }
+
+        [Fact]
+        public async Task Handler_Should_Throw_MyValidationException_WhenProductIdNotFound()
+        {
+            // Arrange
+            var createEmployeeProductRequest = new CreateEmployeeProductRequest(
+                Date: "01/01/2024",
+                SlotId: 1,
+                CreateQuantityProducts: new List<CreateQuantityProductRequest>
+                {
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                });
+            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin");
+
+            _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))
+              .ReturnsAsync(true);
+            _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
+                .ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(false);
+
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>()))
+                .ReturnsAsync(true);
+
+            _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(
+                It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(new List<EmployeeProduct>());
+            // Act & Assert
+            await Assert.ThrowsAsync<MyValidationException>(() => _handler.Handle(command, default));
         }
     }
 }

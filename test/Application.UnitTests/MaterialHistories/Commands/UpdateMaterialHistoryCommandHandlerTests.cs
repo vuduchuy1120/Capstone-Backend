@@ -23,7 +23,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
         _materialHistoryRepositoryMock = new Mock<IMaterialHistoryRepository>();
         _materialRepositoryMock = new Mock<IMaterialRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _validator = new UpdateMaterialHistoryRequestValidator(_materialHistoryRepositoryMock.Object, _materialRepositoryMock.Object);
+        _validator = new UpdateMaterialHistoryRequestValidator(
+            _materialHistoryRepositoryMock.Object, _materialRepositoryMock.Object);
         _handler = new UpdateMaterialHistoryCommandHandler(
                         _materialHistoryRepositoryMock.Object,
                         _unitOfWorkMock.Object,
@@ -46,7 +47,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
         // Act
         _materialHistoryRepositoryMock.Setup(x => x.IsMaterialHistoryExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
-        _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Domain.Entities.MaterialHistory());
+        _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new Domain.Entities.MaterialHistory());
 
         _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
             .ReturnsAsync(true);
@@ -96,7 +98,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
 
         _materialHistoryRepositoryMock.Setup(x => x.IsMaterialHistoryExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
-        _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Domain.Entities.MaterialHistory());
+        _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new Domain.Entities.MaterialHistory());
 
         _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
             .ReturnsAsync(false);
@@ -114,7 +117,15 @@ public class UpdateMaterialHistoryCommandHandlerTests
     [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, -1.0, 1.0, 50000.0, "Description", 1.0, "03/06/2024")]
     [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 1.0, 0.0, "Description", 1.0, "03/06/2024")] // error price
     [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 1.0, 50000.0, "Description", 1.0, "")] // error importDate
-    public async Task Handle_Should_Throw_ValidationException(string id, int materialId, double quantity, double? quantityPerUnit, decimal price, string? description, double? quantityInStock, string importDate)
+    public async Task Handle_Should_Throw_ValidationException(
+        string id,
+        int materialId,
+        double quantity, 
+        double? quantityPerUnit,
+        decimal price,
+        string? description,
+        double? quantityInStock, 
+        string importDate)
     {
         // Arrange
         var request = new UpdateMaterialHistoryRequest(

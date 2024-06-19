@@ -59,13 +59,17 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
             }).WithMessage("HourOverTime must be greater than or equal to 0!")
             .Must(attendance =>
             {
-                return attendance.HourOverTime <= 10;
-            }).WithMessage("HourOverTime must be less than or equal to 10!")
+                return attendance.HourOverTime <= 5;
+            }).WithMessage("HourOverTime must be less than or equal to 5!")
+            .Must(attendance =>
+            {
+                return attendance.HourOverTime % 0.5 == 0;
+            }).WithMessage("HourOverTime must be a multiple of 0.5!")
             .Must(attendance =>
             {
                 if (!attendance.IsAttendance)
                 {
-                    return attendance.IsOverTime == false && attendance.IsSalaryByProduct == false && attendance.HourOverTime == 0;
+                    return attendance.IsOverTime == false && attendance.HourOverTime == 0;
                 }
                 return true;
             }).WithMessage("IsAttendance must be true");

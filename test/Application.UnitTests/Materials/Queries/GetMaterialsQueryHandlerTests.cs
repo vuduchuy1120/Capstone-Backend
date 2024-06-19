@@ -22,10 +22,13 @@ public class GetMaterialsQueryHandlerTests
     public async Task Handler_ShouldReturnSuccess_WhenReceivedMaterialsIsNotNull()
     {
         var getMaterialsQuery = new GetMaterialsQuery("");
-        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(_materialRepositoryMock.Object, _mapperMock.Object);
+        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(
+            _materialRepositoryMock.Object, _mapperMock.Object);
 
-        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery)).ReturnsAsync((new List<Domain.Entities.Material>() { new Domain.Entities.Material() }, 1));
-        _mapperMock.Setup(mapper => mapper.Map<MaterialResponse>(It.IsAny<Domain.Entities.Material>())).Returns(It.IsAny<MaterialResponse>);
+        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery))
+            .ReturnsAsync((new List<Domain.Entities.Material>() { new Domain.Entities.Material() }, 1));
+        _mapperMock.Setup(mapper => mapper.Map<MaterialResponse>(It.IsAny<Domain.Entities.Material>()))
+            .Returns(It.IsAny<MaterialResponse>);
         var result = await getMaterialsQueryHandler.Handle(getMaterialsQuery, default);
 
         Assert.NotNull(result);
@@ -36,9 +39,11 @@ public class GetMaterialsQueryHandlerTests
     public async Task Handler_ShouldThrow_MaterialNotFoundException_WhenReceivedMaterialsIsNull()
     {
         var getMaterialsQuery = new GetMaterialsQuery("");
-        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(_materialRepositoryMock.Object, _mapperMock.Object);
+        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(
+            _materialRepositoryMock.Object, _mapperMock.Object);
 
-        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery)).ReturnsAsync(((List<Domain.Entities.Material>)null, 0));
+        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery))
+            .ReturnsAsync(((List<Domain.Entities.Material>)null, 0));
 
         await Assert.ThrowsAsync<MaterialNotFoundException>(async () =>
         {
@@ -49,9 +54,11 @@ public class GetMaterialsQueryHandlerTests
     public async Task Handler_ShouldThrow_MaterialNotFoundException_WhenReceivedMaterialsCountEqual0()
     {
         var getMaterialsQuery = new GetMaterialsQuery("");
-        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(_materialRepositoryMock.Object, _mapperMock.Object);
+        var getMaterialsQueryHandler = new GetMaterialsQueryHandler(
+            _materialRepositoryMock.Object, _mapperMock.Object);
 
-        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery)).ReturnsAsync((new List<Domain.Entities.Material>(), 0));
+        _materialRepositoryMock.Setup(repo => repo.SearchMaterialsAsync(getMaterialsQuery))
+            .ReturnsAsync((new List<Domain.Entities.Material>(), 0));
 
         await Assert.ThrowsAsync<MaterialNotFoundException>(async () =>
         {

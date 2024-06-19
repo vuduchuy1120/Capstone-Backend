@@ -12,19 +12,10 @@ public class EmployeeProductRepository : IEmployeeProductRepository
     {
         _context = context;
     }
-    public void AddEmployeeProduct(EmployeeProduct employeeProduct)
-    {
-        _context.EmployeeProducts.Add(employeeProduct);
-    }
 
     public async Task AddRangeEmployeeProduct(List<EmployeeProduct> employeeProducts)
     {
         await _context.EmployeeProducts.AddRangeAsync(employeeProducts);
-    }
-
-    public void DeleteEmployeeProduct(EmployeeProduct employeeProduct)
-    {
-        _context.EmployeeProducts.Remove(employeeProduct);
     }
 
     public void DeleteRangeEmployeeProduct(List<EmployeeProduct> employeeProducts)
@@ -34,7 +25,10 @@ public class EmployeeProductRepository : IEmployeeProductRepository
 
     public async Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date)
     {
-        return await _context.EmployeeProducts.Include(ep => ep.Phase).Include(ep => ep.Product).ThenInclude(p => p.Images)
+        return await _context.EmployeeProducts
+            .Include(ep => ep.Phase)
+            .Include(ep => ep.Product)
+            .ThenInclude(p => p.Images)
             .Where(ep => ep.SlotId == slotId && ep.Date == date)
             .ToListAsync();
     }
@@ -105,19 +99,5 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         }
 
         return matchingCount == keys.Count;
-
     }
-
-
-    public void UpdateEmployeeProduct(EmployeeProduct employeeProduct)
-    {
-        _context.EmployeeProducts.Update(employeeProduct);
-    }
-
-    public void UpdateRangeEmployeeProduct(List<EmployeeProduct> employeeProducts)
-    {
-        _context.EmployeeProducts.UpdateRange(employeeProducts);
-
-    }
-
 }

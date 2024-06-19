@@ -5,11 +5,6 @@ using Contract.Services.Material.Query;
 using Contract.Services.Material.ShareDto;
 using Domain.Exceptions.Materials;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.UnitTests.Materials.Queries;
 
@@ -29,10 +24,13 @@ public class GetMaterialByIdQueryHandlerTests
     {
         // Arrange
         var getMaterialByIdQuery = new GetMaterialByIdQuery(1);
-        var getMaterialByIdQueryHandler = new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
+        var getMaterialByIdQueryHandler =
+            new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
 
-        _materialRepositoryMock.Setup(repo => repo.GetMaterialByIdAsync(getMaterialByIdQuery.Id)).ReturnsAsync(new Domain.Entities.Material());
-        _mock.Setup(mapper => mapper.Map<MaterialResponse>(It.IsAny<Domain.Entities.Material>())).Returns(It.IsAny<MaterialResponse>);
+        _materialRepositoryMock.Setup(repo => repo.GetMaterialByIdAsync(getMaterialByIdQuery.Id))
+            .ReturnsAsync(new Domain.Entities.Material());
+        _mock.Setup(mapper => mapper.Map<MaterialResponse>(It.IsAny<Domain.Entities.Material>()))
+            .Returns(It.IsAny<MaterialResponse>);
 
         // Act
         var result = await getMaterialByIdQueryHandler.Handle(getMaterialByIdQuery, default);
@@ -46,9 +44,11 @@ public class GetMaterialByIdQueryHandlerTests
     {
         // Arrange
         var getMaterialByIdQuery = new GetMaterialByIdQuery(1);
-        var getMaterialByIdQueryHandler = new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
+        var getMaterialByIdQueryHandler =
+            new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
 
-        _materialRepositoryMock.Setup(repo => repo.GetMaterialByIdAsync(getMaterialByIdQuery.Id)).ReturnsAsync((Domain.Entities.Material)null);
+        _materialRepositoryMock.Setup(repo => repo.GetMaterialByIdAsync(getMaterialByIdQuery.Id))
+            .ReturnsAsync((Domain.Entities.Material)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<MaterialNotFoundException>(async () =>
