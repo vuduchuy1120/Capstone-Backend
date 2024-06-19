@@ -9,6 +9,7 @@ public interface IUserRepository
     Task<User?> GetUserActiveByIdAsync(string id);
     Task<bool> IsUserExistAsync(string id);
     Task<bool> IsUserActiveAsync(string id);
+    Task<bool> IsAllUserActiveAsync(List<string> userIds);
     void AddUser(User user);
     Task<(List<User>?, int)> SearchUsersAsync(GetUsersQuery request);
     void Update(User user);

@@ -29,6 +29,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<ShipmentDetail> ShipmentDetails { get; set; }
     public DbSet<Shipment> Shipments { get; set; }
     public DbSet<Report> Reports { get; set; }
+    public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -83,7 +84,8 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasForeignKey(sp => sp.SetId);
 
         modelBuilder.Entity<ProductPhase>()
-            .HasKey(ph => new {ph.PhaseId, ph.ProductId});
+            .HasKey(ph => new { ph.PhaseId, ph.ProductId });
+
 
         modelBuilder.Entity<ProductPhase>()
             .HasOne(ph => ph.Phase)
@@ -94,5 +96,29 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(ph => ph.Product)
             .WithMany(ph => ph.ProductPhases)
             .HasForeignKey(pc => pc.ProductId);
+        modelBuilder.Entity<EmployeeProduct>().ToTable("EmployeeProducts");
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasKey(ep => new { ep.ProductId, ep.UserId, ep.PhaseId, ep.SlotId, ep.Date });
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(ep => ep.Product)
+            .WithMany(p => p.EmployeeProducts)
+            .HasForeignKey(ep => ep.ProductId);
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(ep => ep.User)
+            .WithMany(u => u.EmployeeProducts)
+            .HasForeignKey(ep => ep.UserId);
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(ep => ep.Phase)
+            .WithMany(p => p.EmployeeProducts)
+            .HasForeignKey(ep => ep.PhaseId);
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(ep => ep.Slot)
+            .WithMany(s => s.EmployeeProducts)
+            .HasForeignKey(ep => ep.SlotId);
     }
 }

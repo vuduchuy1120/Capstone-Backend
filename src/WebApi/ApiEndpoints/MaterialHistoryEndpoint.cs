@@ -45,7 +45,7 @@ public class MaterialHistoryEndpoint : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material History api" } }
         });
 
-      
+
         app.MapGet(string.Empty, async (
             ISender sender,
             [AsParameters] GetMaterialHistoriesByMaterialQuery getMaterialHistoriesQuery) =>
@@ -57,6 +57,17 @@ public class MaterialHistoryEndpoint : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material History api" } }
         });
 
+        app.MapGet("{id:guid}", async (
+                       ISender sender,
+                       Guid id) =>
+        {
+            var getMaterialHistoryByIdQuery = new GetMaterialHistoryByIdQuery(id);
+            var result = await sender.Send(getMaterialHistoryByIdQuery);
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Material History api" } }
+        });
 
 
     }

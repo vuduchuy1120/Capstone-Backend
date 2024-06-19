@@ -10,5 +10,6 @@ public record AttendanceResponse
     double HourOverTime,
     bool IsAttendance,
     bool IsOverTime,
-    bool IsSalaryByProduct
+    bool IsSalaryByProduct,
+    bool IsManufacture
     );

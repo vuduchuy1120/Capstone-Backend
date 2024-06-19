@@ -24,9 +24,7 @@ public class AddAttendanceTests : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "001201011091",
-                        HourOverTime: 2,
-                        IsAttendance: true,
-                        IsOverTime: true,
+                        IsManufacture : true,
                         IsSalaryByProduct: false);
 
         var attendance = Attendance.Create(createAttendanceRequest, 1, "001201011091");
@@ -46,9 +44,7 @@ public class AddAttendanceTests : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "034202001936",
-                        HourOverTime: 2,
-                        IsAttendance: true,
-                        IsOverTime: true,
+                        IsManufacture: true,
                         IsSalaryByProduct: false);
         var attendance = Attendance.Create(createAttendanceRequest, 5, "001201011091");
          _attendanceRepository.AddAttendance(attendance);
@@ -56,9 +52,7 @@ public class AddAttendanceTests : IDisposable
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "034202001936",
-                        HourOverTime: 2,
-                        IsAttendance: true,
-                        IsOverTime: true,
+                        IsManufacture: true,
                         IsSalaryByProduct: false);
         var attendance2 = Attendance.Create(createAttendanceRequest2, 5, "001201011091");
 

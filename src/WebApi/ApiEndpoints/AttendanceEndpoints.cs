@@ -1,6 +1,7 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.Attendance.Create;
+using Contract.Services.Attendance.Queries;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.Update;
 using Contract.Services.User.CreateUser;
@@ -75,6 +76,16 @@ public class AttendanceEndpoints : CarterModule
             [AsParameters] GetAttendancesQuery getAttendancesQuery) =>
         {
             var result = await sender.Send(getAttendancesQuery);
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
+        });
+        app.MapGet("overall", async (
+               ISender sender,
+               [AsParameters] GetAttendanceOverallQuery getAttendanceOverallQuery) =>
+        {
+            var result = await sender.Send(getAttendanceOverallQuery);
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {

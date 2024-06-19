@@ -1,10 +1,8 @@
 ﻿using Application.Abstractions.Data;
-using Contract.Abstractions.Shared.Utils;
+using Application.Abstractions.Shared.Utils;
 using Contract.Services.Material.Get;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using System.Text;
 
 namespace Persistence.Repositories;
 

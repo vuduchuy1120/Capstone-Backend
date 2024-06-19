@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Abstractions.Data;
+﻿using Application.Abstractions.Data;
 using Application.UserCases.Commands.Sets.UpdateSet;
 using Contract.Services.Set.SharedDto;
 using Contract.Services.Set.UpdateSet;

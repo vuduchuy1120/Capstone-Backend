@@ -27,7 +27,7 @@ public sealed class GetMaterialHistoriesByMaterialQueryHandler(
         }
 
         var result = _mapper.Map<List<MaterialHistoryResponse>>(materialHistories);
-        var searchResponse = new SearchResponse<List<MaterialHistoryResponse>>(totalPage, request.PageIndex, result);
+        var searchResponse = new SearchResponse<List<MaterialHistoryResponse>>(request.PageIndex, totalPage, result);
 
         return Result.Success<SearchResponse<List<MaterialHistoryResponse>>>.Get(searchResponse);
     }

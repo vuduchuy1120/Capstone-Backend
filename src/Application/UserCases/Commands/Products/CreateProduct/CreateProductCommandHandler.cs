@@ -6,14 +6,13 @@ using Contract.Services.Product.SharedDto;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
-using MediatR;
 
 namespace Application.UserCases.Commands.Products.CreateProduct;
 
 internal sealed class CreateProductCommandHandler(
     IProductRepository _productRepository,
     IProductImageRepository _productImageRepository,
-    IUnitOfWork _unitOfWork, 
+    IUnitOfWork _unitOfWork,
     IValidator<CreateProductRequest> _validator) : ICommandHandler<CreateProductCommand>
 {
     public async Task<Result.Success> Handle(CreateProductCommand request, CancellationToken cancellationToken)

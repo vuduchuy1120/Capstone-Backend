@@ -11,7 +11,8 @@ namespace Contract.Services.MaterialHistory.Queries;
 
 public record GetMaterialHistoriesByMaterialQuery(
     string? SearchTerms,
-    string? DateImport,
+    string? StartDateImport,
+    string? EndDateImport,
     int PageIndex = 1,
     int PageSize = 10
     ) : IQuery<SearchResponse<List<MaterialHistoryResponse>>>;
