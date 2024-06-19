@@ -1,21 +1,108 @@
-﻿using Domain.Abstractions.Entities;
+﻿using Contract.Services.ShipmentDetail.Share;
+using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
 
 public class ShipmentDetail : EntityBase<Guid>
 {
-    public Guid? ShipmentId { get; set; }
-    public Guid? ShipOrderId { get; set; }
-    public Guid? ProductId { get; set; }
-    public Guid? PhaseId { get; set; }
-    public Guid? SetId { get; set; }
+    public Guid? ShipmentId { get; private set; }
+    public Guid? ShipOrderId { get; private set; }
+    public Guid? ProductId { get; private set; }
+    public Guid? PhaseId { get; private set; }
+    public Guid? SetId { get; private set; }
     public Guid? MaterialHistoryId { get; set; }
-    public Shipment? Shipment { get; set; }
-    public ShipOrder? ShipOrder { get; set; }
-    public Product? Product { get; set; }
-    public Phase? Phase { get; set; }    
-    public Set? Set { get; set; }
-    public MaterialHistory? MaterialHistory { get; set; }
-    public int Quantity { get; set; }
-    public int ReturnQuantity { get; set; }
+    public Shipment? Shipment { get; private set; }
+    public ShipOrder? ShipOrder { get; private set; }
+    public Product? Product { get; private set; }
+    public Phase? Phase { get; private set; }
+    public Set? Set { get; private set; }
+    public MaterialHistory? MaterialHistory { get; private set; }
+    public int Quantity { get; private set; }
+    public int ReturnQuantity { get; private set; }
+    private ShipmentDetail() { }
+
+    public static ShipmentDetail CreateShipmentProductDetail(
+        Guid shipId, Guid itemId, Guid? phaseId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipmentId = shipId,
+            ProductId = itemId,
+            PhaseId = phaseId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public static ShipmentDetail CreateShipOrderProductDetail(
+        Guid shipId, Guid itemId, Guid? phaseId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipOrderId = shipId,
+            ProductId = itemId,
+            PhaseId = phaseId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public static ShipmentDetail CreateShipmentSetDetail(
+        Guid shipId, Guid itemId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipmentId = shipId,
+            SetId = itemId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public static ShipmentDetail CreateShipOrderSetDetail(
+        Guid shipId, Guid itemId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipOrderId = shipId,
+            SetId = itemId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public static ShipmentDetail CreateShipmentMaterialDetail(
+        Guid shipId, Guid itemId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipmentId = shipId,
+            MaterialHistoryId = itemId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public static ShipmentDetail CreateShipOrderMaterialDetail(
+        Guid shipId, Guid itemId, int quantity)
+    {
+        return new()
+        {
+            Id = Guid.NewGuid(),
+            ShipOrderId = shipId,
+            MaterialHistoryId = itemId,
+            Quantity = quantity,
+            ReturnQuantity = 0
+        };
+    }
+
+    public void UpdateReturnQuantity(int returnQuantity)
+    {
+        ReturnQuantity = returnQuantity;
+    }
 }

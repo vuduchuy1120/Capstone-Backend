@@ -14,8 +14,6 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            //TODO
-            //options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 option  => option.MaxBatchSize(100)
@@ -34,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IMaterialHistoryRepository, MaterialHistoryRepository>();
         services.AddScoped<ISetProductRepository, SetProductRepository>();
         services.AddScoped<ISetRepository, SetRepository>();
+        services.AddScoped<IShipmentRepository, ShipmentRepository>();
+        services.AddScoped<IShipmentDetailRepository, ShipmentDetailRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
 
         return services;
     }
