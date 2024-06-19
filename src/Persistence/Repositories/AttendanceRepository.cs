@@ -197,8 +197,8 @@ public class AttendanceRepository : IAttendanceRepository
                 .ThenInclude(p => p.Product)
                 .ThenInclude(p => p.Images)
             .Include(user => user.User)
-            .ThenInclude(emp => emp.EmployeeProducts)
-            .ThenInclude(p => p.Phase)
+                .ThenInclude(emp => emp.EmployeeProducts)
+                .ThenInclude(p => p.Phase)
             .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId);
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
