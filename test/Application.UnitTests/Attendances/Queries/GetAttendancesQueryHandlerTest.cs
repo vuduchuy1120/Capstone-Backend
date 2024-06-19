@@ -25,10 +25,14 @@ public class GetAttendancesQueryHandlerTest
     public async Task Handler_ShouldReturnSuccess_WhenReceivedAttendancesIsNotNull()
     {
         var getAttendancesQuery = new GetAttendancesQuery("", "01/06/2024", 1);
-        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(_attendanceRepositoryMock.Object, _mapperMock.Object);
+        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(
+            _attendanceRepositoryMock.Object,
+            _mapperMock.Object);
 
-        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery)).ReturnsAsync((new List<Attendance>() { new Attendance() }, 1));
-        _mapperMock.Setup(mapper => mapper.Map<AttendanceResponse>(It.IsAny<Attendance>())).Returns(It.IsAny<AttendanceResponse>);
+        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery))
+            .ReturnsAsync((new List<Attendance>() { new Attendance() }, 1));
+        _mapperMock.Setup(mapper => mapper.Map<AttendanceResponse>(It.IsAny<Attendance>()))
+            .Returns(It.IsAny<AttendanceResponse>);
 
         var result = await getAttendancesQueryHandler.Handle(getAttendancesQuery, default);
 
@@ -40,9 +44,12 @@ public class GetAttendancesQueryHandlerTest
     public async Task Handler_ShouldThrow_AttendanceNotFoundException_WhenReceivedAttendancesIsNull()
     {
         var getAttendancesQuery = new GetAttendancesQuery("", "01/06/2024", 1);
-        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(_attendanceRepositoryMock.Object, _mapperMock.Object);
+        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(
+            _attendanceRepositoryMock.Object,
+            _mapperMock.Object);
 
-        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery)).ReturnsAsync(((List<Attendance>)null, 0));
+        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery))
+            .ReturnsAsync(((List<Attendance>)null, 0));
 
         await Assert.ThrowsAsync<AttendanceNotFoundException>(async () =>
         {
@@ -55,9 +62,12 @@ public class GetAttendancesQueryHandlerTest
     public async Task Handler_ShouldThrow_AttendanceNotFoundException_WhenReceivedAttendancesCountEqual0()
     {
         var getAttendancesQuery = new GetAttendancesQuery("", "01/06/2024", 1);
-        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(_attendanceRepositoryMock.Object, _mapperMock.Object);
+        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(
+            _attendanceRepositoryMock.Object,
+            _mapperMock.Object);
 
-        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery)).ReturnsAsync((new List<Attendance>(), 0));
+        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery))
+            .ReturnsAsync((new List<Attendance>(), 0));
 
         await Assert.ThrowsAsync<AttendanceNotFoundException>(async () =>
         {
@@ -70,9 +80,12 @@ public class GetAttendancesQueryHandlerTest
     public async Task Handler_ShouldThrow_AttendanceNotFoundException_WhenTotalPageEqual0()
     {
         var getAttendancesQuery = new GetAttendancesQuery("", "01/06/2024", 1);
-        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(_attendanceRepositoryMock.Object, _mapperMock.Object);
+        var getAttendancesQueryHandler = new GetAttendancesQueryHandler(
+            _attendanceRepositoryMock.Object,
+            _mapperMock.Object);
 
-        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery)).ReturnsAsync((new List<Attendance>() { new Attendance() }, 0));
+        _attendanceRepositoryMock.Setup(repo => repo.SearchAttendancesAsync(getAttendancesQuery))
+            .ReturnsAsync((new List<Attendance>() { new Attendance() }, 0));
 
         await Assert.ThrowsAsync<AttendanceNotFoundException>(async () =>
         {

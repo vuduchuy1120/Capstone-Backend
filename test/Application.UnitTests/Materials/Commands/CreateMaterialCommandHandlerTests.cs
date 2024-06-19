@@ -51,7 +51,12 @@ public class CreateMaterialCommandHandlerTests
     [InlineData("Material 1", "Description 1", "", 1, "No Image")]
     [InlineData("Material 1", "Description 1", "Unit 1", 0, "No Image")]
     [InlineData("Material 1", "Description 1", "Unit 1", -1, "")]
-    public async Task Handle_Should_Throw_ValidationException(string name, string description, string unit, int quantityPerUnit, string image)
+    public async Task Handle_Should_Throw_ValidationException(
+        string name,
+        string description,
+        string unit,
+        int quantityPerUnit,
+        string image)
     {
         // Arrange
         var request = new CreateMaterialRequest(

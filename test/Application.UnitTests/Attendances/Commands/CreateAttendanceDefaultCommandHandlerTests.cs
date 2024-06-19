@@ -115,15 +115,15 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-                                   slotId: 1,
-                                                          CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
-                                                          {
-                            new CreateAttendanceWithoutSlotIdRequest(
-                                                               UserId: "",
-                                                                                              IsManufacture: true,
-                                                                                                                             IsSalaryByProduct: false
-                                                                                                                                                        )
-                        });
+                    slotId: 1,
+                    CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
+                    {
+                        new CreateAttendanceWithoutSlotIdRequest(
+                            UserId: "",
+                            IsManufacture: true,
+                            IsSalaryByProduct: false
+                        )
+                    });
 
         var command = new CreateAttendanceDefaultCommand(request, "001201011091");
 
@@ -146,15 +146,15 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-                                              slotId: 1,
-                                                                                                       CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
-                                                                                                       {
-                            new CreateAttendanceWithoutSlotIdRequest(
-                                                                                              UserId: "001201011091",
-                                                                                                                                                                                           IsManufacture: true,
-                                                                                                                                                                                                                                                                                                                       IsSalaryByProduct: false
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              )
-                        });
+                            slotId: 1,
+                            CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
+                            {
+                                new CreateAttendanceWithoutSlotIdRequest(
+                                    UserId: "001201011091",
+                                    IsManufacture: true,
+                                    IsSalaryByProduct: false
+                                )
+                            });
 
         var command = new CreateAttendanceDefaultCommand(request, "001201011091");
 
@@ -171,4 +171,5 @@ public class CreateAttendanceDefaultCommandHandlerTests
         await Assert.ThrowsAsync<MyValidationException>(async () =>
                                  await _handler.Handle(command, default));
     }
+    // throw date invalid exception
 }

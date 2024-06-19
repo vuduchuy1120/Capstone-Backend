@@ -40,12 +40,13 @@ public class CreatePhaseCommandHandlerTests
     {
         // Arrange
         var request = new CreatePhaseRequest(
-                                            Name: "",
-                                            Description: "Description 1");
+                                Name: "",
+                                Description: "Description 1");
 
         // Act
 
         // Assert
-        Assert.ThrowsAsync<MyValidationException>(async () => await _handler.Handle(new CreatePhaseCommand(request), CancellationToken.None));
+        Assert.ThrowsAsync<MyValidationException>(
+            async () => await _handler.Handle(new CreatePhaseCommand(request), CancellationToken.None));
     }
 }

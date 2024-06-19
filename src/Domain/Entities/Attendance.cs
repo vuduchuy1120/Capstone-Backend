@@ -41,7 +41,7 @@ namespace Domain.Entities
         {
             HourOverTime = updateAttendanceRequest.HourOverTime;
             IsAttendance = updateAttendanceRequest.IsAttendance;
-            IsOverTime = updateAttendanceRequest.IsOverTime;
+            IsOverTime = updateAttendanceRequest.HourOverTime > 0 ? true : false;
             IsManufacture = updateAttendanceRequest.IsManufacture;
             IsSalaryByProduct = updateAttendanceRequest.IsSalaryByProduct;
             UpdatedBy = updatedBy;
