@@ -23,9 +23,9 @@ public class UpdateMaterialCommandHandlerTests
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _validator = new UpdateMaterialRequestValidator(_materialRepositoryMock.Object);
         _handler = new UpdateMaterialCommandHandler(
-                       _materialRepositoryMock.Object,
-                                  _unitOfWorkMock.Object,
-                                             _validator);
+                            _materialRepositoryMock.Object,
+                            _unitOfWorkMock.Object,
+                            _validator);
     }
 
     [Fact]
@@ -57,7 +57,13 @@ public class UpdateMaterialCommandHandlerTests
     [InlineData(1, "Material 1", "Description 1", "", 1, "No Image")]
     [InlineData(1, "Material 1", "Description 1", "Unit 1", 0, "No Image")]
     [InlineData(1, "Material 1", "Description 1", "Unit 1", -1, "")]
-    public async Task Handle_Should_Throw_ValidationException(int id, string name, string description, string unit, int quantityPerUnit, string image)
+    public async Task Handle_Should_Throw_ValidationException(
+        int id, 
+        string name,
+        string description,
+        string unit,
+        int quantityPerUnit, 
+        string image)
     {
         // Arrange
         var request = new UpdateMaterialRequest(

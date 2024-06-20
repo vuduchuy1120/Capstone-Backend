@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Data;
 using Application.UserCases.Commands.Phases.Updates;
-using Contract.Services.Material.Create;
 using Contract.Services.Phase.Updates;
 using Domain.Abstractions.Exceptions;
 using FluentAssertions;
@@ -53,9 +52,9 @@ public class UpdatePhaseCommandHandlerTests
     {
         // Arrange
         var request = new UpdatePhaseRequest(
-                                       Id: Guid.NewGuid(),
-                                                                  Name: "",
-                                                                                             Description: "Description 1");
+                            Id: Guid.NewGuid(),
+                            Name: "",
+                            Description: "Description 1");
 
         var command = new UpdatePhaseCommand(request);
 
@@ -74,9 +73,9 @@ public class UpdatePhaseCommandHandlerTests
     {
         // Arrange
         var request = new UpdatePhaseRequest(
-                                            Id: Guid.NewGuid(),
-                                            Name: "Phase 1",
-                                            Description: "Description 1");
+                                Id: Guid.NewGuid(),
+                                Name: "Phase 1",
+                                Description: "Description 1");
 
         var command = new UpdatePhaseCommand(request);
 

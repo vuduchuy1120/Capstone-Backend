@@ -1,4 +1,6 @@
 ﻿
+using Contract.Services.EmployeeProduct.ShareDto;
+
 namespace Contract.Services.Attendance.ShareDto;
 
 public record AttendanceResponse
@@ -11,5 +13,6 @@ public record AttendanceResponse
     bool IsAttendance,
     bool IsOverTime,
     bool IsSalaryByProduct,
-    bool IsManufacture
+    bool IsManufacture,
+    List<EmployeeProductResponse> EmployeeProductResponses
     );

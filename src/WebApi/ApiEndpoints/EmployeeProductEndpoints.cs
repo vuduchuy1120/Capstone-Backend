@@ -33,20 +33,6 @@ public class EmployeeProductEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
         });
-        app.MapPut(string.Empty, async (
-               ISender sender,
-               ClaimsPrincipal claim,
-               [FromBody] UpdateEmployeeProductRequest updateEmployeeProductRequest) =>
-        {
-            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var updateEmployeeProductCommand = new UpdateEmployeeProductCommand(updateEmployeeProductRequest, userId);
-            var result = await sender.Send(updateEmployeeProductCommand);
-
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
-        });
         app.MapDelete(string.Empty, async (
                 ISender sender,
                 [FromBody] DeleteEmployeeProductRequest deleteEmployeeProductRequest) =>
