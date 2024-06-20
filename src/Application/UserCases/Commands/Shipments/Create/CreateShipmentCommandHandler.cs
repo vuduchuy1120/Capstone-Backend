@@ -29,6 +29,8 @@ internal sealed class CreateShipmentCommandHandler(
         var shipmentDetails = CreateShipmentDetails(createShipmentRequest.ShipmentDetailRequests, shipment.Id);
 
         // Change quantity in product phase
+        // Nếu from Id là third party company và to Id là factory
+        // thì sẽ trừ các phase cũ và cộng các phase mới
 
         _shipmentRepository.Add(shipment);
         _shipmentDetailRepository.AddRange(shipmentDetails);

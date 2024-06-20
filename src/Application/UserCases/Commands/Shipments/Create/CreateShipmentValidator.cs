@@ -19,9 +19,9 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             }).WithMessage("Công ty không tồn tại");
 
         RuleFor(req => req.ToId)
-            .Must((req, fromId, _) =>
+            .Must((req, toId, _) =>
             {
-                return req.ToId != fromId;
+                return req.FromId != toId;
             }).WithMessage("Công ty gửi phải khác công ty nhận");
 
         RuleFor(req => req.ToId)
@@ -34,9 +34,9 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             .NotNull().WithMessage("Vật phẩm giao không được để trống")
             .Must((shipmentDetailRequest) =>
             {
-                return shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_ORDER_MATERIAL
-                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_ORDER_SET
-                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_ORDER_PRODUCT;
+                return shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL
+                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_SET
+                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT;
             }).WithMessage("Loại đơn giao phải là giao hàng cho các cơ sở")
             .Must((shipmentDetailRequest) =>
             {
