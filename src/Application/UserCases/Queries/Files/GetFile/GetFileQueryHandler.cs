@@ -5,13 +5,14 @@ using Contract.Services.Files.GetFile;
 
 namespace Application.UserCases.Queries.Files.GetFile;
 
-internal sealed class GetFileQueryHandler(IFileService _fileService)
-    : IQueryHandler<GetFileQuery, byte[]>
+internal sealed class GetFileQueryHandler(ICloudStorage _cloudStorage)
+    : IQueryHandler<GetFileQuery, string>
 {
-    public async Task<Result.Success<byte[]>> Handle(GetFileQuery request, CancellationToken cancellationToken)
+    public async Task<Result.Success<string>> Handle(GetFileQuery request, CancellationToken cancellationToken)
     {
-        var fileBytes = await _fileService.GetFile(request.fileName);
+        var fileUrl = await _cloudStorage.GetSignedUrlAsync(request.fileName);
 
-        return Result.Success<byte[]>.Get(fileBytes);
+        return Result.Success<string>.Get(fileUrl);
     }
 }
+
