@@ -14,11 +14,11 @@ public class GoogleCloudStorage : ICloudStorage
 
     public GoogleCloudStorage(IConfiguration configuration)
     {
-        string currentDirectory = "/home/vinhnqhe163166/backend";
+        //string currentDirectory = "/home/vinhnqhe163166/backend";
         //string currentDirectory = "D://Ky9//CaptonProject";
         string keyName = configuration.GetValue<string>("GoogleCredentialFile");
-        string keyAddress = Path.Combine(currentDirectory, keyName);
-        googleCredential = GoogleCredential.FromFile(keyAddress);
+        //string keyAddress = Path.Combine(currentDirectory, keyName);
+        googleCredential = GoogleCredential.FromFile(keyName);
         storageClient = StorageClient.Create(googleCredential);
         bucketName = configuration.GetValue<string>("GoogleCloudStorageBucket");
     }

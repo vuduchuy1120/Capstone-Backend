@@ -3,6 +3,8 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+capstone-426620-071d9a42b286.json
+
 # dotenv files
 .env
 
