@@ -24,10 +24,13 @@ public class AddAttendanceTests : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "001201011091",
-                        IsManufacture : true,
-                        IsSalaryByProduct: false);
+                        IsAttendance: true,
+                        HourOverTime: 0.5,
+                        IsManufacture: true,
+                        IsSalaryByProduct: false
+                        );
 
-        var attendance = Attendance.Create(createAttendanceRequest, 1, "001201011091");
+        var attendance = Attendance.Create(createAttendanceRequest, "01/01/2001", 1, "001201011091");
         _attendanceRepository.AddAttendance(attendance);
         await _context.SaveChangesAsync();
 
@@ -44,22 +47,28 @@ public class AddAttendanceTests : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "034202001936",
+                        IsAttendance: true,
+                        HourOverTime: 0.5,
                         IsManufacture: true,
-                        IsSalaryByProduct: false);
-        var attendance = Attendance.Create(createAttendanceRequest, 5, "001201011091");
-         _attendanceRepository.AddAttendance(attendance);
+                        IsSalaryByProduct: false
+                        );
+        var attendance = Attendance.Create(createAttendanceRequest, "01/01/2001", 5, "001201011091");
+        _attendanceRepository.AddAttendance(attendance);
         await _context.SaveChangesAsync();
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                         UserId: "034202001936",
+                        IsAttendance: true,
+                        HourOverTime: 0.5,
                         IsManufacture: true,
-                        IsSalaryByProduct: false);
-        var attendance2 = Attendance.Create(createAttendanceRequest2, 5, "001201011091");
+                        IsSalaryByProduct: false
+                        );
+        var attendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2001", 5, "001201011091");
 
         // Assert and await the exception
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
-             _attendanceRepository.AddAttendance(attendance2);
+            _attendanceRepository.AddAttendance(attendance2);
             await _context.SaveChangesAsync();
         });
     }

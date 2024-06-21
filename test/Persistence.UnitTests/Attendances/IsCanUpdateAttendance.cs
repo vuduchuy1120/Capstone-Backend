@@ -28,17 +28,21 @@ public class IsCanUpdateAttendance : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                                               UserId: "001201011091",
-                                              IsManufacture: true,
-                                              IsSalaryByProduct: false);
-        var req = Domain.Entities.Attendance.Create(createAttendanceRequest, 1, "001201011091");
+                                              IsAttendance: true,
+                                            HourOverTime: 0.5,
+                                            IsManufacture: true,
+                                            IsSalaryByProduct: false);
+        var req = Domain.Entities.Attendance.Create(createAttendanceRequest, "01/01/2004", 1, "001201011091");
         _attendanceRepository.AddAttendance(req);
         _context.SaveChanges();
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                                                 UserId: "034202001936",
+                                                IsAttendance: true,
+                                                HourOverTime: 0.5,
                                                 IsManufacture: true,
                                                 IsSalaryByProduct: false);
-        var req2 = Domain.Entities.Attendance.Create(createAttendanceRequest2, 1, "001201011091");
+        var req2 = Domain.Entities.Attendance.Create(createAttendanceRequest2, "01/01/2001", 1, "001201011091");
         _attendanceRepository.AddAttendance(req2);
         _context.SaveChanges();
         var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));

@@ -23,7 +23,6 @@ public class User : EntityAuditBase<string>
     public Company Company { get; private set; }
     public List<Attendance>? Attendances { get; private set; }
     public List<EmployeeProduct>? EmployeeProducts { get; private set; }
-    public WareHouse? WareHouse { get; private set; }
 
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {

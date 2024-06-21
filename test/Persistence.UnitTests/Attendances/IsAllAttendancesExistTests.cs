@@ -27,17 +27,21 @@ namespace Persistence.UnitTests.Attendances
             // Arrange
             var createAttendanceRequest1 = new CreateAttendanceWithoutSlotIdRequest(
                 UserId: "001201011091",
+                IsAttendance: true,
+                HourOverTime: 0.5,
                 IsManufacture: true,
                 IsSalaryByProduct: false);
 
-            var attendance1 = Attendance.Create(createAttendanceRequest1, 1, "001201011091");
+            var attendance1 = Attendance.Create(createAttendanceRequest1, "01/01/2004", 1, "001201011091");
 
             var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                 UserId: "034202001936",
+                IsAttendance: true,
+                HourOverTime: 0.5,
                 IsManufacture: true,
                 IsSalaryByProduct: false);
 
-            var attendance2 = Attendance.Create(createAttendanceRequest2, 1, "034202001936");
+            var attendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2004", 1, "034202001936");
 
             var attendances = new List<Attendance> { attendance1, attendance2 };
 
@@ -45,7 +49,7 @@ namespace Persistence.UnitTests.Attendances
             await _context.SaveChangesAsync();
 
             var slotId = 1;
-            var date = DateUtil.ConvertStringToDateTimeOnly(DateUtils.GetNow().ToString("dd/MM/yyyy"));
+            var date = DateUtil.ConvertStringToDateTimeOnly("01/01/2004");
             var userIds = new List<string> { "001201011091", "034202001936" };
 
             // Act
@@ -61,17 +65,21 @@ namespace Persistence.UnitTests.Attendances
             // Arrange
             var createAttendanceRequest1 = new CreateAttendanceWithoutSlotIdRequest(
                 UserId: "001201011091",
+                IsAttendance: true,
+                HourOverTime: 0.5,
                 IsManufacture: true,
                 IsSalaryByProduct: false);
 
-            var attendance1 = Attendance.Create(createAttendanceRequest1, 1, "001201011091");
+            var attendance1 = Attendance.Create(createAttendanceRequest1, "01/01/2004", 1, "001201011091");
 
             var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                 UserId: "034202001936",
+                IsAttendance: true,
+                HourOverTime: 0.5,
                 IsManufacture: true,
                 IsSalaryByProduct: false);
 
-            var attendance2 = Attendance.Create(createAttendanceRequest2, 5, "034202001936");
+            var attendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2004", 5, "034202001936");
 
             var attendances = new List<Attendance> { attendance1 };
 

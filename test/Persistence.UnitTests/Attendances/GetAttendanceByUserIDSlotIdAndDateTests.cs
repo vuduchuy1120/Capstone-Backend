@@ -47,11 +47,13 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
     private async Task InitDb()
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
-                                   UserId: "001201011091",
-                                  IsManufacture: true,
-                                   IsSalaryByProduct: false);
+                                    UserId: "001201011091",
+                                    IsAttendance: true,
+                                    HourOverTime: 0.5,
+                                    IsManufacture: true,
+                                    IsSalaryByProduct: false);
 
-        var attendance = Attendance.Create(createAttendanceRequest, 1, "001201011091");
+        var attendance = Attendance.Create(createAttendanceRequest, "01/01/2004", 1, "001201011091");
         _attendanceRepository.AddAttendance(attendance);
         await _context.SaveChangesAsync();
     }
