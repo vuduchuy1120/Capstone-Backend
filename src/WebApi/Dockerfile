@@ -26,4 +26,8 @@ RUN dotnet publish "./WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY src/WebApi/capstone-426620-071d9a42b286.json .
+
 ENTRYPOINT ["dotnet", "WebApi.dll"]
+
