@@ -8,4 +8,4 @@ using System.Threading.Tasks;
 
 namespace Contract.Services.MaterialHistory.Queries;
 
-public record GetMaterialHistoryByIdQuery(Guid Id) : IQuery<MaterialHistoryResponse>;
+public record GetMaterialHistoryByIdQuery(Guid Id) : IQueryHandler<MaterialHistoryResponse>;

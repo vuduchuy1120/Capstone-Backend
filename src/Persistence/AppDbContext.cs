@@ -120,5 +120,12 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(ep => ep.Slot)
             .WithMany(s => s.EmployeeProducts)
             .HasForeignKey(ep => ep.SlotId);
+
+        modelBuilder.Entity<Company>().ToTable("Companies");
+        modelBuilder.Entity<Order>().ToTable("Orders");
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Company)
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CompanyId);
     }
 }

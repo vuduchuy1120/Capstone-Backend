@@ -26,7 +26,8 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
                         .Select(emp => Attendance
                         .Create(
                                     emp,
-                                    request.CreateAttendanceDefaultRequest.slotId,
+                                    request.CreateAttendanceDefaultRequest.Date,
+                                    request.CreateAttendanceDefaultRequest.SlotId,
                                     request.CreatedBy))
                         .ToList();
 

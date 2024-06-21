@@ -4,11 +4,7 @@ using Contract.Services.Attendance.Create;
 using Contract.Services.Attendance.Queries;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.Update;
-using Contract.Services.User.CreateUser;
-using Contract.Services.User.GetUsers;
-using Contract.Services.User.UpdateUser;
 using MediatR;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -86,6 +82,16 @@ public class AttendanceEndpoints : CarterModule
                [AsParameters] GetAttendanceOverallQuery getAttendanceOverallQuery) =>
         {
             var result = await sender.Send(getAttendanceOverallQuery);
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
+        });
+        app.MapGet("/users", async (
+            ISender sender,
+                       [AsParameters] GetAttendancesByMonthAndUserIdQuery getAttendancesByMonthAndUserIdQuery) =>
+        {
+            var result = await sender.Send(getAttendancesByMonthAndUserIdQuery);
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {

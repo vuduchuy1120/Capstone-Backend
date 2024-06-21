@@ -16,10 +16,10 @@ public interface IAttendanceRepository
     Task<bool> IsCanUpdateAttendance(string userId, int slotId, DateOnly date);
     Task AddRangeAsync(List<Attendance> attendances);
     Task<bool> IsAllAttendancesExist(int slotID, DateOnly date, List<string> userIds);
-    Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize);
+    Task<(List<AttendanceOverallResponse>?, int)> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize);
     Task<List<Attendance>> GetAttendancesByKeys(int slotId, DateOnly date, List<string> userIds);
     Task<bool> IsAllCanUpdateAttendance(List<string> userIds, int slotId, DateOnly date);
     void UpdateRange(List<Attendance> attendances);
     Task<bool> IsAttendanceAlreadyExisted(List<string> userIds, int slotId, DateOnly date);
-
+    Task<List<Attendance>> GetAttendanceByMonthAndUserIdAsync(int month, int year, string userId);
 }

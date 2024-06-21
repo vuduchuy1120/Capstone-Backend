@@ -2,5 +2,5 @@
 
 namespace Contract.Services.Slot.GetSlots;
 
-public record GetAllSlotsQuery : IQuery<List<SlotResponse>>;
+public record GetAllSlotsQuery : IQueryHandler<List<SlotResponse>>;
 

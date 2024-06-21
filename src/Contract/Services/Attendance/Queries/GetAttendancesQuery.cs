@@ -9,4 +9,4 @@ public record GetAttendancesQuery(
     string? Date,
     int SlotId,
     int PageIndex = 1,
-    int PageSize = 10) : IQuery<SearchResponse<List<AttendanceResponse>>>;
+    int PageSize = 10) : IQueryHandler<SearchResponse<List<AttendanceResponse>>>;

@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Set.GetSet;
 
-public record GetSetQuery(Guid setId) : IQuery<SetResponse>;
+public record GetSetQuery(Guid setId) : IQueryHandler<SetResponse>;

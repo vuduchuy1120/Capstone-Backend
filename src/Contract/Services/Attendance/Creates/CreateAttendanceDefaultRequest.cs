@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Contract.Services.Attendance.Create;
+﻿namespace Contract.Services.Attendance.Create;
 
 public record CreateAttendanceDefaultRequest
 (
-    int slotId,
+    int SlotId,
+    string Date,
     List<CreateAttendanceWithoutSlotIdRequest> CreateAttendances
     );
 

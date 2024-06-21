@@ -9,4 +9,4 @@ public record GetUsersQuery(
     int RoleId,
     bool IsActive = true,
     int PageIndex = 1,
-    int PageSize = 10) : IQuery<SearchResponse<List<UserResponse>>>;
+    int PageSize = 10) : IQueryHandler<SearchResponse<List<UserResponse>>>;

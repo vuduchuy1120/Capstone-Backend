@@ -44,6 +44,17 @@ public class AttendanceRepository : IAttendanceRepository
             .ToListAsync();
     }
 
+    public async Task<List<Attendance>> GetAttendanceByMonthAndUserIdAsync(int month, int year, string userId)
+    {
+        var query = await _context.Attendances
+            .AsNoTracking()
+            .Where(a => a.Date.Month == month && a.Date.Year == year && a.UserId.Equals(userId))
+            .OrderByDescending(a => a.Date)
+            .ThenBy(a => a.SlotId)
+            .ToListAsync();
+        return query;
+    }
+
     public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDateAsync(string userId, int slotId, DateOnly date)
     {
         var attendance = await _context.Attendances
@@ -54,7 +65,7 @@ public class AttendanceRepository : IAttendanceRepository
         return attendance;
     }
 
-    public async Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
+    public async Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverall1Async(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
     {
         var query = _context.Attendances.AsQueryable();
 
@@ -108,6 +119,76 @@ public class AttendanceRepository : IAttendanceRepository
             totalPages,
             groupedByDate);
     }
+
+    public async Task<(List<AttendanceOverallResponse>?, int)> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
+    {
+        var query = _context.Attendances.AsQueryable();
+
+        // Apply date filters if provided
+        if (startDate.HasValue)
+        {
+            query = query.Where(a => a.Date >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(a => a.Date <= endDate.Value);
+        }
+
+        // Get the total record count for pagination
+        var totalRecords = await query.CountAsync();
+
+        // Calculate total pages
+        var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        // If totalRecords is zero, return an empty list immediately
+        if (totalRecords == 0)
+        {
+            return (new List<AttendanceOverallResponse>(), totalPages);
+        }
+
+        // Ensure pageIndex is at least 1 and within totalPages
+        pageIndex = Math.Max(1, Math.Min(pageIndex, totalPages));
+
+        // Calculate the number of records to skip
+        int skip = (pageIndex - 1) * pageSize;
+
+        // Apply sorting, pagination, and include related entities
+        var pagedQuery = query
+            .OrderByDescending(a => a.Date)
+            .ThenBy(a => a.SlotId)
+            .Skip(skip)
+            .Take(pageSize)
+            .Include(a => a.Slot)
+            .Include(a => a.User);
+
+        // Execute the paged query and project the results
+        var groupedByDate = await pagedQuery
+            .GroupBy(a => new { a.Date, a.SlotId })
+            .Select(g => new
+            {
+                Date = g.Key.Date,
+                SlotId = g.Key.SlotId,
+                AttendanceStats = new AttendanceStatisticResponse(
+                    g.Key.SlotId,
+                    g.Count(),
+                    g.Count(a => a.IsManufacture),
+                    g.Count(a => a.IsSalaryByProduct),
+                    g.Sum(a => a.HourOverTime),
+                    g.Count(a => a.IsAttendance)
+                )
+            })
+            .GroupBy(x => x.Date)
+            .Select(g => new AttendanceOverallResponse(
+                g.Key,
+                g.Select(x => x.AttendanceStats).ToList()
+            ))
+            .ToListAsync();
+
+        // Return the paginated results and total pages
+        return (groupedByDate, totalPages);
+    }
+
 
     public async Task<List<Attendance>> GetAttendancesByKeys(int slotId, DateOnly date, List<string> userIds)
     {

@@ -78,7 +78,14 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("AddressUnAccent")
+                        .HasColumnType("text");
+
                     b.Property<string>("CompanyType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyTypeUnAccent")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -86,21 +93,26 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("DirectorNameUnAccent")
+                        .HasColumnType("text");
+
                     b.Property<string>("DirectorPhone")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NameUnAccent")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.EmployeeProduct", b =>
@@ -249,7 +261,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
@@ -686,13 +698,42 @@ namespace Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("WareHouseId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("RoleId");
 
+                    b.HasIndex("WareHouseId");
+
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.WareHouse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WareHouse");
                 });
 
             modelBuilder.Entity("Domain.Entities.Attendance", b =>
@@ -763,7 +804,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
                     b.HasOne("Domain.Entities.Company", "Company")
-                        .WithMany("Order")
+                        .WithMany("Orders")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -905,14 +946,20 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.WareHouse", "WareHouse")
+                        .WithMany("Users")
+                        .HasForeignKey("WareHouseId");
+
                     b.Navigation("Company");
 
                     b.Navigation("Role");
+
+                    b.Navigation("WareHouse");
                 });
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
 
                     b.Navigation("Users");
                 });
@@ -994,6 +1041,11 @@ namespace Persistence.Migrations
                     b.Navigation("Attendances");
 
                     b.Navigation("EmployeeProducts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WareHouse", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

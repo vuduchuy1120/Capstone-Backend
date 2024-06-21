@@ -14,7 +14,7 @@ internal sealed class CreateAttendanceCommandHandler(
     {
         var createAttendanceRequest = request.CreateAttendanceRequest;
 
-        var attendance = Attendance.Create(createAttendanceRequest.CreateAttendance, createAttendanceRequest.SlotId, request.CreatedBy);
+        var attendance = Attendance.Create(createAttendanceRequest.CreateAttendance,createAttendanceRequest.Date, createAttendanceRequest.SlotId, request.CreatedBy);
 
         _attendanceRepository.AddAttendance(attendance);
         await _unitOfWork.SaveChangesAsync();

@@ -15,4 +15,4 @@ public record GetMaterialHistoriesByMaterialQuery(
     string? EndDateImport,
     int PageIndex = 1,
     int PageSize = 10
-    ) : IQuery<SearchResponse<List<MaterialHistoryResponse>>>;
+    ) : IQueryHandler<SearchResponse<List<MaterialHistoryResponse>>>;

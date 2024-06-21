@@ -8,4 +8,4 @@ using System.Threading.Tasks;
 
 namespace Contract.Services.Material.Query;
 
-public record GetMaterialByIdQuery(int Id) : IQuery<MaterialResponse>;
+public record GetMaterialByIdQuery(int Id) : IQueryHandler<MaterialResponse>;

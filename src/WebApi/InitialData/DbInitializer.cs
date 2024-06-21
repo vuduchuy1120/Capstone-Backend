@@ -26,18 +26,18 @@ public class DbInitializer
             SeedRoleData(context);
         }
 
-        if(!context.Companies.Any())
+        if (!context.Companies.Any())
         {
             SeedCompanyData(context);
         }
 
-        if(!context.Users.Any())
+        if (!context.Users.Any())
         {
             var passwordService = provider.GetService<IPasswordService>();
             SeedUserData(context, passwordService);
         }
 
-        if(!context.Slots.Any())
+        if (!context.Slots.Any())
         {
             SeedSlotData(context);
         }
@@ -74,10 +74,10 @@ public class DbInitializer
     {
         var companies = new List<Company>
         {
-            Company.Create(new CreateCompanyCommand("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", "FACTORY_01")),
-            Company.Create(new CreateCompanyCommand("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", "FACTORY_02")),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", "FACTORY_01"))),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin2@admin.com", "FACTORY_02"))),
         };
 
         context.Companies.AddRange(companies);

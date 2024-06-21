@@ -13,4 +13,4 @@ public record GetAttendanceOverallQuery(
     string? StartDate,
     string? EndDate,
     int PageIndex = 1,
-    int PageSize = 10) : IQuery<SearchResponse<List<AttendanceOverallResponse>>>;
+    int PageSize = 10) : IQueryHandler<SearchResponse<List<AttendanceOverallResponse>>>;

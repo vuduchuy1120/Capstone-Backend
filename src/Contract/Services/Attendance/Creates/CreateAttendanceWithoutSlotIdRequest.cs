@@ -3,6 +3,8 @@
 public record CreateAttendanceWithoutSlotIdRequest
 (
     string UserId,
-    bool IsManufacture,
-    bool IsSalaryByProduct
+    double HourOverTime,
+    bool IsAttendance,
+    bool IsSalaryByProduct,
+    bool IsManufacture
     );

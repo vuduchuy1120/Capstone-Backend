@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Contract.Abstractions.Messages;
 
-public interface IQuery<TResponse> : IRequest<Result.Success<TResponse>>
+public interface IQueryHandler<TResponse> : IRequest<Result.Success<TResponse>>
 {
 }

@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Role.GetRoles;
 
-public record GetRolesQuery : IQuery<List<RoleResponse>>;
+public record GetRolesQuery : IQueryHandler<List<RoleResponse>>;
