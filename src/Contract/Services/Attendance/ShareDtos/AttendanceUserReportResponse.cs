@@ -3,5 +3,5 @@
 public record AttendanceUserReportResponse
 (
     string Date,
-    List<AttedanceDateReport> AttedanceDateReports
+    AttedanceDateReport AttedanceDateReport
     );

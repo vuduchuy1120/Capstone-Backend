@@ -29,12 +29,13 @@ public sealed class GetAttendancesByMonthAndUserIdQueryHandler
                         .GroupBy(a => a.Date.ToString("dd/MM/yyyy"))
                         .Select(dateGroup => new AttendanceUserReportResponse(
                             Date: dateGroup.Key,
-                            AttedanceDateReports: dateGroup.Select(a => new AttedanceDateReport(
-                                SlotId: a.SlotId,
-                                IsPresent: a.IsAttendance,
-                                isSalaryByProduct: a.IsSalaryByProduct,
-                                isOverTime: a.IsOverTime
-                            )).ToList()
+                            AttedanceDateReport: new AttedanceDateReport(
+                                IsPresentSlot1: dateGroup.Any(a => a.SlotId == 1 && a.IsAttendance),
+                                IsPresentSlot2: dateGroup.Any(a => a.SlotId == 2 && a.IsAttendance),
+                                IsPresentSlot3: dateGroup.Any(a => a.SlotId == 3 && a.IsAttendance),
+                                IsSalaryByProduct: dateGroup.Any(a => a.IsSalaryByProduct),
+                                IsOverTime: dateGroup.Any(a => a.IsOverTime)
+                            )
                         )).ToList()
                 )).ToList();
 

@@ -2,9 +2,10 @@
 
 public record AttedanceDateReport
 (
-    int SlotId,
-    bool IsPresent,
-    bool isSalaryByProduct,
-    bool isOverTime
+    bool IsPresentSlot1,
+    bool IsPresentSlot2,
+    bool IsPresentSlot3,
+    bool IsSalaryByProduct,
+    bool IsOverTime
     );
 

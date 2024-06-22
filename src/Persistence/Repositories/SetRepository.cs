@@ -38,6 +38,16 @@ internal class SetRepository : ISetRepository
             .SingleOrDefaultAsync(s => s.Id == id);
     }
 
+    public async Task<bool> IsAllSetIdExistAsync(List<Guid?> setIds)
+    {
+        if (setIds.Count == 0)
+        {
+            return false;
+        }
+        var query = await _context.Sets.Where(s => setIds.Contains(s.Id)).ToListAsync();
+        return query.Count == setIds.Count;
+    }
+
     public async Task<bool> IsCodeExistAsync(string code)
     {
         return await _context.Sets.AnyAsync(s => s.Code == code);
