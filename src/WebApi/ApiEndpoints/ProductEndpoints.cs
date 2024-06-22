@@ -3,6 +3,7 @@ using Carter;
 using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.GetProduct;
 using Contract.Services.Product.GetProducts;
+using Contract.Services.Product.Search;
 using Contract.Services.Product.UpdateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,17 @@ public class ProductEndpoints : CarterModule
         app.MapGet(string.Empty, async (ISender sender, [AsParameters] GetProductsQuery getProductsQuery) =>
         {
             var result = await sender.Send(getProductsQuery);
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
+        });
+
+        app.MapGet("search", async (ISender sender, [FromQuery] string search) =>
+        {
+            var searchProductQuery = new SearchProductQuery(search);
+            var result = await sender.Send(searchProductQuery);
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
