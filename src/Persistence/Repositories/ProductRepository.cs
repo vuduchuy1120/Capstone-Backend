@@ -87,6 +87,22 @@ internal sealed class ProductRepository : IProductRepository
         return (products, totalPages);
     }
 
+    public async Task<List<Product>> SearchProductAsync(string search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+        {
+            return null;
+        }
+
+        return await _context.Products
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .AsSingleQuery()
+            .Where(p => p.Name.ToLower().Contains(search.ToLower()) 
+                || p.Code.ToLower().Contains(search.ToLower()))
+            .ToListAsync();
+    }
+
     public void Update(Product product)
     {
         _context.Products.Update(product);

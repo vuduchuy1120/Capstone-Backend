@@ -2,6 +2,7 @@
 using Contract.Services.Files.DeleteFile;
 using Contract.Services.Files.GetFile;
 using Contract.Services.Files.UploadFile;
+using Contract.Services.Files.UploadFiles;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -19,6 +20,17 @@ public class FileEndpoints : CarterModule
         {
             var uploadFileCommand = new UploadFileCommand(file, fileName);
             var result = await sender.Send(uploadFileCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new OpenApiTag { Name = "File API" } }
+        }).DisableAntiforgery();
+
+        app.MapPost(string.Empty, async (ISender sender, IFormFileCollection receivedFiles) =>
+        {
+            var uploadFilesCommand = new UploadFilesCommand(receivedFiles);
+            var result = await sender.Send(uploadFilesCommand);
 
             return Results.Ok(result);
         }).WithOpenApi(x => new OpenApiOperation(x)
