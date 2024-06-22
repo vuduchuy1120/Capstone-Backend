@@ -10,18 +10,19 @@ namespace Application.UserCases.Queries.Attendances;
 
 public sealed class GetAttendancesByMonthAndUserIdQueryHandler
     (IAttendanceRepository _attendanceRepository, IMapper _mapper
-    ) : IQueryHandler<GetAttendancesByMonthAndUserIdQuery, List<AttendanceUserReponse>>
+    ) : IQueryHandler<GetAttendancesByMonthAndUserIdQuery, AttendanceUserResponse>
 {
-    public async Task<Result.Success<List<AttendanceUserReponse>>> Handle(GetAttendancesByMonthAndUserIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result.Success<AttendanceUserResponse>> Handle(GetAttendancesByMonthAndUserIdQuery request, CancellationToken cancellationToken)
     {
         var attendances = await _attendanceRepository.GetAttendanceByMonthAndUserIdAsync(request.Month, request.Year, request.UserId);
         if (attendances is null || attendances.Count <= 0)
         {
             throw new AttendanceNotFoundException();
         }
-        var attendancesReponse = attendances
+        var attendanceResponse = attendances
+                .OrderBy(a => a.Date) 
                 .GroupBy(a => new { a.Date.Month, a.Date.Year, a.UserId })
-                .Select(group => new AttendanceUserReponse(
+                .Select(group => new AttendanceUserResponse(
                     Month: group.Key.Month,
                     Year: group.Key.Year,
                     UserId: group.Key.UserId,
@@ -37,8 +38,9 @@ public sealed class GetAttendancesByMonthAndUserIdQueryHandler
                                 IsOverTime: dateGroup.Any(a => a.IsOverTime)
                             )
                         )).ToList()
-                )).ToList();
+                )).FirstOrDefault();
 
-        return Result.Success<List<AttendanceUserReponse>>.Get(attendancesReponse);
+        return Result.Success<AttendanceUserResponse>.Get(attendanceResponse);
+
     }
 }

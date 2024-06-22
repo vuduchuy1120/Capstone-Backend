@@ -100,9 +100,9 @@ public class AttendanceEndpoints : CarterModule
 
         app.MapGet("/users/detail", async (
             ISender sender,
-            [AsParameters] GetAttendanceByUserIdSlotIdAndDateQuery getAttendanceByUserIdSlotIdAndDateQuery) =>
+            [AsParameters] GetAttendanceByUserIdAndDateQuery request) =>
         {
-            var result = await sender.Send(getAttendanceByUserIdSlotIdAndDateQuery);
+            var result = await sender.Send(request);
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {

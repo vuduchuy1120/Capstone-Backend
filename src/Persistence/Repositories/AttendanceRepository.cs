@@ -56,9 +56,9 @@ public class AttendanceRepository : IAttendanceRepository
         return query;
     }
 
-    public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDate(string userId, int slotId, DateOnly date)
+    public async Task<List<Attendance>> GetAttendanceByUserIdAndDateAsync(string userId, DateOnly date)
     {
-        var query = _context.Attendances
+        var query = await _context.Attendances
             .Include(a => a.User)
                 .ThenInclude(u => u.EmployeeProducts)
                 .ThenInclude(ep => ep.Product)
@@ -66,20 +66,9 @@ public class AttendanceRepository : IAttendanceRepository
             .Include(a => a.User)
                 .ThenInclude(u => u.EmployeeProducts)
                 .ThenInclude(ep => ep.Phase)
-            .Where(a => a.Date == date && a.SlotId == slotId && a.UserId.Equals(userId));
+            .Where(a => a.Date == date && a.UserId.Equals(userId)).ToListAsync();
 
-        return await query.FirstOrDefaultAsync();
-    }
-
-
-    public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDateAsync(string userId, int slotId, DateOnly date)
-    {
-        var attendance = await _context.Attendances
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.UserId.Equals(userId) &&
-                                        a.SlotId == (slotId) &&
-                                        a.Date == (date));
-        return attendance;
+        return query;
     }
 
     public async Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverall1Async(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
@@ -280,8 +269,8 @@ public class AttendanceRepository : IAttendanceRepository
 
     public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request)
     {
-       var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
-            
+        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
+
         var query = _context.Attendances
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)

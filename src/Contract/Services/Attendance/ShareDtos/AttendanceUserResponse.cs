@@ -1,6 +1,6 @@
 ﻿namespace Contract.Services.Attendance.ShareDtos;
 
-public record AttendanceUserReponse
+public record AttendanceUserResponse
 (
     int Month,
     int Year,

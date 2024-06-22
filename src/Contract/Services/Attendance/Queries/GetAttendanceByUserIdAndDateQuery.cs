@@ -3,6 +3,6 @@ using Contract.Services.Attendance.ShareDtos;
 
 namespace Contract.Services.Attendance.Queries;
 
-public record GetAttendanceByUserIdSlotIdAndDateQuery
-    (string UserId, int SlotId, string Date)
+public record GetAttendanceByUserIdAndDateQuery
+    (string UserId, string Date)
     : IQueryHandler<AttendanceUserDetailResponse>;
