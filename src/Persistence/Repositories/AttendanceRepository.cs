@@ -280,23 +280,16 @@ public class AttendanceRepository : IAttendanceRepository
 
     public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request)
     {
-        DateOnly formatedDate;
-        if (!string.IsNullOrWhiteSpace(request.Date))
-        {
-            formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
-        }
-        else
-        {
-            formatedDate = DateOnly.FromDateTime(DateTime.Now);
-        }
+       var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
+            
         var query = _context.Attendances
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)
-                .ThenInclude(p => p.Product)
-                .ThenInclude(p => p.Images)
+                    .ThenInclude(p => p.Product)
+                        .ThenInclude(p => p.Images)
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)
-                .ThenInclude(p => p.Phase)
+                    .ThenInclude(p => p.Phase)
             .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId);
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {

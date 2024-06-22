@@ -6,7 +6,7 @@ namespace Contract.Services.Attendance.Query;
 
 public record GetAttendancesQuery(
     string? SearchTerm,
-    string? Date,
+    string Date,
     int SlotId,
     int PageIndex = 1,
     int PageSize = 10) : IQueryHandler<SearchResponse<List<AttendanceResponse>>>;
