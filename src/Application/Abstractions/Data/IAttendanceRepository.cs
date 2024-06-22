@@ -22,4 +22,5 @@ public interface IAttendanceRepository
     void UpdateRange(List<Attendance> attendances);
     Task<bool> IsAttendanceAlreadyExisted(List<string> userIds, int slotId, DateOnly date);
     Task<List<Attendance>> GetAttendanceByMonthAndUserIdAsync(int month, int year, string userId);
+    Task<Attendance?> GetAttendanceByUserIdSlotIdAndDate(string userId, int slotId, DateOnly date);
 }

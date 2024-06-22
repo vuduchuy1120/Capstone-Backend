@@ -89,9 +89,20 @@ public class AttendanceEndpoints : CarterModule
         });
         app.MapGet("/users", async (
             ISender sender,
-                       [AsParameters] GetAttendancesByMonthAndUserIdQuery getAttendancesByMonthAndUserIdQuery) =>
+            [AsParameters] GetAttendancesByMonthAndUserIdQuery getAttendancesByMonthAndUserIdQuery) =>
         {
             var result = await sender.Send(getAttendancesByMonthAndUserIdQuery);
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
+        });
+
+        app.MapGet("/users/detail", async (
+            ISender sender,
+            [AsParameters] GetAttendanceByUserIdSlotIdAndDateQuery getAttendanceByUserIdSlotIdAndDateQuery) =>
+        {
+            var result = await sender.Send(getAttendanceByUserIdSlotIdAndDateQuery);
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {

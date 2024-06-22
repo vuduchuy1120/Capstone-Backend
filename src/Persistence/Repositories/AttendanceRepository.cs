@@ -4,6 +4,7 @@ using Contract.Abstractions.Shared.Search;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.ShareDto;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -54,6 +55,22 @@ public class AttendanceRepository : IAttendanceRepository
             .ToListAsync();
         return query;
     }
+
+    public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDate(string userId, int slotId, DateOnly date)
+    {
+        var query = _context.Attendances
+            .Include(a => a.User)
+                .ThenInclude(u => u.EmployeeProducts)
+                .ThenInclude(ep => ep.Product)
+                .ThenInclude(p => p.Images)
+            .Include(a => a.User)
+                .ThenInclude(u => u.EmployeeProducts)
+                .ThenInclude(ep => ep.Phase)
+            .Where(a => a.Date == date && a.SlotId == slotId && a.UserId.Equals(userId));
+
+        return await query.FirstOrDefaultAsync();
+    }
+
 
     public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDateAsync(string userId, int slotId, DateOnly date)
     {
