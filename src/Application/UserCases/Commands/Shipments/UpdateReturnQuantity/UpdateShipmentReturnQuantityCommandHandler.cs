@@ -7,7 +7,6 @@ using Domain.Abstractions.Exceptions;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
 using FluentValidation;
-using MediatR;
 
 namespace Application.UserCases.Commands.Shipments.UpdateReturnQuantity;
 
@@ -55,7 +54,7 @@ internal sealed class UpdateShipmentReturnQuantityCommandHandler(
             if (updateReturnQuantityDictionary.TryGetValue(shipmentDetail.Id, out var updateRequest))
             {
                 //get and update quantity in product phase
-                shipmentDetail.UpdateReturnQuantity(updateRequest.Quantity);
+                //shipmentDetail.UpdateReturnQuantity(updateRequest.Quantity);
             }
             else
             {

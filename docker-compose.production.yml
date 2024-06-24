@@ -31,7 +31,7 @@ services:
     container_name: capstone
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=postgres:5432;User Id=postgres;Password=postgres;Database=CapstoneProject
+      - ConnectionStrings__DefaultConnection=Server=postgres-capstone:5432;User Id=postgres;Password=postgres;Database=CapstoneProject
       - ConnectionStrings__Redis=redis:6379
       - Jwt__Issuer=http://capstone:7001
       - Jwt__Audience=http://capstone:7001

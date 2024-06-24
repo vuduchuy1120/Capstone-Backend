@@ -18,7 +18,7 @@ public class ShipmentDetail : EntityBase<Guid>
     public Set? Set { get; private set; }
     public MaterialHistory? MaterialHistory { get; private set; }
     public int Quantity { get; private set; }
-    public int ReturnQuantity { get; private set; }
+    public ProductPhaseType ProductPhaseType { get; set; }
     private ShipmentDetail() { }
 
     public static ShipmentDetail CreateShipmentProductDetail(
@@ -31,7 +31,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ProductId = itemId,
             PhaseId = phaseId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
     }
 
@@ -45,7 +44,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ProductId = itemId,
             PhaseId = phaseId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
     }
 
@@ -58,7 +56,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ShipmentId = shipId,
             SetId = itemId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
     }
 
@@ -71,7 +68,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ShipOrderId = shipId,
             SetId = itemId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
     }
 
@@ -84,7 +80,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ShipmentId = shipId,
             MaterialHistoryId = itemId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
     }
 
@@ -97,12 +92,6 @@ public class ShipmentDetail : EntityBase<Guid>
             ShipOrderId = shipId,
             MaterialHistoryId = itemId,
             Quantity = quantity,
-            ReturnQuantity = 0
         };
-    }
-
-    public void UpdateReturnQuantity(int returnQuantity)
-    {
-        ReturnQuantity = returnQuantity;
     }
 }
