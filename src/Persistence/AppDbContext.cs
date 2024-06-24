@@ -84,8 +84,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasForeignKey(sp => sp.SetId);
 
         modelBuilder.Entity<ProductPhase>()
-            .HasKey(ph => new { ph.PhaseId, ph.ProductId });
-
+            .HasKey(ph => new { ph.PhaseId, ph.ProductId, ph.CompanyId });
 
         modelBuilder.Entity<ProductPhase>()
             .HasOne(ph => ph.Phase)
@@ -96,6 +95,12 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(ph => ph.Product)
             .WithMany(ph => ph.ProductPhases)
             .HasForeignKey(pc => pc.ProductId);
+
+        modelBuilder.Entity<ProductPhase>()
+            .HasOne(ph => ph.Company)
+            .WithMany(ph => ph.ProductPhases)
+            .HasForeignKey(pc => pc.CompanyId);
+
         modelBuilder.Entity<EmployeeProduct>().ToTable("EmployeeProducts");
 
         modelBuilder.Entity<EmployeeProduct>()

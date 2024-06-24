@@ -13,6 +13,7 @@ public class Company : EntityBase<Guid>
     public string CompanyType {  get; set; }
     public List<Order>? Order { get; set; }
     public List<User>? Users { get; set; }
+    public List<ProductPhase>? ProductPhases { get; set; }
 
     public static Company Create(CreateCompanyCommand request)
     {
