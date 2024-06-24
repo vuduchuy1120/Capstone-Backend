@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240624065104_updateShipEntity")]
-    partial class updateShipEntity
+    [Migration("20240624085849_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,9 +81,8 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CompanyType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("DirectorName")
                         .IsRequired()
@@ -382,13 +381,18 @@ namespace Persistence.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("SalaryPerProduct")
                         .HasColumnType("numeric");
 
-                    b.HasKey("PhaseId", "ProductId");
+                    b.HasKey("PhaseId", "ProductId", "CompanyId");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ProductId");
 
@@ -832,6 +836,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ProductPhase", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("ProductPhases")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Phase", "Phase")
                         .WithMany("ProductPhases")
                         .HasForeignKey("PhaseId")
@@ -843,6 +853,8 @@ namespace Persistence.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Company");
 
                     b.Navigation("Phase");
 
@@ -877,7 +889,7 @@ namespace Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "Shipper")
-                        .WithMany()
+                        .WithMany("ShipOrders")
                         .HasForeignKey("ShipperId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -890,7 +902,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
                     b.HasOne("Domain.Entities.User", "Shipper")
-                        .WithMany()
+                        .WithMany("Shipments")
                         .HasForeignKey("ShipperId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -959,6 +971,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
                     b.Navigation("Order");
+
+                    b.Navigation("ProductPhases");
 
                     b.Navigation("Users");
                 });
@@ -1040,6 +1054,10 @@ namespace Persistence.Migrations
                     b.Navigation("Attendances");
 
                     b.Navigation("EmployeeProducts");
+
+                    b.Navigation("ShipOrders");
+
+                    b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618
         }

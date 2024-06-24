@@ -11,4 +11,5 @@ public interface ISetRepository
     Task<Set?> GetByIdAsync(Guid id);
     Task<Set?> GetByIdWithoutSetProductAsync(Guid id);
     Task<(List<Set>, int)> SearchSetAsync(GetSetsQuery request);
+    Task<bool> IsAllSetExistAsync(List<Guid> ids);
 }
