@@ -28,10 +28,6 @@ internal sealed class CreateShipmentCommandHandler(
 
         var shipmentDetails = CreateShipmentDetails(createShipmentRequest.ShipmentDetailRequests, shipment.Id);
 
-        // Change quantity in product phase
-        // Nếu from Id là third party company và to Id là factory
-        // thì sẽ trừ các phase cũ và cộng các phase mới
-
         _shipmentRepository.Add(shipment);
         _shipmentDetailRepository.AddRange(shipmentDetails);
 
@@ -59,10 +55,7 @@ internal sealed class CreateShipmentCommandHandler(
 
     private Shipment CreateShipment(CreateShipmentRequest createShipmentRequest, string createdBy)
     {
-        return Shipment.Create(
-            createShipmentRequest.FromId,
-            createShipmentRequest.ToId,
-            createdBy);
+        return Shipment.Create( createShipmentRequest, createdBy);
     }
 
     private ShipmentDetail CreateShipmentDetail(ShipmentDetailRequest request, Guid shipmentId)
@@ -70,13 +63,13 @@ internal sealed class CreateShipmentCommandHandler(
         switch (request.KindOfShip)
         {
             case KindOfShip.SHIP_FACTORY_PRODUCT:
-                return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request.ItemId, request.PhaseId, request.Quantity);
+                return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
 
             case KindOfShip.SHIP_FACTORY_SET:
-                return ShipmentDetail.CreateShipmentSetDetail(shipmentId, request.ItemId, request.Quantity);
+                return ShipmentDetail.CreateShipmentSetDetail(shipmentId, request);
 
             case KindOfShip.SHIP_FACTORY_MATERIAL:
-                return ShipmentDetail.CreateShipmentMaterialDetail (shipmentId, request.ItemId, request.Quantity);
+                return ShipmentDetail.CreateShipmentMaterialDetail (shipmentId, request);
 
             default:
                 throw new KindOfShipNotFoundException();

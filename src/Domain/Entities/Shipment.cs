@@ -1,4 +1,5 @@
-﻿using Contract.Services.Shipment.Share;
+﻿using Contract.Services.Shipment.Create;
+using Contract.Services.Shipment.Share;
 using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
@@ -16,14 +17,17 @@ public class Shipment : EntityAuditBase<Guid>
     {
     }
 
-    public static Shipment Create(Guid fromId, Guid toId, string createdBy)
+    public static Shipment Create(CreateShipmentRequest request, string createdBy)
     {
         return new()
         {
-            FromId = fromId,
-            ToId = toId,
+            Id = Guid.NewGuid(),
+            FromId = request.FromId,
+            ToId = request.ToId,
             CreatedBy = createdBy,
             CreatedDate = DateTime.UtcNow,
+            ShipperId = request.ShipperId,
+            ShipDate = request.ShipDate,
         };
     }
 

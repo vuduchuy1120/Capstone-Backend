@@ -22,40 +22,42 @@ public class ShipmentDetail : EntityBase<Guid>
     private ShipmentDetail() { }
 
     public static ShipmentDetail CreateShipmentProductDetail(
-        Guid shipId, Guid itemId, Guid? phaseId, int quantity)
+        Guid shipmentId, ShipmentDetailRequest request)
     {
         return new()
         {
             Id = Guid.NewGuid(),
-            ShipmentId = shipId,
-            ProductId = itemId,
-            PhaseId = phaseId,
-            Quantity = quantity,
+            ShipmentId = shipmentId,
+            ProductId = request.ItemId,
+            PhaseId = request.PhaseId,
+            Quantity = request.Quantity,
+            ProductPhaseType = request.ProductPhaseType,
         };
     }
 
     public static ShipmentDetail CreateShipOrderProductDetail(
-        Guid shipId, Guid itemId, Guid? phaseId, int quantity)
+        Guid shipId, ShipmentDetailRequest request)
     {
         return new()
         {
             Id = Guid.NewGuid(),
             ShipOrderId = shipId,
-            ProductId = itemId,
-            PhaseId = phaseId,
-            Quantity = quantity,
+            ProductId = request.ItemId,
+            PhaseId = request.PhaseId,
+            Quantity = request.Quantity,
+            ProductPhaseType = request.ProductPhaseType,
         };
     }
 
     public static ShipmentDetail CreateShipmentSetDetail(
-        Guid shipId, Guid itemId, int quantity)
+        Guid shipId, ShipmentDetailRequest request)
     {
         return new()
         {
             Id = Guid.NewGuid(),
             ShipmentId = shipId,
-            SetId = itemId,
-            Quantity = quantity,
+            SetId = request.ItemId,
+            Quantity = request.Quantity,
         };
     }
 
@@ -72,26 +74,15 @@ public class ShipmentDetail : EntityBase<Guid>
     }
 
     public static ShipmentDetail CreateShipmentMaterialDetail(
-        Guid shipId, Guid itemId, int quantity)
+        Guid shipId, ShipmentDetailRequest request)
     {
         return new()
         {
             Id = Guid.NewGuid(),
             ShipmentId = shipId,
-            MaterialHistoryId = itemId,
-            Quantity = quantity,
+            MaterialHistoryId = request.ItemId,
+            Quantity = request.Quantity,
         };
     }
 
-    public static ShipmentDetail CreateShipOrderMaterialDetail(
-        Guid shipId, Guid itemId, int quantity)
-    {
-        return new()
-        {
-            Id = Guid.NewGuid(),
-            ShipOrderId = shipId,
-            MaterialHistoryId = itemId,
-            Quantity = quantity,
-        };
-    }
 }

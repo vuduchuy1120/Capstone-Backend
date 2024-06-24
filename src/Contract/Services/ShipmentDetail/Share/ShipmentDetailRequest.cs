@@ -4,5 +4,6 @@ public record ShipmentDetailRequest(
     Guid ItemId,
     Guid? PhaseId, 
     int Quantity,
-    KindOfShip KindOfShip);
+    KindOfShip KindOfShip,
+    ProductPhaseType ProductPhaseType);
 

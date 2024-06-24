@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Contract.Services.Company.Create;
+using Contract.Services.Company.Shared;
 using Contract.Services.Role.Create;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
@@ -75,9 +76,13 @@ public class DbInitializer
         var companies = new List<Company>
         {
             Company.Create(new CreateCompanyCommand("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", "FACTORY_01")),
+            "0976099789", "admin@admin.com", CompanyType.FACTORY)),
             Company.Create(new CreateCompanyCommand("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", "FACTORY_02")),
+            "0976099789", "admin@admin.com", CompanyType.FACTORY)),
+             Company.Create(new CreateCompanyCommand("Công ty đối tác sản xuất", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", CompanyType.THIRD_PARTY_COMPANY)),
+              Company.Create(new CreateCompanyCommand("Công ty cổ phần ABC", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", CompanyType.CUSTOMER_COMPANY)),
         };
 
         context.Companies.AddRange(companies);
@@ -87,7 +92,7 @@ public class DbInitializer
     public static void SeedUserData(AppDbContext context, IPasswordService passwordService)
     {
         var adminRole = context.Roles.FirstOrDefault();
-        var companyId = context.Companies.FirstOrDefault(c => c.CompanyType == "FACTORY_01").Id;
+        var companyId = context.Companies.FirstOrDefault(c => c.CompanyType == CompanyType.FACTORY).Id;
         var userCreateRequest = new CreateUserRequest(
             "001201011091",
             "Son",

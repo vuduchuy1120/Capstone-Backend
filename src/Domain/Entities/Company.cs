@@ -1,4 +1,5 @@
 ﻿using Contract.Services.Company.Create;
+using Contract.Services.Company.Shared;
 using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
@@ -10,7 +11,7 @@ public class Company : EntityBase<Guid>
     public string DirectorName { get; set; }
     public string DirectorPhone { get; set; }
     public string Email { get; set; }
-    public string CompanyType {  get; set; }
+    public CompanyType CompanyType {  get; set; }
     public List<Order>? Order { get; set; }
     public List<User>? Users { get; set; }
     public List<ProductPhase>? ProductPhases { get; set; }

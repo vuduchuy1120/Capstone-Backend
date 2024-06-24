@@ -78,9 +78,8 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CompanyType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("DirectorName")
                         .IsRequired()

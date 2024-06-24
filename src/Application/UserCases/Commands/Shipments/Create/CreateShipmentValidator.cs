@@ -10,11 +10,13 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
     public CreateShipmentValidator(
         ICompanyRepository companyRepository,
         IProductRepository productRepository, 
-        ISetRepository setRepository)
+        ISetRepository setRepository,
+        IUserRepository userRepository)
     {
         RuleFor(req => req.FromId)
             .MustAsync(async (fromId, _) =>
             {
+                // check company is not CUSTOMER_COMPANY
                 return await companyRepository.IsCompanyExistAsync(fromId);
             }).WithMessage("Công ty không tồn tại");
 
@@ -29,6 +31,22 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             {
                 return await companyRepository.IsCompanyExistAsync(ToId);
             }).WithMessage("Công ty không tồn tại");
+
+        RuleFor(req => req.ShipperId)
+            .NotEmpty().WithMessage("Không được để trống người giao hàng")
+            .Matches(@"^\d{12}$").WithMessage("Id must be exactly 12 digits")
+            .MustAsync(async (id, _) =>
+            {
+                //check is id input is ShipperID
+                return await userRepository.IsUserActiveAsync(id);
+            }).WithMessage("Người giao hàng không tồn tại");
+
+        RuleFor(req => req.ShipDate)
+            .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
+            .Must((req, shipDate) =>
+            {
+                return shipDate >= DateTime.UtcNow;
+            }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
 
         RuleForEach(req => req.ShipmentDetailRequests)
             .NotNull().WithMessage("Vật phẩm giao không được để trống")

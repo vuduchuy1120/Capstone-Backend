@@ -15,7 +15,7 @@ internal class ShipmentDetailRepository : IShipmentDetailRepository
 
     public void AddRange(List<ShipmentDetail> shipmentDetails)
     {
-        _context.AddRange(shipmentDetails);
+        _context.ShipmentDetails.AddRange(shipmentDetails);
     }
 
     public async Task<List<ShipmentDetail>> GetByShipmentIdAndIdsAsync(Guid shipmentId, List<Guid> shipDetailIds)
