@@ -9,6 +9,8 @@ public class ProductPhase
     public Guid PhaseId { get; set; }
     public int Quantity { get; set; }
     public decimal SalaryPerProduct { get; set; }
+    public Guid CompanyId { get; set; }
+    public Company Company { get; set; }
     public Product Product { get; set; }
     public Phase Phase { get; set; }
 

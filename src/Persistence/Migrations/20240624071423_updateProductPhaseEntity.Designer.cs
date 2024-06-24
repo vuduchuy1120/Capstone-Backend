@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence;
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624071423_updateProductPhaseEntity")]
+    partial class updateProductPhaseEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,7 +391,7 @@ namespace Persistence.Migrations
                     b.Property<decimal>("SalaryPerProduct")
                         .HasColumnType("numeric");
 
-                    b.HasKey("PhaseId", "ProductId", "CompanyId");
+                    b.HasKey("PhaseId", "ProductId");
 
                     b.HasIndex("CompanyId");
 
