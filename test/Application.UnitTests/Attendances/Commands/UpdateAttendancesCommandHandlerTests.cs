@@ -171,8 +171,8 @@ public class UpdateAttendancesCommandHandlerTests
         _userRepositoryMock.Setup(x => x.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
 
         //check if attendance exist
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-                           It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(new Attendance());
+        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdAndDateAsync(
+                           It.IsAny<string>(), It.IsAny<DateOnly>())).ReturnsAsync(new List<Attendance>());
         // Assert
         if (expectException)
         {
@@ -215,9 +215,9 @@ public class UpdateAttendancesCommandHandlerTests
         var command = new UpdateAttendancesCommand(request, "001201011091");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-            It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>()
-        )).ReturnsAsync(new Mock<Attendance>().Object);
+        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdAndDateAsync(
+            It.IsAny<string>(), It.IsAny<DateOnly>()
+        )).ReturnsAsync(new Mock<List<Attendance>>().Object);
         _userRepositoryMock.Setup(x => x.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(false);
 
         // Act
@@ -256,9 +256,9 @@ public class UpdateAttendancesCommandHandlerTests
         var command = new UpdateAttendancesCommand(request, "001201011091");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
-        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdSlotIdAndDateAsync(
-                       It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>()
-                              )).ReturnsAsync(new Mock<Attendance>().Object);
+        _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdAndDateAsync(
+                       It.IsAny<string>(), It.IsAny<DateOnly>()
+                              )).ReturnsAsync(new Mock<List<Attendance>>().Object);
         _attendanceRepositoryMock.Setup(x => x.IsCanUpdateAttendance(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateOnly>())).ReturnsAsync(false);
         _userRepositoryMock.Setup(x => x.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
 

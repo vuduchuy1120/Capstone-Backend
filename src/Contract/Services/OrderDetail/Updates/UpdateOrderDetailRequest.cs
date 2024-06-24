@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Contract.Services.OrderDetail.Creates;
 
-namespace Contract.Services.OrderDetail.Updates
-{
-    internal class UpdateOrderDetailRequest
-    {
-    }
-}
+namespace Contract.Services.OrderDetail.Updates;
+
+public record UpdateOrderDetailRequest
+(   Guid OrderDetailId,
+    List<OrderDetailRequest> OrderDetailRequests
+    );

@@ -19,7 +19,14 @@ public sealed class CreateAttendancesValidator : AbstractValidator<CreateAttenda
            }
 
            return true;
-       }).WithMessage("Date must be a valid date in the format dd/MM/yyyy");
+       }).WithMessage("Date must be a valid date in the format dd/MM/yyyy")
+        .Must(Date =>
+        {
+            var formatedDate = DateUtil.ConvertStringToDateTimeOnly(Date);
+            var dateNow = DateOnly.FromDateTime(DateTime.Now);
+            return formatedDate <= dateNow;
+        }).WithMessage("Date must be less than or equal to today");
+
         RuleFor(req => req.CreateAttendances)
             .NotEmpty().WithMessage("CreateAttendances is required")
             .Must(x => x.Count > 0).WithMessage("CreateAttendances is required");

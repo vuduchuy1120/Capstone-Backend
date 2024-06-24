@@ -12,11 +12,11 @@ public class Order : EntityAuditBase<Guid>
     public string Status { get; set; }
     public DateOnly? StartOrder { get; set; }
     public DateOnly? EndOrder { get; set; }
-    public Company Company { get; set; }    
+    public Company Company { get; set; }
     public List<OrderDetail>? OrderDetails { get; set; }
     public List<ShipOrder>? ShipOrders { get; set; }
 
-    public static Order Create(CreateOrderRequest request)
+    public static Order Create(CreateOrderRequest request, string CreatedBy)
     {
         return new Order
         {
@@ -24,15 +24,19 @@ public class Order : EntityAuditBase<Guid>
             CompanyId = request.CompanyId,
             Status = request.Status,
             StartOrder = ConvertStringToDateTimeOnly(request.StartOrder),
-            EndOrder = ConvertStringToDateTimeOnly(request.EndOrder)
+            EndOrder = ConvertStringToDateTimeOnly(request.EndOrder),
+            CreatedBy = CreatedBy,
+            CreatedDate = DateTime.UtcNow
         };
     }
-    public void Update(UpdateOrderRequest request)
+    public void Update(UpdateOrderRequest request, string UpdatedBy)
     {
         CompanyId = request.CompanyId;
         Status = request.Status;
         StartOrder = ConvertStringToDateTimeOnly(request.StartOrder);
         EndOrder = ConvertStringToDateTimeOnly(request.EndOrder);
+        UpdatedBy = UpdatedBy;
+        UpdatedDate = DateTime.UtcNow;
     }
     private static DateOnly ConvertStringToDateTimeOnly(string dateString)
     {

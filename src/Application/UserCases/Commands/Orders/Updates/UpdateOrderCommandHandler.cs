@@ -28,7 +28,7 @@ public sealed class UpdateOrderCommandHandler
                throw new MyValidationException("Order does not exist.");
         }
 
-        order.Update(request.UpdateOrderRequest);
+        order.Update(request.UpdateOrderRequest,request.UpdatedBy);
         _orderRepository.UpdateOrder(order);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

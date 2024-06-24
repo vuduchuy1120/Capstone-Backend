@@ -28,7 +28,7 @@ public sealed class CreateOrderCommandHandler
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        var oder = Order.Create(request.CreateOrderRequest);
+        var oder = Order.Create(request.CreateOrderRequest, request.CreatedBy);
 
         _orderRepository.AddOrder(oder);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

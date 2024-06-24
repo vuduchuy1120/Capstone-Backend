@@ -2,7 +2,8 @@
 
 public record OrderDetailRequest
 (
-    Guid? ProductId,
-    Guid? SetId,
-    int Quantity
+    Guid ProductIdOrSetId,
+    int Quantity,
+    decimal UnitPrice,
+    bool isProductId
     );

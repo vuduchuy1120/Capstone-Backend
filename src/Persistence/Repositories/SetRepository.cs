@@ -38,7 +38,7 @@ internal class SetRepository : ISetRepository
             .SingleOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<bool> IsAllSetIdExistAsync(List<Guid?> setIds)
+    public async Task<bool> IsAllSetIdExistAsync(List<Guid> setIds)
     {
         if (setIds.Count == 0)
         {

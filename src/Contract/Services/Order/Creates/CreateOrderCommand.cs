@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Order.Creates;
 
-public record CreateOrderCommand(CreateOrderRequest CreateOrderRequest) : ICommand;
+public record CreateOrderCommand(CreateOrderRequest CreateOrderRequest, string CreatedBy) : ICommand;

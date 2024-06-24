@@ -2,8 +2,8 @@
 
 public record OrderResponse
 (
-    Guid OrderId,
+    Guid Id,
     Guid CompanyId,
     string Status,
-    string StartOrder,
-    string EndOrder);
+    DateOnly? StartOrder,
+    DateOnly? EndOrder);

@@ -36,17 +36,6 @@ internal sealed class ProductRepository : IProductRepository
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<bool> IsAllProductIdsCanNullExistAsync(List<Guid?> productIds)
-    {
-        if(productIds == null || productIds.Count == 0)
-        {
-            return false;
-        }
-        var existingProductCount = await _context.Products
-            .CountAsync(p => productIds.Contains(p.Id));
-        return existingProductCount == productIds.Count;
-    }
-
     public async Task<bool> IsAllProductIdsExistAsync(List<Guid> productIds)
     {
         var existingProductCount = await _context.Products

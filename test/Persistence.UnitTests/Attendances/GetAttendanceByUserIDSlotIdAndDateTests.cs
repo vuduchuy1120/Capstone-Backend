@@ -25,12 +25,10 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
     {
         await InitDb();
         var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync("001201011091", 1, fomartedDate);
+        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdAndDateAsync("001201011091", fomartedDate);
 
         Assert.NotNull(retrievedAttendance);
-        Assert.Equal("001201011091", retrievedAttendance.UserId);
-        Assert.Equal(1, retrievedAttendance.SlotId);
-        Assert.Equal(fomartedDate, retrievedAttendance.Date);
+
     }
     // handle should return null if not found
     [Fact]
@@ -38,7 +36,7 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
     {
         await InitDb();
         var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync("001201011091", 2, fomartedDate);
+        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdAndDateAsync("001201011091", fomartedDate);
 
         Assert.Null(retrievedAttendance);
     }

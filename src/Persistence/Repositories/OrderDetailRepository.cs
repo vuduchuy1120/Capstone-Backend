@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.OrderDetail.Queries;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -33,13 +35,62 @@ public class OrderDetailRepository : IOrderDetailRepository
 
     public async Task<List<OrderDetail>> GetOrderDetailsByOrderIdAsync(Guid id)
     {
-        return await _context.OrderDetails.Where(x => x.OrderId.Equals(id)).ToListAsync();
+        return await _context.OrderDetails
+            .Include(x => x.Product).ThenInclude(x => x.Images)
+            .Include(x => x.Set).ThenInclude(x => x.SetProducts).ThenInclude(x => x.Product).ThenInclude(x => x.Images)
+            .Where(x => x.OrderId.Equals(id)).ToListAsync();
+    }
+
+    public async Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid?> productIds)
+    {
+        if (productIds == null || !productIds.Any())
+        {
+            throw new ArgumentException("ProductIds must contain at least one ID.", nameof(productIds));
+        }
+
+        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && productIds.Contains(x.ProductId));
+
+        var count = await query.CountAsync();
+
+        return count == productIds.Count();
+
+    }
+
+    public async Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid?> setIds)
+    {
+        if (setIds == null || !setIds.Any())
+        {
+            throw new ArgumentException("SetIds must contain at least one ID.", nameof(setIds));
+        }
+        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && setIds.Contains(x.SetId));
+        var count = await query.CountAsync();
+        return (count == setIds.Count());
     }
 
     public async Task<bool> IsOrderDetailExistedAsync(Guid id)
     {
         return await _context.OrderDetails.AnyAsync(x => x.Id.Equals(id));
     }
+
+    //public async Task<(List<OrderDetail>?, int)> SearchByOrderId(GetOrderDetailsByOrderIdQuery request)
+    //{
+    //    var query = _context.OrderDetails
+    //    .Include(x => x.Product).ThenInclude(x => x.Images)
+    //    .Include(x => x.Set)
+    //    .Where(x => x.OrderId.Equals(request.OrderId))
+    //    .AsQueryable();
+
+    //    var totalItems = await query.CountAsync();
+
+    //    int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
+
+    //    var orderDetails = await query
+    //    .Skip((request.PageIndex - 1) * request.PageSize)
+    //    .Take(request.PageSize)
+    //        .ToListAsync();
+
+    //    return (orderDetails, totalPages);
+    //}
 
     public void UpdateRange(List<OrderDetail> orderDetails)
     {
