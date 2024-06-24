@@ -1,4 +1,5 @@
-﻿using Domain.Abstractions.Entities;
+﻿using Contract.Services.ShipmentDetail.Share;
+using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
 
@@ -17,5 +18,5 @@ public class ShipmentDetail : EntityBase<Guid>
     public Set? Set { get; set; }
     public MaterialHistory? MaterialHistory { get; set; }
     public int Quantity { get; set; }
-    public int ReturnQuantity { get; set; }
+    public ProductPhaseType ProductPhaseType { get; set; }
 }
