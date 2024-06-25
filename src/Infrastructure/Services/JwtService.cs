@@ -49,7 +49,8 @@ internal class JwtService : IJwtService
         {
             new Claim("UserID", user.Id),
             new Claim("UserName", user.FirstName + " " + user.LastName),
-            new Claim("Role", user.Role.RoleName)
+            new Claim("Role", user.Role.RoleName),
+            new Claim("CompanyID", user.CompanyId.ToString())
         };
 
         var signingCredentials = new SigningCredentials(

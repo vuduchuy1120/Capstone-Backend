@@ -32,6 +32,7 @@ public class UpdateAttendancesCommandHandlerTests
         );
         _handler = new UpdateAttendancesCommandHandler(
             _attendanceRepositoryMock.Object,
+            _userRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _validator
         );
@@ -43,6 +44,7 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/06/2024",
 
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
@@ -67,7 +69,7 @@ public class UpdateAttendancesCommandHandlerTests
             }
         );
 
-        var command = new UpdateAttendancesCommand(request, "001201011091");
+        var command = new UpdateAttendancesCommand(request, "001201011091", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),"MAIN_ADMIN");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
         _attendanceRepositoryMock.Setup(x => x.IsAllAttendancesExist(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<List<string>>())).ReturnsAsync(true);
@@ -94,6 +96,7 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -116,7 +119,7 @@ public class UpdateAttendancesCommandHandlerTests
             }
         );
 
-        var command = new UpdateAttendancesCommand(request, "001201011091");
+        var command = new UpdateAttendancesCommand(request, "001201011091", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),"MAIN_ADMIN");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(false);
 
@@ -150,6 +153,7 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: slotId,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: date,
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -164,7 +168,7 @@ public class UpdateAttendancesCommandHandlerTests
             }
         );
 
-        var command = new UpdateAttendancesCommand(request, "001201011091");
+        var command = new UpdateAttendancesCommand(request, "001201011091", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"), "MAIN_ADMIN");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
         //check if user exist
@@ -190,6 +194,7 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -212,7 +217,7 @@ public class UpdateAttendancesCommandHandlerTests
             }
         );
 
-        var command = new UpdateAttendancesCommand(request, "001201011091");
+        var command = new UpdateAttendancesCommand(request, "001201011091", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"), "MAIN_ADMIN");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
         _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdAndDateAsync(
@@ -232,6 +237,7 @@ public class UpdateAttendancesCommandHandlerTests
     {
         var request = new UpdateAttendancesRequest(
              SlotId: 2,
+             CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
              Date: "01/06/2024",
              UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
              {
@@ -253,7 +259,7 @@ public class UpdateAttendancesCommandHandlerTests
                     )
              });
 
-        var command = new UpdateAttendancesCommand(request, "001201011091");
+        var command = new UpdateAttendancesCommand(request, "001201011091", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"), "MAIN_ADMIN");
 
         _slotRepositoryMock.Setup(x => x.IsSlotExisted(It.IsAny<int>())).ReturnsAsync(true);
         _attendanceRepositoryMock.Setup(x => x.GetAttendanceByUserIdAndDateAsync(

@@ -49,7 +49,7 @@ namespace Persistence.UnitTests.Attendances
             await _context.SaveChangesAsync();
 
             var slotId = 1;
-            var date = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.ToString("dd/MM/yyyy"));
+            var date = DateUtil.ConvertStringToDateTimeOnly("01/01/2004");
             var userIds = new List<string> { "001201011091", "034202001936" };
 
             // Act

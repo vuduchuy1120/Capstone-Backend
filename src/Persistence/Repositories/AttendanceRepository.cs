@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
 using Contract.Abstractions.Shared.Search;
+using Contract.Services.Attendance.Queries;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.ShareDto;
 using Domain.Entities;
@@ -267,8 +268,9 @@ public class AttendanceRepository : IAttendanceRepository
         return Task.FromResult(true);
     }
 
-    public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request)
+    public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendanceRequest request)
     {
+
         var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
 
         var query = _context.Attendances
@@ -279,7 +281,7 @@ public class AttendanceRepository : IAttendanceRepository
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)
                     .ThenInclude(p => p.Phase)
-            .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId);
+            .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId && a.User.CompanyId == request.CompanyId);
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(attendance => (attendance.User.FirstName + ' ' + attendance.User.LastName).Contains(request.SearchTerm));

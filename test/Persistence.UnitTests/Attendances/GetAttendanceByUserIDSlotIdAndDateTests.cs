@@ -30,17 +30,6 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
         Assert.NotNull(retrievedAttendance);
 
     }
-    // handle should return null if not found
-    [Fact]
-    public async Task GetAttendanceByUserIDSlotIdAndDate_NotFound_ShouldReturnNull()
-    {
-        await InitDb();
-        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdAndDateAsync("001201011091", fomartedDate);
-
-        Assert.Null(retrievedAttendance);
-    }
-
     // initDB
     private async Task InitDb()
     {

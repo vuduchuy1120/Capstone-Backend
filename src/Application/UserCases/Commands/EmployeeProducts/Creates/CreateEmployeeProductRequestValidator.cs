@@ -49,6 +49,12 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
                     var phaseIds = createQuantityProducts.Select(c => c.PhaseId).Distinct().ToList();
                     return await phaseRepository.IsAllPhaseExistByIdAsync(phaseIds);
                 }).WithMessage("PhaseIds are invalid");
+            RuleFor(req => req.CreateQuantityProducts)
+                .MustAsync(async (request,createQuantityProducts, cancellationToken) =>
+                {
+                    var userIds = createQuantityProducts.Select(c => c.UserId).Distinct().ToList();
+                    return await userRepository.IsAllUserActiveByCompanyId(userIds, request.CompanyId);                    
+                }).WithMessage("One or more users are other companies, you do not have permission to create products of that employee");
 
         }
 

@@ -4,5 +4,5 @@ using Contract.Services.Attendance.ShareDtos;
 namespace Contract.Services.Attendance.Queries;
 
 public record GetAttendanceByUserIdAndDateQuery
-    (string UserId, string Date)
+    (GetAttendancesByDateRequest getRequest, string UserId)
     : IQueryHandler<AttendanceUserDetailResponse>;

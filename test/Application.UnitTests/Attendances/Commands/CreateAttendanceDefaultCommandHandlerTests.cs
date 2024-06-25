@@ -31,6 +31,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
 
         _handler = new CreateAttendanceDefaultCommandHandler(
             _attendanceRepositoryMock.Object,
+            _userRepositoryMock.Object,
             _validator,
             _unitOfWorkMock.Object);
     }
@@ -41,6 +42,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
             SlotId: 2,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/01/2001",
             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
             {
@@ -61,7 +63,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
             });
 
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 
         _attendanceRepositoryMock
@@ -89,6 +91,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                         SlotId: -1,
+                        CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                         Date: "01/01/2001",
                         CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                         {
@@ -101,7 +104,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
                             )
                         });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 
@@ -124,6 +127,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                     SlotId: 1,
+                    CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                     Date: "01/01/2001",
                     CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                     {
@@ -136,7 +140,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
                         )
                     });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(false);
 
@@ -158,6 +162,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                             SlotId: 1,
+                            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                             Date: "01/01/2001",
                             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                             {
@@ -170,7 +175,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
                                 )
                             });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 

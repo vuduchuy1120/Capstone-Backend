@@ -10,5 +10,6 @@ public record CreateEmployeeProductRequest
 (
     string Date,
     int SlotId,
+    Guid CompanyId,
     List<CreateQuantityProductRequest> CreateQuantityProducts
     );

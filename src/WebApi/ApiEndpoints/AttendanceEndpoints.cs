@@ -13,25 +13,11 @@ namespace WebApi.ApiEndpoints;
 
 public class AttendanceEndpoints : CarterModule
 {
-    public AttendanceEndpoints() : base("/api/attendance")
+    public AttendanceEndpoints() : base("/api/attendances")
     {
     }
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost(string.Empty, async (
-        ISender sender,
-        ClaimsPrincipal claim,
-        [FromBody] CreateAttendanceRequest attendanceRequest) =>
-        {
-            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var createAttendanceCommand = new CreateAttendanceCommand(attendanceRequest, userId);
-            var result = await sender.Send(createAttendanceCommand);
-
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
-        });
 
         app.MapPost("batch", async (
             ISender sender,
@@ -39,10 +25,14 @@ public class AttendanceEndpoints : CarterModule
             [FromBody] CreateAttendanceDefaultRequest attendanceDefaultRequest) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var createAttendanceDefaultCommand = new CreateAttendanceDefaultCommand(attendanceDefaultRequest, userId);
+            var companyID = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+            Guid.TryParse(companyID, out var companyId);
+            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+            var createAttendanceDefaultCommand = new CreateAttendanceDefaultCommand(attendanceDefaultRequest, userId, roleName, companyId);
             var result = await sender.Send(createAttendanceDefaultCommand);
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization("RequireAdminOrBranchAdmin")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
         });
@@ -54,13 +44,16 @@ public class AttendanceEndpoints : CarterModule
         [FromBody] UpdateAttendancesRequest updateAttendanceRequest) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var updateAttendanceCommandHandler = new UpdateAttendancesCommand(updateAttendanceRequest, userId);
+            var companyID = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+            Guid.TryParse(companyID, out var companyId);
+            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+            var updateAttendanceCommandHandler = new UpdateAttendancesCommand(updateAttendanceRequest, userId, companyId, roleName);
 
             var result = await sender.Send(updateAttendanceCommandHandler);
 
             return Results.Ok(result);
         })
-           .RequireAuthorization("Require-Admin")
+        .RequireAuthorization("RequireAdminOrBranchAdmin")
         .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
@@ -69,44 +62,56 @@ public class AttendanceEndpoints : CarterModule
         // get Attendances by Date
         app.MapGet(string.Empty, async (
             ISender sender,
-            [AsParameters] GetAttendancesQuery getAttendancesQuery) =>
+            ClaimsPrincipal claim,
+            [AsParameters] GetAttendanceRequest request) =>
         {
-            var result = await sender.Send(getAttendancesQuery);
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var companyID = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+            Guid.TryParse(companyID, out var companyId);
+            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+            var query = new GetAttendancesQuery(request, companyId, roleName);
+            var result = await sender.Send(query);
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        })
+        .RequireAuthorization("RequireAdminOrCounter")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
         });
-        app.MapGet("overall", async (
-               ISender sender,
-               [AsParameters] GetAttendanceOverallQuery getAttendanceOverallQuery) =>
-        {
-            var result = await sender.Send(getAttendanceOverallQuery);
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
-        });
+
         app.MapGet("/users", async (
             ISender sender,
-            [AsParameters] GetAttendancesByMonthAndUserIdQuery getAttendancesByMonthAndUserIdQuery) =>
+            ClaimsPrincipal claim,
+            int month,
+            int year) =>
         {
-            var result = await sender.Send(getAttendancesByMonthAndUserIdQuery);
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var request = new GetAttendancesByMonthAndUserIdQuery(month, year, userId);
+            var result = await sender.Send(request);
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization("RequireAnyRole")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
         });
 
         app.MapGet("/users/detail", async (
             ISender sender,
-            [AsParameters] GetAttendanceByUserIdAndDateQuery request) =>
+            ClaimsPrincipal claim,
+            [AsParameters] GetAttendancesByDateRequest getRequest) =>
         {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+
+            var request = new GetAttendanceByUserIdAndDateQuery(getRequest, userId);
             var result = await sender.Send(request);
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        })
+        .RequireAuthorization("RequireAnyRole")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
         });
+
+
     }
 }

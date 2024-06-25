@@ -1,4 +1,5 @@
 ﻿using Contract.Abstractions.Shared.Search;
+using Contract.Services.Attendance.Queries;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.ShareDto;
 using Domain.Entities;
@@ -12,7 +13,7 @@ public interface IAttendanceRepository
     Task<List<Attendance>?> GetAttendanceByUserIdAndDateAsync(string userId, DateOnly date);
     Task<List<Attendance>> GetAttendanceByDate(DateOnly date);
     Task<List<Attendance>> GetAttendanceByDateAndSlotId(DateOnly date, int slotId);
-    Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request);
+    Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendanceRequest request);
     Task<bool> IsCanUpdateAttendance(string userId, int slotId, DateOnly date);
     Task AddRangeAsync(List<Attendance> attendances);
     Task<bool> IsAllAttendancesExist(int slotID, DateOnly date, List<string> userIds);

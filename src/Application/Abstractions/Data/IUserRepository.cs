@@ -13,4 +13,6 @@ public interface IUserRepository
     void AddUser(User user);
     Task<(List<User>?, int)> SearchUsersAsync(GetUsersQuery request);
     void Update(User user);
+    Task<bool> IsAllUserActiveByCompanyId(List<string> userIds, Guid companyId);
+    Task<List<User>> GetUsersByCompanyId(Guid companyId);
 }

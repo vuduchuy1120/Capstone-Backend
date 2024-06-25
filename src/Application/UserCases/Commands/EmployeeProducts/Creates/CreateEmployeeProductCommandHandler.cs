@@ -5,12 +5,14 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.EmployeeProduct.Creates;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.Users;
 using FluentValidation;
 
 namespace Application.UserCases.Commands.EmployeeProducts.Creates;
 
 public sealed class CreateEmployeeProductCommandHandler
     (IEmployeeProductRepository _employeeProductRepository,
+    IUserRepository _userRepository,
     IValidator<CreateEmployeeProductRequest> _validator,
     IUnitOfWork _unitOfWork) : ICommandHandler<CreateEmployeeProductComand>
 {
@@ -23,7 +25,23 @@ public sealed class CreateEmployeeProductCommandHandler
         }
         var slotId = request.createEmployeeProductRequest.SlotId;
         var date = DateUtil.ConvertStringToDateTimeOnly(request.createEmployeeProductRequest.Date);
-        var empProDeletes = await _employeeProductRepository.GetEmployeeProductsByDateAndSlotId(slotId, date);
+        var roleName = request.roleNameClaim;
+        var companyId = request.companyIdClaim;
+
+
+        if (roleName != "MAIN_ADMIN" && companyId != request.createEmployeeProductRequest.CompanyId)
+        {
+            var isUserValid = await _userRepository
+                .IsAllUserActiveByCompanyId(
+                request
+                .createEmployeeProductRequest
+                .CreateQuantityProducts
+                .Select(c => c.UserId).Distinct().ToList(), companyId);
+            if(!isUserValid)
+                throw new UserNotPermissionException("You dont have permission create employee product of other companyID");
+        }
+
+        var empProDeletes = await _employeeProductRepository.GetEmployeeProductsByDateAndSlotId(slotId, date, request.createEmployeeProductRequest.CompanyId);
         if (empProDeletes.Count > 0)
         {
             _employeeProductRepository.DeleteRangeEmployeeProduct(empProDeletes);

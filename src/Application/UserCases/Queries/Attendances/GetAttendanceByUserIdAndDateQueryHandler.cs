@@ -4,10 +4,8 @@ using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Queries;
-using Contract.Services.Attendance.ShareDto;
 using Contract.Services.Attendance.ShareDtos;
 using Contract.Services.EmployeeProduct.ShareDto;
-using Domain.Entities;
 using Domain.Exceptions.Attendances;
 
 namespace Application.UserCases.Queries.Attendances;
@@ -19,7 +17,7 @@ public sealed class GetAttendanceByUserIdAndDateQueryHandler
 {
     public async Task<Result.Success<AttendanceUserDetailResponse>> Handle(GetAttendanceByUserIdAndDateQuery request, CancellationToken cancellationToken)
     {
-        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
+        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.getRequest.date);
         var attendances = await _attendanceRepository.GetAttendanceByUserIdAndDateAsync(request.UserId, formatedDate);
         if (attendances == null)
         {
@@ -58,7 +56,7 @@ public sealed class GetAttendanceByUserIdAndDateQueryHandler
 
         var response = new AttendanceUserDetailResponse
         (
-            Date: request.Date,
+            Date: request.getRequest.date,
             UserId: request.UserId,
             AttendanceSlotReports: attendanceSlotReports
         );

@@ -50,7 +50,9 @@ public class DbInitializer
         {
             Role.Create(new CreateRoleCommand("MAIN_ADMIN", "HuyVu's father")),
             Role.Create(new CreateRoleCommand("BRAND_ADMIN", "HuyVu's father")),
-            Role.Create(new CreateRoleCommand("COUNTER", "HuyVu's father"))
+            Role.Create(new CreateRoleCommand("COUNTER", "HuyVu's father")),
+            Role.Create(new CreateRoleCommand("DRIVER", "HuyVu's father")),
+            Role.Create(new CreateRoleCommand("USER", "HuyVu's father"))
         };
 
         context.Roles.AddRange(roles);

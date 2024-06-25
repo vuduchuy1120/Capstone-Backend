@@ -7,6 +7,7 @@ using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.ShareDto;
 using Contract.Services.EmployeeProduct.ShareDto;
 using Domain.Exceptions.Attendances;
+using Domain.Exceptions.Users;
 using MediatR;
 
 namespace Application.UserCases.Queries.Attendances;
@@ -17,7 +18,12 @@ internal sealed class GetAttendancesQueryHandler
 {
     public async Task<Result.Success<SearchResponse<List<AttendanceResponse>>>> Handle(GetAttendancesQuery request, CancellationToken cancellationToken)
     {
-        var searchResult = await _attendanceRepository.SearchAttendancesAsync(request);
+        if (request.RoleName != "MAIN_ADMIN" && request.CompanyIdClaim != request.GetAttendanceRequest.CompanyId)
+        {
+            throw new UserNotPermissionException("You do not have permission to access this data");
+        }
+
+        var searchResult = await _attendanceRepository.SearchAttendancesAsync(request.GetAttendanceRequest);
 
         var attendances = searchResult.Item1;
         var totalPage = searchResult.Item2;
@@ -47,7 +53,7 @@ internal sealed class GetAttendancesQueryHandler
                        ))
                        .ToList()
                )).ToList();
-        var searchResponse = new SearchResponse<List<AttendanceResponse>>(totalPage, request.PageIndex, data);
+        var searchResponse = new SearchResponse<List<AttendanceResponse>>(totalPage, request.GetAttendanceRequest.PageIndex, data);
 
         return Result.Success<SearchResponse<List<AttendanceResponse>>>.Get(searchResponse);
     }
