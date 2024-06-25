@@ -50,7 +50,12 @@ public static class DependencyInjection
         services.AddAuthorization();
 
         services.AddAuthorizationBuilder()
-            .AddPolicy("Require-Admin", policy => policy.RequireClaim("Role", "MAIN_ADMIN"));
+            .AddPolicy("Require-Admin", policy => policy.RequireClaim("Role", "MAIN_ADMIN"))
+            .AddPolicy("Require-Admin-Or-Admin-Branch", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c =>
+                            c.Type == "Role" && (c.Value == "MAIN_ADMIN" || c.Value == "BRAND_ADMIN"))
+                    ));
 
         services.AddStackExchangeRedisCache(options =>
         {

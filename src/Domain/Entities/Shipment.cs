@@ -1,6 +1,7 @@
 ﻿using Contract.Services.Shipment.Create;
 using Contract.Services.Shipment.Share;
 using Domain.Abstractions.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
@@ -12,6 +13,8 @@ public class Shipment : EntityAuditBase<Guid>
     public User Shipper { get; set; }
     public DateTime ShipDate { get; set; }
     public Status Status { get; set; }
+    public Company FromCompany { get; set; }
+    public Company ToCompany { get; set; }
     public List<ShipmentDetail>? ShipmentDetails { get; set; }
     private Shipment()
     {
@@ -31,9 +34,10 @@ public class Shipment : EntityAuditBase<Guid>
         };
     }
 
-    public void Update(string updateBy)
+    public void UpdateStatus(string updateBy, Status status)
     {
         UpdatedBy = updateBy;
         UpdatedDate = DateTime.UtcNow;
+        Status = status;
     }
 }
