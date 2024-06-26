@@ -24,6 +24,8 @@ public class ProductPhase
             PhaseId = request.PhaseId,
             Quantity = request.Quantity,
             SalaryPerProduct = request.SalaryPerProduct
+            //CompanyId = request.CompanyId
+
         };
     }
 

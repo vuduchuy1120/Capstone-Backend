@@ -16,6 +16,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
         private readonly Mock<IPhaseRepository> _phaseRepositoryMock;
         private readonly Mock<IProductRepository> _productRepositoryMock;
         private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<IProductPhaseRepository> _productPhaseRepositoryMock;
+        private readonly Mock<ICompanyRepository> _companyRepositoryMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly IValidator<CreateEmployeeProductRequest> _validator;
         private readonly CreateEmployeeProductCommandHandler _handler;
@@ -25,6 +27,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             _employeeProductRepositoryMock = new Mock<IEmployeeProductRepository>();
             _slotRepositoryMock = new Mock<ISlotRepository>();
             _phaseRepositoryMock = new Mock<IPhaseRepository>();
+            _productPhaseRepositoryMock = new Mock<IProductPhaseRepository>();
+            _companyRepositoryMock = new Mock<ICompanyRepository>();
             _productRepositoryMock = new Mock<IProductRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -37,6 +41,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             _handler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
+                _companyRepositoryMock.Object,
+                _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);
         }
@@ -58,6 +64,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             var createEmployeeProductCommandHandler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
+                _companyRepositoryMock.Object,
+                _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);
 
@@ -126,7 +134,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 {
                     new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1", true)
                 });
-            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin","MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
+            var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
 
             _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))

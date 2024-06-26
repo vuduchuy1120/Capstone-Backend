@@ -10,6 +10,7 @@ public record CompanyResponse
     string DirectorName,
     string DirectorPhone,
     string Email,
+    string CompanyEnum,
     CompanyType CompanyType,
     string CompanyTypeDescription
     );
