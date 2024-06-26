@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Shared.Utils;
 using Contract.Services.Company.Queries;
+using Contract.Services.Company.Shared;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,4 +76,13 @@ public class CompanyRepository : ICompanyRepository
         return await _context.Companies.SingleOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<List<Company>> GetCompanyByNameAsync(string name)
+    {
+        return await _context.Companies.Where(c => c.NameUnAccent.ToLower().Trim().Contains(name.ToLower().Trim())).ToListAsync();
+    }
+
+    public async Task<List<Company>> GetCompanyFactory(CompanyType CompanyType)
+    {
+        return await _context.Companies.Where(c => c.CompanyType == CompanyType).ToListAsync();
+    }
 }

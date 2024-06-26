@@ -13,4 +13,9 @@ public interface IProductPhaseRepository
     void DeleteProductPhase(ProductPhase productPhase);
     Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId);
     Task<(List<ProductPhase>?, int)> GetProductPhases(GetProductPhasesQuery getProductPhasesQuery);
+    void AddProductPhaseRange(List<ProductPhase> productPhases);
+    void UpdateProductPhaseRange(List<ProductPhase> productPhases);
+    Task<ProductPhase> GetByProductIdPhaseIdCompanyID(Guid productId, Guid phaseId,Guid mainCompanyID);
+    //Task<List<ProductPhase>> GetByProductIdPhaseIdCompanyID(Guid companyId);
+
 }

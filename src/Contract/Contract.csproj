@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Company\Create\" />
     <Folder Include="Services\Report\ShareDtos\" />
     <Folder Include="Services\Report\Queries\" />
   </ItemGroup>

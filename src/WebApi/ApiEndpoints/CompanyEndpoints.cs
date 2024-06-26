@@ -1,6 +1,7 @@
 ﻿using Carter;
 using Contract.Services.Company.Create;
 using Contract.Services.Company.Queries;
+using Contract.Services.Company.Shared;
 using Contract.Services.Company.Updates;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,17 @@ public class CompanyEndpoints : CarterModule
             var result = await _sender.Send(new GetCompanyByIdQuery(id));
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Company api" } }
+        });
+
+        app.MapGet("/CompanyType/{id}", async (
+            ISender _sender,
+            [FromRoute] CompanyType id) =>
+        {
+            var result = await _sender.Send(new GetCompaniesByCompanyTypeQuery(id));
+            return Results.Ok(result);
+        }).RequireAuthorization("RequireAdminOrBranchAdmin").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Company api" } }
         });
