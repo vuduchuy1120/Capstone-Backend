@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class updateDatabase : Migration
+    public partial class updateDBMerge : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,8 @@ namespace Persistence.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Unit = table.Column<string>(type: "text", nullable: false),
                     QuantityPerUnit = table.Column<double>(type: "double precision", nullable: true),
-                    Image = table.Column<string>(type: "text", nullable: true)
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    QuantityInStock = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,6 +140,7 @@ namespace Persistence.Migrations
                     Status = table.Column<string>(type: "text", nullable: false),
                     StartOrder = table.Column<DateOnly>(type: "date", nullable: true),
                     EndOrder = table.Column<DateOnly>(type: "date", nullable: true),
+                    VAT = table.Column<double>(type: "double precision", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -162,10 +164,8 @@ namespace Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     MaterialId = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<double>(type: "double precision", nullable: false),
-                    QuantityPerUnit = table.Column<double>(type: "double precision", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    QuantityInStock = table.Column<double>(type: "double precision", nullable: true),
                     ImportDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
@@ -208,6 +208,8 @@ namespace Persistence.Migrations
                     PhaseId = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
+                    ErrorQuantity = table.Column<int>(type: "integer", nullable: false),
+                    AvailableQuantity = table.Column<int>(type: "integer", nullable: false),
                     SalaryPerProduct = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
@@ -305,7 +307,8 @@ namespace Persistence.Migrations
                     ProductId = table.Column<Guid>(type: "uuid", nullable: true),
                     SetId = table.Column<Guid>(type: "uuid", nullable: true),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false)
+                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -451,6 +454,18 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shipments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Shipments_Companies_FromId",
+                        column: x => x.FromId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Shipments_Companies_ToId",
+                        column: x => x.ToId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Shipments_Users_ShipperId",
                         column: x => x.ShipperId,
@@ -646,9 +661,19 @@ namespace Persistence.Migrations
                 column: "ShipOrderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shipments_FromId",
+                table: "Shipments",
+                column: "FromId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shipments_ShipperId",
                 table: "Shipments",
                 column: "ShipperId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shipments_ToId",
+                table: "Shipments",
+                column: "ToId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipOrders_OrderId",

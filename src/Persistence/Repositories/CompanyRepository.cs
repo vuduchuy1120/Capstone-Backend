@@ -23,11 +23,6 @@ public class CompanyRepository : ICompanyRepository
         _context.Companies.Update(company);
     }
 
-    public async Task<Company?> GetByIdAsync(Guid id)
-    {
-        return await _context.Companies.FirstOrDefaultAsync(company => company.Id.Equals(id));
-    }
-
     public async Task<bool> IsExistAsync(Guid id)
     {
         return await _context.Companies.AnyAsync(company => company.Id.Equals(id));
@@ -74,6 +69,10 @@ public class CompanyRepository : ICompanyRepository
     public async Task<bool> IsCompanyExistAsync(Guid companyId)
     {
         return await _context.Companies.AnyAsync(c => c.Id == companyId);
+    }
+    public async Task<Company> GetByIdAsync(Guid id)
+    {
+        return await _context.Companies.SingleOrDefaultAsync(c => c.Id == id);
     }
 
 }

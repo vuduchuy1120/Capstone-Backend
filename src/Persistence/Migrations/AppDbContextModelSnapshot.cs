@@ -401,6 +401,12 @@ namespace Persistence.Migrations
                     b.Property<Guid>("CompanyId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AvailableQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ErrorQuantity")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
@@ -621,7 +627,11 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FromId");
+
                     b.HasIndex("ShipperId");
+
+                    b.HasIndex("ToId");
 
                     b.ToTable("Shipments");
                 });
@@ -944,13 +954,29 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "FromCompany")
+                        .WithMany()
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.User", "Shipper")
                         .WithMany("Shipments")
                         .HasForeignKey("ShipperId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Company", "ToCompany")
+                        .WithMany()
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromCompany");
+
                     b.Navigation("Shipper");
+
+                    b.Navigation("ToCompany");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>

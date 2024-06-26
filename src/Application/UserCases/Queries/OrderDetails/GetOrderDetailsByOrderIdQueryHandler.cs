@@ -40,7 +40,8 @@ namespace Application.UserCases.Queries.OrderDetails
                         orderDetail.Product.Description,
                         orderDetail.Product.Images.FirstOrDefault(x => x.IsMainImage)?.ImageUrl ?? string.Empty,
                         orderDetail.Quantity,
-                        orderDetail.UnitPrice
+                        orderDetail.UnitPrice,
+                        orderDetail.Note
                     ));
                 }
                 else if (orderDetail.SetId != null && orderDetail.Set != null)
@@ -63,7 +64,8 @@ namespace Application.UserCases.Queries.OrderDetails
                         orderDetail.Set.ImageUrl,
                         productResponses,
                         orderDetail.Quantity,
-                        orderDetail.UnitPrice
+                        orderDetail.UnitPrice,
+                        orderDetail.Note
                     ));
                 }
             }
@@ -71,8 +73,7 @@ namespace Application.UserCases.Queries.OrderDetails
             var data = new OrderDetailResponse(
                 OrderId: request.OrderId,
                 ProductOrderResponses: products,
-                SetOrderResponses: sets,
-                Note: orderDetails.FirstOrDefault()?.Note ?? string.Empty
+                SetOrderResponses: sets
             );
 
             return Result.Success<OrderDetailResponse>.Get(data);

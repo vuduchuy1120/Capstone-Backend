@@ -8,5 +8,6 @@ public record ProductOrderResponse
     string ProductDescription,
     string ImageProductUrl,
     int Quantity,
-    decimal UnitPrice
+    decimal UnitPrice,
+    string? Note
     );

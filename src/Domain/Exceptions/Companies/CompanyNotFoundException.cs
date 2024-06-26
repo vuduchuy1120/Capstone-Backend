@@ -1,4 +1,5 @@
 ﻿using Domain.Abstractions.Exceptions.Base;
+using System.Net;
 
 namespace Domain.Exceptions.Companies;
 

@@ -4,8 +4,7 @@ public record OrderDetailResponse
 (
     Guid OrderId,
     List<ProductOrderResponse> ProductOrderResponses,
-    List<SetOrderResponse> SetOrderResponses,
-    string? Note
+    List<SetOrderResponse> SetOrderResponses
     );
 
 

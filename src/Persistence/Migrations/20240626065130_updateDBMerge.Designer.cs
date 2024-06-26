@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240626023304_updateDatabase")]
-    partial class updateDatabase
+    [Migration("20240626065130_updateDBMerge")]
+    partial class updateDBMerge
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -182,6 +182,9 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<double>("QuantityInStock")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("QuantityPerUnit")
                         .HasColumnType("double precision");
 
@@ -214,12 +217,6 @@ namespace Persistence.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<double>("Quantity")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityInStock")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityPerUnit")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -261,6 +258,9 @@ namespace Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double>("VAT")
+                        .HasColumnType("double precision");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
@@ -273,6 +273,9 @@ namespace Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
@@ -400,6 +403,12 @@ namespace Persistence.Migrations
 
                     b.Property<Guid>("CompanyId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AvailableQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ErrorQuantity")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -621,7 +630,11 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FromId");
+
                     b.HasIndex("ShipperId");
+
+                    b.HasIndex("ToId");
 
                     b.ToTable("Shipments");
                 });
@@ -944,13 +957,29 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "FromCompany")
+                        .WithMany()
+                        .HasForeignKey("FromId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.User", "Shipper")
                         .WithMany("Shipments")
                         .HasForeignKey("ShipperId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Company", "ToCompany")
+                        .WithMany()
+                        .HasForeignKey("ToId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromCompany");
+
                     b.Navigation("Shipper");
+
+                    b.Navigation("ToCompany");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
