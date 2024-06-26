@@ -125,5 +125,17 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(ep => ep.Slot)
             .WithMany(s => s.EmployeeProducts)
             .HasForeignKey(ep => ep.SlotId);
+
+        modelBuilder.Entity<Shipment>()
+            .HasOne(s => s.FromCompany)
+            .WithMany()
+            .HasForeignKey(s => s.FromId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Shipment>()
+            .HasOne(s => s.ToCompany)
+            .WithMany()
+            .HasForeignKey(s => s.ToId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

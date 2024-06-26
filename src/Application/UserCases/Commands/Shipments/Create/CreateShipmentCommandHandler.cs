@@ -5,7 +5,9 @@ using Contract.Services.Shipment.Create;
 using Contract.Services.ShipmentDetail.Share;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
+using Domain.Exceptions.Shipments;
 using FluentValidation;
 using MediatR;
 
@@ -14,6 +16,7 @@ namespace Application.UserCases.Commands.Shipments.Create;
 internal sealed class CreateShipmentCommandHandler(
     IShipmentRepository _shipmentRepository,
     IShipmentDetailRepository _shipmentDetailRepository,
+    IProductPhaseRepository _productPhaseRepository,
     IUnitOfWork _unitOfWork,
     IValidator<CreateShipmentRequest> _validator) : ICommandHandler<CreateShipmentCommand>
 {
@@ -26,7 +29,7 @@ internal sealed class CreateShipmentCommandHandler(
 
         var shipment = CreateShipment(createShipmentRequest, request.CreatedBy);
 
-        var shipmentDetails = CreateShipmentDetails(createShipmentRequest.ShipmentDetailRequests, shipment.Id);
+        var shipmentDetails = await CreateShipmentDetails(createShipmentRequest.ShipmentDetailRequests, shipment.Id);
 
         _shipmentRepository.Add(shipment);
         _shipmentDetailRepository.AddRange(shipmentDetails);
@@ -46,11 +49,14 @@ internal sealed class CreateShipmentCommandHandler(
         }
     }
 
-    private List<ShipmentDetail> CreateShipmentDetails(
+    private async Task<List<ShipmentDetail>> CreateShipmentDetails(
         List<ShipmentDetailRequest> shipmentDetailRequests,
         Guid shipmentId)
     {
-        return shipmentDetailRequests.ConvertAll(s => CreateShipmentDetail(s, shipmentId)).ToList();
+        var shipmentDetailTasks = shipmentDetailRequests.Select(detailRequest => CreateShipmentDetail(detailRequest, shipmentId));
+        var shipmentDetails = await Task.WhenAll(shipmentDetailTasks);
+
+        return shipmentDetails.ToList();
     }
 
     private Shipment CreateShipment(CreateShipmentRequest createShipmentRequest, string createdBy)
@@ -58,15 +64,26 @@ internal sealed class CreateShipmentCommandHandler(
         return Shipment.Create( createShipmentRequest, createdBy);
     }
 
-    private ShipmentDetail CreateShipmentDetail(ShipmentDetailRequest request, Guid shipmentId)
+    private async Task<ShipmentDetail> CreateShipmentDetail(ShipmentDetailRequest request, Guid shipmentId)
     {
         switch (request.KindOfShip)
         {
             case KindOfShip.SHIP_FACTORY_PRODUCT:
-                return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
+                var phaseId = request.PhaseId ?? throw new ProductPhaseNotFoundException();
+                var productPhase = await _productPhaseRepository
+                    .GetProductPhaseByPhaseIdAndProductId(request.ItemId, phaseId) 
+                    ?? throw new ProductPhaseNotFoundException();
 
-            case KindOfShip.SHIP_FACTORY_SET:
-                return ShipmentDetail.CreateShipmentSetDetail(shipmentId, request);
+                if(productPhase.AvailableQuantity < request.Quantity)
+                {
+                    throw new ItemAvailableNotEnoughException();
+                }
+
+                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity - request.Quantity);
+
+                _productPhaseRepository.UpdateProductPhase(productPhase);
+
+                return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
 
             case KindOfShip.SHIP_FACTORY_MATERIAL:
                 return ShipmentDetail.CreateShipmentMaterialDetail (shipmentId, request);

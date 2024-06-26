@@ -53,7 +53,6 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             .Must((shipmentDetailRequest) =>
             {
                 return shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL
-                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_SET
                         || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT;
             }).WithMessage("Loại đơn giao phải là giao hàng cho các cơ sở")
             .Must((shipmentDetailRequest) =>
@@ -90,21 +89,21 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
                 return await productRepository.IsAllSubProductIdsExist(shipProduct);
             }).WithMessage("Có một vài mã sản phẩm không hợp lệ");
 
-        RuleFor(req => req.ShipmentDetailRequests)
-            .MustAsync(async (requests, _) =>
-            {
-                var shipSet = requests
-                .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_SET)
-                .Select(s => s.ItemId)
-                .ToList();
+        //RuleFor(req => req.ShipmentDetailRequests)
+        //    .MustAsync(async (requests, _) =>
+        //    {
+        //        var shipSet = requests
+        //        .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_SET)
+        //        .Select(s => s.ItemId)
+        //        .ToList();
 
-                if (shipSet is null)
-                {
-                    return false;
-                }
+        //        if (shipSet is null)
+        //        {
+        //            return false;
+        //        }
 
-                return await setRepository.IsAllSetExistAsync(shipSet);
-            }).WithMessage("Có một vài mã bộ không hợp lệ");
+        //        return await setRepository.IsAllSetExistAsync(shipSet);
+        //    }).WithMessage("Có một vài mã bộ không hợp lệ");
 
         RuleFor(req => req.ShipmentDetailRequests)
             .MustAsync(async (requests, _) =>

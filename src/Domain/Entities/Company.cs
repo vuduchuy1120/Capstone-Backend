@@ -12,7 +12,7 @@ public class Company : EntityBase<Guid>
     public string DirectorPhone { get; set; }
     public string Email { get; set; }
     public CompanyType CompanyType {  get; set; }
-    public List<Order>? Order { get; set; }
+    public List<Order>? Orders { get; set; }
     public List<User>? Users { get; set; }
     public List<ProductPhase>? ProductPhases { get; set; }
 
