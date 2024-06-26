@@ -3,6 +3,7 @@ using Carter;
 using Contract.Services.Set.CreateSet;
 using Contract.Services.Set.GetSet;
 using Contract.Services.Set.GetSets;
+using Contract.Services.Set.Search;
 using Contract.Services.Set.UpdateSet;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,16 @@ public class SetEndpoints : CarterModule
         app.MapGet(string.Empty, async (ISender sender, [AsParameters] GetSetsQuery request) =>
         {
             var result = await sender.Send(request);
+
+            return Results.Ok(result);
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Set api" } }
+        });
+
+        app.MapGet("search", async (ISender sender, [FromQuery] string searchTerm) =>
+        {
+            var result = await sender.Send(new SearchSetQuery(searchTerm));
 
             return Results.Ok(result);
         }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
