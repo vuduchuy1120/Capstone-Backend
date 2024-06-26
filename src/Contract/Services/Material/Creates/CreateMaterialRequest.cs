@@ -7,5 +7,6 @@ public record CreateMaterialRequest
     string? Description,
     string Unit,
     double? QuantityPerUnit,
-    string? Image
+    string? Image,
+    double QuantityInStock
     );

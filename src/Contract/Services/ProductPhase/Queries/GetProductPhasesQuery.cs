@@ -7,4 +7,4 @@ namespace Contract.Services.ProductPhase.Queries;
 public record GetProductPhasesQuery(
     int PageIndex = 1,
     int PageSize = 10)
-    : IQueryHandler<SearchResponse<List<ProductPhaseResponse>>>;
+    : IQuery<SearchResponse<List<ProductPhaseResponse>>>;

@@ -11,4 +11,4 @@ public record SearchOrderQuery(
     string? EndOrder,
     int PageIndex = 1,
     int PageSize = 10
-    ) : IQueryHandler<SearchResponse<List<OrderResponse>>>;
+    ) : IQuery<SearchResponse<List<OrderResponse>>>;

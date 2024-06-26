@@ -10,4 +10,5 @@ public interface ICompanyRepository
     Task<Company?> GetByIdAsync(Guid id);
     Task<bool> IsExistAsync(Guid id);
     Task<(List<Company>?, int)> SearchCompanyAsync(SearchCompanyQuery request);
+    Task<bool> IsCompanyExistAsync(Guid companyId);
 }

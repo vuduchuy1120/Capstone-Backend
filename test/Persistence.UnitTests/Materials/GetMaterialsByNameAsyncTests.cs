@@ -62,9 +62,9 @@ namespace Persistence.UnitTests.Materials
         {
             var materials = new List<CreateMaterialRequest>
             {
-                new CreateMaterialRequest("Material 1", "Description 1", "Unit 1", 10, "Image 1"),
-                new CreateMaterialRequest("Material 2", "Description 2", "Unit 2", 20, "Image 2"),
-                new CreateMaterialRequest("Different Material", "Description 3", "Unit 3", 30, "Image 3")
+                new CreateMaterialRequest("Material 1", "Description 1", "Unit 1", 10, "Image 1",10),
+                new CreateMaterialRequest("Material 2", "Description 2", "Unit 2", 20, "Image 2",20),
+                new CreateMaterialRequest("Different Material", "Description 3", "Unit 3", 30, "Image 3",30)
             };
 
             foreach (var request in materials)

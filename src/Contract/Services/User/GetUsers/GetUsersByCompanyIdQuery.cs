@@ -4,4 +4,4 @@ using Contract.Services.User.SharedDto;
 namespace Contract.Services.User.GetUsers;
 
 public record GetUsersByCompanyIdQuery
-(GetUsersByCompanyIdRequest GetUsersRequest, Guid CompanyIdClaim, string RoleNameClaim) : IQueryHandler<List<UserResponse>>;
+(GetUsersByCompanyIdRequest GetUsersRequest, Guid CompanyIdClaim, string RoleNameClaim) : IQuery<List<UserResponse>>;

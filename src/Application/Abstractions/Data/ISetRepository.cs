@@ -13,4 +13,5 @@ public interface ISetRepository
     Task<(List<Set>, int)> SearchSetAsync(GetSetsQuery request);
     Task<bool> IsAllSetIdExistAsync(List<Guid> setIds);
 
+    Task<bool> IsAllSetExistAsync(List<Guid> ids);
 }

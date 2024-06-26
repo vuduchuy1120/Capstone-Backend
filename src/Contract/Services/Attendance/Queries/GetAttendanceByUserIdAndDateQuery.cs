@@ -5,4 +5,4 @@ namespace Contract.Services.Attendance.Queries;
 
 public record GetAttendanceByUserIdAndDateQuery
     (GetAttendancesByDateRequest getRequest, string UserId)
-    : IQueryHandler<AttendanceUserDetailResponse>;
+    : IQuery<AttendanceUserDetailResponse>;

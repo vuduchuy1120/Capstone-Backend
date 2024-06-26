@@ -23,5 +23,11 @@ public sealed class CreateMaterialRequestValidator : AbstractValidator<CreateMat
             {
                 return QuantityPerUnit > 0;
             }).WithMessage("QuantityPerUnit must be greater than 0");
+        RuleFor(m => m.QuantityInStock)
+            .NotEmpty().WithMessage("QuantityInStock must be not empty!")
+            .Must(QuantityInStock =>
+            {
+                return QuantityInStock >= 0;
+            }).WithMessage("QuantityInStock must be greater than 0");
     }
 }

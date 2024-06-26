@@ -1,5 +1,6 @@
 ﻿using Contract.Abstractions.Shared.Utils;
 using Contract.Services.Company.Create;
+using Contract.Services.Company.Shared;
 using Contract.Services.Company.Updates;
 using Domain.Abstractions.Entities;
 
@@ -15,10 +16,10 @@ public class Company : EntityBase<Guid>
     public string? DirectorNameUnAccent { get; set; }
     public string DirectorPhone { get; set; }
     public string? Email { get; set; }
-    public string CompanyType { get; set; }
-    public string CompanyTypeUnAccent { get; set; }
     public List<Order>? Orders { get; set; }
+    public CompanyType CompanyType {  get; set; }
     public List<User>? Users { get; set; }
+    public List<ProductPhase>? ProductPhases { get; set; }
 
     public static Company Create(CreateCompanyRequest request)
     {
@@ -32,7 +33,6 @@ public class Company : EntityBase<Guid>
             DirectorPhone = request.CompanyRequest.DirectorPhone,
             Email = request.CompanyRequest.Email,
             CompanyType = request.CompanyRequest.CompanyType,
-            CompanyTypeUnAccent = StringUtils.RemoveDiacritics(request.CompanyRequest.CompanyType),
             Name = request.CompanyRequest.Name,
             NameUnAccent = StringUtils.RemoveDiacritics(request.CompanyRequest.Name),
         };
@@ -47,7 +47,6 @@ public class Company : EntityBase<Guid>
         DirectorPhone = request.CompanyRequest.DirectorPhone;
         Email = request.CompanyRequest.Email;
         CompanyType = request.CompanyRequest.CompanyType;
-        CompanyTypeUnAccent = StringUtils.RemoveDiacritics(request.CompanyRequest.CompanyType);
         Name = request.CompanyRequest.Name;
         NameUnAccent = StringUtils.RemoveDiacritics(request.CompanyRequest.Name);
     }

@@ -38,7 +38,8 @@ public class UpdateMaterialCommandHandlerTests
                                   Description: "Description 1",
                                   Unit: "Unit 1",
                                   QuantityPerUnit: 1,
-                                  Image: "No Image");
+                                  Image: "No Image",
+                                  QuantityInStock: 1);
 
         _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
             .ReturnsAsync(true);
@@ -53,17 +54,20 @@ public class UpdateMaterialCommandHandlerTests
     }
 
     [Theory]
-    [InlineData(1, "", "Description 1", "Unit 1", 1, "No Image")]
-    [InlineData(1, "Material 1", "Description 1", "", 1, "No Image")]
-    [InlineData(1, "Material 1", "Description 1", "Unit 1", 0, "No Image")]
-    [InlineData(1, "Material 1", "Description 1", "Unit 1", -1, "")]
+    [InlineData(1, "", "Description 1", "Unit 1", 1, "No Image", 2)]
+    [InlineData(1, "Material 1", "Description 1", "", 1, "No Image",2)]
+    [InlineData(1, "Material 1", "Description 1", "Unit 1", 0, "No Image",2)]
+    [InlineData(1, "Material 1", "Description 1", "Unit 1", -1, "",2)]
+    [InlineData(1, "Material 1", "Description 1", "Unit 1", 1, "No Imange", -2)]
+
     public async Task Handle_Should_Throw_ValidationException(
         int id, 
         string name,
         string description,
         string unit,
         int quantityPerUnit, 
-        string image)
+        string image,
+        double quantityInStock)
     {
         // Arrange
         var request = new UpdateMaterialRequest(
@@ -72,7 +76,8 @@ public class UpdateMaterialCommandHandlerTests
                                  Description: description,
                                  Unit: unit,
                                  QuantityPerUnit: quantityPerUnit,
-                                 Image: image);
+                                 Image: image,
+                                 QuantityInStock: quantityInStock);
 
         // Act
         _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))

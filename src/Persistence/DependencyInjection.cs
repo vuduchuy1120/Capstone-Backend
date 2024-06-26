@@ -33,6 +33,9 @@ public static class DependencyInjection
         services.AddScoped<IPhaseRepository, PhaseRepository>();
         services.AddScoped<ISetProductRepository, SetProductRepository>();
         services.AddScoped<ISetRepository, SetRepository>();
+        services.AddScoped<IShipmentRepository, ShipmentRepository>();
+        services.AddScoped<IShipmentDetailRepository, ShipmentDetailRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<IProductPhaseRepository, ProductPhaseRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();

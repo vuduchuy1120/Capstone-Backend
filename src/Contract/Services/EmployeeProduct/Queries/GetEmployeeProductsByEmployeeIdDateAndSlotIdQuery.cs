@@ -8,6 +8,6 @@ public record GetEmployeeProductsByEmployeeIdDateAndSlotIdQuery
     GetEmployeeProductsByEmployeeIdDateAndSlotIdRequest getRequest,
     string RoleName,
     string UserIdClaim,
-    Guid CompanyIdClaim) : IQueryHandler<List<EmployeeProductResponse>>;
+    Guid CompanyIdClaim) : IQuery<List<EmployeeProductResponse>>;
 
 

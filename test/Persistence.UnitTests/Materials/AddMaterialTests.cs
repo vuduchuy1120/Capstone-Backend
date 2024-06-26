@@ -3,11 +3,6 @@ using Contract.Services.Material.Create;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.UnitTests.Materials;
 
@@ -33,7 +28,8 @@ public class AddMaterialTests : IDisposable
             Description: "Description 1",
             Unit: "Unit 1",
             QuantityPerUnit: 10,
-            Image: "Image 1"
+            Image: "Image 1",
+            QuantityInStock: 10
         );
         var material = Material.Create(CreateMaterialRequest);
 

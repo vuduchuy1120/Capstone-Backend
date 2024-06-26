@@ -8,4 +8,4 @@ public record GetMaterialsQuery
 (
     string? SearchTerm,
     int PageIndex = 1,
-    int PageSize = 10) : IQueryHandler<SearchResponse<List<MaterialResponse>>>;
+    int PageSize = 10) : IQuery<SearchResponse<List<MaterialResponse>>>;

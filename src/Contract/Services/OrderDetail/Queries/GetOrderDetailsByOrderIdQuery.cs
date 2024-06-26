@@ -7,4 +7,4 @@ namespace Contract.Services.OrderDetail.Queries;
 public record GetOrderDetailsByOrderIdQuery
 (
     Guid OrderId
-    ) : IQueryHandler<OrderDetailResponse>;
+    ) : IQuery<OrderDetailResponse>;

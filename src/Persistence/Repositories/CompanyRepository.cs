@@ -5,10 +5,10 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
-
 public class CompanyRepository : ICompanyRepository
 {
     private readonly AppDbContext _context;
+
     public CompanyRepository(AppDbContext context)
     {
         _context = context;
@@ -54,9 +54,9 @@ public class CompanyRepository : ICompanyRepository
         {
             query = query.Where(company => company.DirectorPhone.Contains(request.PhoneNumber));
         }
-        if (!string.IsNullOrWhiteSpace(request.CompanyType))
+        if (request.CompanyType != null)
         {
-            query = query.Where(company => company.CompanyTypeUnAccent.Contains(StringUtils.RemoveDiacritics(request.CompanyType)));
+            query = query.Where(company => company.CompanyType == request.CompanyType);
         }
 
         var totalItems = await query.CountAsync();
@@ -70,6 +70,10 @@ public class CompanyRepository : ICompanyRepository
             .ToListAsync();
 
         return (companies, totalPages);
+    }
+    public async Task<bool> IsCompanyExistAsync(Guid companyId)
+    {
+        return await _context.Companies.AnyAsync(c => c.Id == companyId);
     }
 
 }

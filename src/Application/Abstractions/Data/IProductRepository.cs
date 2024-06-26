@@ -14,5 +14,6 @@ public interface IProductRepository
     Task<Product?> GetProductByIdWithoutImages(Guid id);
     Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery);
     Task<bool> IsProductIdExist(Guid id);
+    Task<List<Product>> SearchProductAsync(string search);
 
 }

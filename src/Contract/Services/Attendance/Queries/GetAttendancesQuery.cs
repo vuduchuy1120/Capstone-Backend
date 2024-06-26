@@ -8,4 +8,4 @@ namespace Contract.Services.Attendance.Query;
 public record GetAttendancesQuery(
     GetAttendanceRequest GetAttendanceRequest,
     Guid CompanyIdClaim,
-    string RoleName) : IQueryHandler<SearchResponse<List<AttendanceResponse>>>;
+    string RoleName) : IQuery<SearchResponse<List<AttendanceResponse>>>;

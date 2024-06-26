@@ -48,6 +48,11 @@ internal class SetRepository : ISetRepository
         return query.Count == setIds.Count;
     }
 
+    public async Task<bool> IsAllSetExistAsync(List<Guid> ids)
+    {
+        var numberExist = await _context.Sets.CountAsync(s => ids.Contains(s.Id));
+        return numberExist == ids.Count;
+    }
     public async Task<bool> IsCodeExistAsync(string code)
     {
         return await _context.Sets.AnyAsync(s => s.Code == code);

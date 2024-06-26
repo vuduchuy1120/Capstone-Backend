@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Material.Query;
 
-public record GetMaterialUnitsQuery : IQueryHandler<List<string>>;
+public record GetMaterialUnitsQuery : IQuery<List<string>>;

@@ -5,5 +5,6 @@ public record CreateOrderRequest
     Guid CompanyId,
     string Status,
     string StartOrder,
-    string EndOrder
+    string EndOrder,
+    double VAT
     );

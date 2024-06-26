@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Files.GetFile;
 
-public record GetFileQuery(string fileName) : IQueryHandler<byte[]>;
+public record GetFileQuery(string fileName) : IQuery<string>;

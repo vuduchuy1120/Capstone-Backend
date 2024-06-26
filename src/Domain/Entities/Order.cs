@@ -8,13 +8,14 @@ namespace Domain.Entities;
 
 public class Order : EntityAuditBase<Guid>
 {
-    public Guid CompanyId { get; set; }
-    public string Status { get; set; }
-    public DateOnly? StartOrder { get; set; }
-    public DateOnly? EndOrder { get; set; }
-    public Company Company { get; set; }
-    public List<OrderDetail>? OrderDetails { get; set; }
-    public List<ShipOrder>? ShipOrders { get; set; }
+    public Guid CompanyId { get; private set; }
+    public string Status { get; private set; }
+    public DateOnly? StartOrder { get; private set; }
+    public DateOnly? EndOrder { get; private set; }
+    public double VAT { get; private set; }
+    public Company Company { get; private set; }
+    public List<OrderDetail>? OrderDetails { get; private set; }
+    public List<ShipOrder>? ShipOrders { get; private set; }
 
     public static Order Create(CreateOrderRequest request, string CreatedBy)
     {
@@ -25,6 +26,7 @@ public class Order : EntityAuditBase<Guid>
             Status = request.Status,
             StartOrder = ConvertStringToDateTimeOnly(request.StartOrder),
             EndOrder = ConvertStringToDateTimeOnly(request.EndOrder),
+            VAT = request.VAT,
             CreatedBy = CreatedBy,
             CreatedDate = DateTime.UtcNow
         };
@@ -35,6 +37,7 @@ public class Order : EntityAuditBase<Guid>
         Status = request.Status;
         StartOrder = ConvertStringToDateTimeOnly(request.StartOrder);
         EndOrder = ConvertStringToDateTimeOnly(request.EndOrder);
+        VAT = request.VAT;
         UpdatedBy = UpdatedBy;
         UpdatedDate = DateTime.UtcNow;
     }

@@ -9,4 +9,5 @@ public record OrderResponse
     CompanyResponse Company,
     string Status,
     DateOnly? StartOrder,
-    DateOnly? EndOrder);
+    DateOnly? EndOrder,
+    double VAT);

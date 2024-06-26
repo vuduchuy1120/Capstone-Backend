@@ -36,8 +36,8 @@ public class CreateMaterialCommandHandlerTests
                        Description: "Description 1",
                        Unit: "Unit 1",
                        QuantityPerUnit: 1,
-                       Image: "No Image");
-
+                       Image: "No Image",
+                       QuantityInStock: 1);
 
         // Act
         var result = await _handler.Handle(new CreateMaterialCommand(request), CancellationToken.None);
@@ -46,17 +46,20 @@ public class CreateMaterialCommandHandlerTests
         result.Should().BeOfType<Result.Success>();
     }
     [Theory]
-    [InlineData("", "Description 1", "Unit 1", 1, "No Image")]
-    [InlineData("Material 1", "", "", 1, "No Image")]
-    [InlineData("Material 1", "Description 1", "", 1, "No Image")]
-    [InlineData("Material 1", "Description 1", "Unit 1", 0, "No Image")]
-    [InlineData("Material 1", "Description 1", "Unit 1", -1, "")]
+    [InlineData("", "Description 1", "Unit 1", 1, "No Image",2)]
+    [InlineData("Material 1", "", "", 1, "No Image",2)]
+    [InlineData("Material 1", "Description 1", "", 1, "No Image",2)]
+    [InlineData("Material 1", "Description 1", "Unit 1", 0, "No Image",2)]
+    [InlineData("Material 1", "Description 1", "Unit 1", -1, "",2)]
+    [InlineData("Material 1", "Description 1", "Unit 1", 1, "No Image", -1)]
+
     public async Task Handle_Should_Throw_ValidationException(
         string name,
         string description,
         string unit,
         int quantityPerUnit,
-        string image)
+        string image,
+        double quantityInStock)
     {
         // Arrange
         var request = new CreateMaterialRequest(
@@ -64,7 +67,8 @@ public class CreateMaterialCommandHandlerTests
                       Description: description,
                       Unit: unit,
                       QuantityPerUnit: quantityPerUnit,
-                      Image: image);
+                      Image: image,
+                      QuantityInStock: quantityInStock);
 
         // Act
         Func<Task> act = async () => await _handler.Handle(new CreateMaterialCommand(request), CancellationToken.None);

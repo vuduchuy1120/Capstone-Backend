@@ -39,10 +39,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
                                 Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
                                 MaterialId: 1,
                                 Quantity: 1,
-                                QuantityPerUnit: 1,
                                 Price: 50000,
                                 Description: "Description",
-                                QuantityInStock: 1,
                                 ImportDate: "03/06/2024");
         // Act
         _materialHistoryRepositoryMock.Setup(x => x.IsMaterialHistoryExist(It.IsAny<Guid>()))
@@ -67,10 +65,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
                             Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
                             MaterialId: 1,
                             Quantity: 1,
-                            QuantityPerUnit: 1,
                             Price: 50000,
                             Description: "Description",
-                            QuantityInStock: 1,
                             ImportDate: "03/06/2024");
 
         _materialHistoryRepositoryMock.Setup(x => x.IsMaterialHistoryExist(It.IsAny<Guid>()))
@@ -90,10 +86,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
                             Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
                             MaterialId: 1,
                             Quantity: 1,
-                            QuantityPerUnit: 1,
                             Price: 50000,
                             Description: "Description",
-                            QuantityInStock: 1,
                             ImportDate: "03/06/2024");
 
         _materialHistoryRepositoryMock.Setup(x => x.IsMaterialHistoryExist(It.IsAny<Guid>()))
@@ -113,18 +107,16 @@ public class UpdateMaterialHistoryCommandHandlerTests
 
 
     [Theory]
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 0.0, 1.0, 50000.0, "Description", 1.0, "03/06/2024")] // error quantity
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, -1.0, 1.0, 50000.0, "Description", 1.0, "03/06/2024")]
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 1.0, 0.0, "Description", 1.0, "03/06/2024")] // error price
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 1.0, 50000.0, "Description", 1.0, "")] // error importDate
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 0.0, 50000.0, "Description", "03/06/2024")] // error quantity
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, -1.0, 50000.0, "Description", "03/06/2024")]
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 0.0, "Description", "03/06/2024")] // error price
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 50000.0, "Description", "")] // error importDate
     public async Task Handle_Should_Throw_ValidationException(
         string id,
         int materialId,
-        double quantity, 
-        double? quantityPerUnit,
+        double quantity,
         decimal price,
         string? description,
-        double? quantityInStock, 
         string importDate)
     {
         // Arrange
@@ -132,10 +124,8 @@ public class UpdateMaterialHistoryCommandHandlerTests
             Id: new Guid(id),
             MaterialId: materialId,
             Quantity: quantity,
-            QuantityPerUnit: quantityPerUnit,
             Price: price,
             Description: description,
-            QuantityInStock: quantityInStock,
             ImportDate: importDate);
 
         // error id inline 1 not found

@@ -34,9 +34,7 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
             .EmailAddress().WithMessage("Email is not valid.")
             .MaximumLength(100)
             .WithMessage("Email cannot exceed 100 characters.");
-        RuleFor(x => x.CompanyRequest.CompanyType)
-            .NotEmpty().WithMessage("CompanyType is required.")
-            .MaximumLength(100).WithMessage("CompanyType cannot exceed 100 characters.");
+
         RuleFor(x => x.Id)
             .MustAsync(async (id, _) => await _companyRepository.IsExistAsync(id))
             .WithMessage("CompanyId not found!");

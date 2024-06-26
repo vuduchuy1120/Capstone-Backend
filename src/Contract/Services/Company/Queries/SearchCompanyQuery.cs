@@ -1,5 +1,6 @@
 ﻿using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Search;
+using Contract.Services.Company.Shared;
 using Contract.Services.Company.ShareDtos;
 
 namespace Contract.Services.Company.Queries;
@@ -11,7 +12,7 @@ public record SearchCompanyQuery
     string? PhoneNumber,
     string? Email,
     string? DirectorName,
-    string? CompanyType,
+    CompanyType? CompanyType,
     int PageIndex = 1,
     int PageSize = 10
-    ) : IQueryHandler<SearchResponse<List<CompanyResponse>>>;
+    ) : IQuery<SearchResponse<List<CompanyResponse>>>;

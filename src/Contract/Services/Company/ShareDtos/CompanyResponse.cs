@@ -1,4 +1,6 @@
-﻿namespace Contract.Services.Company.ShareDtos;
+﻿using Contract.Services.Company.Shared;
+
+namespace Contract.Services.Company.ShareDtos;
 
 public record CompanyResponse
 (
@@ -8,5 +10,5 @@ public record CompanyResponse
     string DirectorName,
     string DirectorPhone,
     string Email,
-    string CompanyType
+    CompanyType CompanyType
     );

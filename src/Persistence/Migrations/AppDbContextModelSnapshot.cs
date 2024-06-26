@@ -81,13 +81,8 @@ namespace Persistence.Migrations
                     b.Property<string>("AddressUnAccent")
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CompanyTypeUnAccent")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CompanyType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("DirectorName")
                         .IsRequired()
@@ -184,6 +179,9 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<double>("QuantityInStock")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("QuantityPerUnit")
                         .HasColumnType("double precision");
 
@@ -216,12 +214,6 @@ namespace Persistence.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<double>("Quantity")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityInStock")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("QuantityPerUnit")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -263,6 +255,9 @@ namespace Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double>("VAT")
+                        .HasColumnType("double precision");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
@@ -275,6 +270,9 @@ namespace Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
@@ -400,13 +398,18 @@ namespace Persistence.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("SalaryPerProduct")
                         .HasColumnType("numeric");
 
-                    b.HasKey("PhaseId", "ProductId");
+                    b.HasKey("PhaseId", "ProductId", "CompanyId");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("ProductId");
 
@@ -430,6 +433,13 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ReplyMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReportType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -440,7 +450,13 @@ namespace Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reports");
                 });
@@ -543,6 +559,16 @@ namespace Persistence.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("ShipDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ShipperId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
@@ -552,6 +578,8 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("ShipperId");
 
                     b.ToTable("ShipOrders");
                 });
@@ -572,6 +600,16 @@ namespace Persistence.Migrations
                     b.Property<Guid>("FromId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("ShipDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ShipperId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("ToId")
                         .HasColumnType("uuid");
 
@@ -582,6 +620,8 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShipperId");
 
                     b.ToTable("Shipments");
                 });
@@ -601,10 +641,10 @@ namespace Persistence.Migrations
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("ProductPhaseType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ReturnQuantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("SetId")
@@ -828,6 +868,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ProductPhase", b =>
                 {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("ProductPhases")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Phase", "Phase")
                         .WithMany("ProductPhases")
                         .HasForeignKey("PhaseId")
@@ -840,9 +886,22 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Company");
+
                     b.Navigation("Phase");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Report", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("Reports")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.SetProduct", b =>
@@ -872,7 +931,26 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.User", "Shipper")
+                        .WithMany("ShipOrders")
+                        .HasForeignKey("ShipperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
+
+                    b.Navigation("Shipper");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Shipment", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "Shipper")
+                        .WithMany("Shipments")
+                        .HasForeignKey("ShipperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shipper");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
@@ -936,6 +1014,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("ProductPhases");
 
                     b.Navigation("Users");
                 });
@@ -1017,6 +1097,12 @@ namespace Persistence.Migrations
                     b.Navigation("Attendances");
 
                     b.Navigation("EmployeeProducts");
+
+                    b.Navigation("Reports");
+
+                    b.Navigation("ShipOrders");
+
+                    b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618
         }

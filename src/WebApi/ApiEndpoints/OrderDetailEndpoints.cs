@@ -27,11 +27,11 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Order Detail api" } }
             });
 
-            app.MapGet(string.Empty, async (
+            app.MapGet("order/{orderId}", async (
                             ISender sender,
-                            [AsParameters] GetOrderDetailsByOrderIdQuery request) =>
+                            [FromRoute] Guid orderId) =>
             {
-                var result = await sender.Send(request);
+                var result = await sender.Send(new GetOrderDetailsByOrderIdQuery(orderId));
 
                 return Results.Ok(result);
             }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)

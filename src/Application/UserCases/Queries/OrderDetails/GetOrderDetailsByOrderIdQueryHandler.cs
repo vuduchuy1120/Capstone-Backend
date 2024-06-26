@@ -71,7 +71,8 @@ namespace Application.UserCases.Queries.OrderDetails
             var data = new OrderDetailResponse(
                 OrderId: request.OrderId,
                 ProductOrderResponses: products,
-                SetOrderResponses: sets
+                SetOrderResponses: sets,
+                Note: orderDetails.FirstOrDefault()?.Note ?? string.Empty
             );
 
             return Result.Success<OrderDetailResponse>.Get(data);

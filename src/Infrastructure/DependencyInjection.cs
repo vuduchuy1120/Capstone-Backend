@@ -85,6 +85,7 @@ public static class DependencyInjection
 
         services.AddScoped<IRedisService, RedisService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<ICloudStorage, GoogleCloudStorage>();
 
         var apiKeySid = "SK.0.DjKijVdL1BKmr4ktbhuk84ugDaBWb498";
         var apiKeySecret = "MVZtVzh1TWhpZTZuY2cwV3g2WmZyZjZxbnFFTnJCcFE=";

@@ -38,25 +38,25 @@ public class EmployeeProductEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
         });
 
-        app.MapGet(string.Empty, async (
-                       ISender sender,
-                       ClaimsPrincipal claim,
-                        [AsParameters] GetEmployeeProductsByEmployeeIdDateAndSlotIdRequest request) =>
-        {
-            var CompanyId = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
-            Guid.TryParse(CompanyId, out var companyIdGuid);
-            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
-            var userIdClaim = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var getEmployeeProductsByEmployeeIdDateAndSlotIdQuery = new GetEmployeeProductsByEmployeeIdDateAndSlotIdQuery(request, roleName,userIdClaim,companyIdGuid);
-            var result = await sender.Send(getEmployeeProductsByEmployeeIdDateAndSlotIdQuery);
+        //app.MapGet(string.Empty, async (
+        //               ISender sender,
+        //               ClaimsPrincipal claim,
+        //                [AsParameters] GetEmployeeProductsByEmployeeIdDateAndSlotIdRequest request) =>
+        //{
+        //    var CompanyId = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+        //    Guid.TryParse(CompanyId, out var companyIdGuid);
+        //    var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+        //    var userIdClaim = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+        //    var getEmployeeProductsByEmployeeIdDateAndSlotIdQuery = new GetEmployeeProductsByEmployeeIdDateAndSlotIdQuery(request, roleName,userIdClaim,companyIdGuid);
+        //    var result = await sender.Send(getEmployeeProductsByEmployeeIdDateAndSlotIdQuery);
 
-            return Results.Ok(result);
-        })
-        .RequireAuthorization("RequireAnyRole")
-        .WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
-        });
+        //    return Results.Ok(result);
+        //})
+        //.RequireAuthorization("RequireAnyRole")
+        //.WithOpenApi(x => new OpenApiOperation(x)
+        //{
+        //    Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
+        //});
 
     }
 }
