@@ -51,11 +51,35 @@ public static class DependencyInjection
 
         services.AddAuthorizationBuilder()
             .AddPolicy("Require-Admin", policy => policy.RequireClaim("Role", "MAIN_ADMIN"))
+            .AddPolicy("Require-User", policy => policy.RequireClaim("Role", "USER"))
+            .AddPolicy("Require-Counter", policy => policy.RequireClaim("Role", "COUNTER"))
+            .AddPolicy("Require-Driver", policy => policy.RequireClaim("Role", "DRIVER"))
+            .AddPolicy("Require-Branch-Admin", policy => policy.RequireClaim("Role", "BRANCH_ADMIN"))
+            .AddPolicy("RequireAdminOrBranchAdmin", policy =>
+                        policy.RequireAssertion(
+                            context =>
+                            context.User.HasClaim(
+                                c => c.Type == "Role" &&
+                                (c.Value == "MAIN_ADMIN" || c.Value == "BRANCH_ADMIN"))))
+            .AddPolicy("RequireAdminOrCounter", policy => policy.RequireAssertion(
+                                           context =>
+                                            context.User.HasClaim(
+                                            c => c.Type == "Role" &&
+                                            (c.Value == "MAIN_ADMIN" || c.Value == "COUNTER" || c.Value == "BRANCH_ADMIN"))))
+            .AddPolicy("RequireAdminOrDriver", policy => policy.RequireAssertion(
+                context => context.User.HasClaim(
+                    c => c.Type == "Role" &&
+                    (c.Value == "MAIN_ADMIN" || c.Value == "DRIVER" || c.Value == "BRANCH_ADMIN"))))
+            .AddPolicy("RequireAnyRole", policy => policy.RequireAssertion(
+                               context => context.User.HasClaim(
+                                c => c.Type == "Role")))
             .AddPolicy("Require-Admin-Or-Admin-Branch", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
                             c.Type == "Role" && (c.Value == "MAIN_ADMIN" || c.Value == "BRAND_ADMIN"))
                     ));
+
+
 
         services.AddStackExchangeRedisCache(options =>
         {

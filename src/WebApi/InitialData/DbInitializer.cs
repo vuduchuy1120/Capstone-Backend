@@ -27,18 +27,18 @@ public class DbInitializer
             SeedRoleData(context);
         }
 
-        if(!context.Companies.Any())
+        if (!context.Companies.Any())
         {
             SeedCompanyData(context);
         }
 
-        if(!context.Users.Any())
+        if (!context.Users.Any())
         {
             var passwordService = provider.GetService<IPasswordService>();
             SeedUserData(context, passwordService);
         }
 
-        if(!context.Slots.Any())
+        if (!context.Slots.Any())
         {
             SeedSlotData(context);
         }
@@ -51,7 +51,9 @@ public class DbInitializer
         {
             Role.Create(new CreateRoleCommand("MAIN_ADMIN", "HuyVu's father")),
             Role.Create(new CreateRoleCommand("BRAND_ADMIN", "HuyVu's father")),
-            Role.Create(new CreateRoleCommand("COUNTER", "HuyVu's father"))
+            Role.Create(new CreateRoleCommand("COUNTER", "HuyVu's father")),
+            Role.Create(new CreateRoleCommand("DRIVER", "HuyVu's father")),
+            Role.Create(new CreateRoleCommand("USER", "HuyVu's father"))
         };
 
         context.Roles.AddRange(roles);
@@ -75,14 +77,14 @@ public class DbInitializer
     {
         var companies = new List<Company>
         {
-            Company.Create(new CreateCompanyCommand("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", CompanyType.FACTORY)),
-            Company.Create(new CreateCompanyCommand("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", CompanyType.FACTORY)),
-             Company.Create(new CreateCompanyCommand("Công ty đối tác sản xuất", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", CompanyType.THIRD_PARTY_COMPANY)),
-              Company.Create(new CreateCompanyCommand("Công ty cổ phần ABC", "Hà Nội", "Vũ Đức Huy",
-            "0976099789", "admin@admin.com", CompanyType.CUSTOMER_COMPANY)),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com",CompanyType.FACTORY))),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Cơ sở phụ", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin2@admin.com", CompanyType.FACTORY))),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Công ty đối tác sản xuất", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", CompanyType.THIRD_PARTY_COMPANY))),
+            Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Công ty cổ phần ABC", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", CompanyType.CUSTOMER_COMPANY))),
         };
 
         context.Companies.AddRange(companies);

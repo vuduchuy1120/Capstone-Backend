@@ -22,7 +22,7 @@ public class UserEndpoints : CarterModule
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/{id}", async (ISender sender,  string id) =>
+        app.MapGet("/{id}", async (ISender sender, string id) =>
         {
             var result = await sender.Send(new GetUserByIdQuery(id));
 
@@ -43,7 +43,7 @@ public class UserEndpoints : CarterModule
         });
 
         app.MapPost(string.Empty, async (
-            ISender sender, 
+            ISender sender,
             ClaimsPrincipal claim,
             [FromBody] CreateUserRequest userRequest) =>
         {
@@ -58,8 +58,8 @@ public class UserEndpoints : CarterModule
         });
 
         app.MapPut(string.Empty, async (
-            ISender sender, 
-            ClaimsPrincipal claim, 
+            ISender sender,
+            ClaimsPrincipal claim,
             [FromBody] UpdateUserRequest updateUserRequest) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
@@ -74,9 +74,9 @@ public class UserEndpoints : CarterModule
         });
 
         app.MapPut("/{id}/status/{isActive}", async (
-            ISender sender, 
-            ClaimsPrincipal claim, 
-            [FromRoute] string id, 
+            ISender sender,
+            ClaimsPrincipal claim,
+            [FromRoute] string id,
             [FromRoute] bool isActive) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
@@ -91,8 +91,8 @@ public class UserEndpoints : CarterModule
         });
 
         app.MapPut("/change-password", async (
-            ISender sender, 
-            ClaimsPrincipal claim, 
+            ISender sender,
+            ClaimsPrincipal claim,
             [FromBody] ChangePasswordRequest request) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
@@ -102,6 +102,22 @@ public class UserEndpoints : CarterModule
 
             return Results.Ok(result);
         }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
+
+        app.MapGet("/Company", async (
+            ISender sender,
+            ClaimsPrincipal claim,
+            [AsParameters] GetUsersByCompanyIdRequest request) =>
+        {
+            var CompanyId = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+            Guid.TryParse(CompanyId, out var companyId);
+            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+            var result = await sender.Send(new GetUsersByCompanyIdQuery(request, companyId, roleName));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("RequireAdminOrCounter").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
         });

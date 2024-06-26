@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Contract.Services.Material.ShareDto;
+﻿namespace Contract.Services.Material.ShareDto;
 
 public record MaterialResponse
 (
@@ -13,5 +7,6 @@ public record MaterialResponse
     string? Description,
     string Unit,
     double? QuantityPerUnit,
-    string? Image
+    string? Image,
+    double QuantityInStock
     );

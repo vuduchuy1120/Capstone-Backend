@@ -5,8 +5,14 @@ namespace Domain.Exceptions.Companies;
 
 public class CompanyNotFoundException : MyException
 {
-    public CompanyNotFoundException() : base(
-        (int) HttpStatusCode.NotFound, "Không tìm thấy công ty theo yêu cầu")
+    public CompanyNotFoundException(Guid id)
+       : base(400, $"Can not found Company has id: {id}")
     {
     }
+
+    public CompanyNotFoundException()
+        : base(400, $"Search Company not found")
+    {
+    }
+
 }

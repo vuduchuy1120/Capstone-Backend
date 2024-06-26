@@ -25,41 +25,38 @@ public class EmployeeProductEndpoints : CarterModule
        [FromBody] CreateEmployeeProductRequest createEmployeeProductRequest) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var createEmployeeProductCommand = new CreateEmployeeProductComand(createEmployeeProductRequest, userId);
+            var CompanyId = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+            Guid.TryParse(CompanyId, out var companyId);
+            var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+            var createEmployeeProductCommand = new CreateEmployeeProductComand(createEmployeeProductRequest, userId, roleName, companyId);
             var result = await sender.Send(createEmployeeProductCommand);
 
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
-        });
-        app.MapDelete(string.Empty, async (
-                ISender sender,
-                [FromBody] DeleteEmployeeProductRequest deleteEmployeeProductRequest) =>
-        {
-            var deleteEmployeeProductCommand = new DeleteEmployeeProductCommand(deleteEmployeeProductRequest);
-            var result = await sender.Send(deleteEmployeeProductCommand);
-
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization("RequireAdminOrCounter")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
         });
 
-        app.MapGet(string.Empty, async (
-                       ISender sender,
-                        [FromQuery] int slotId,
-                        [FromQuery] string userId,
-                        [FromQuery] string date) =>
-        {
-            var getEmployeeProductsByEmployeeIdDateAndSlotIdQuery = new GetEmployeeProductsByEmployeeIdDateAndSlotIdQuery(slotId, userId, date);
-            var result = await sender.Send(getEmployeeProductsByEmployeeIdDateAndSlotIdQuery);
+        //app.MapGet(string.Empty, async (
+        //               ISender sender,
+        //               ClaimsPrincipal claim,
+        //                [AsParameters] GetEmployeeProductsByEmployeeIdDateAndSlotIdRequest request) =>
+        //{
+        //    var CompanyId = UserUtil.GetCompanyIdFromClaimsPrincipal(claim);
+        //    Guid.TryParse(CompanyId, out var companyIdGuid);
+        //    var roleName = UserUtil.GetRoleFromClaimsPrincipal(claim);
+        //    var userIdClaim = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+        //    var getEmployeeProductsByEmployeeIdDateAndSlotIdQuery = new GetEmployeeProductsByEmployeeIdDateAndSlotIdQuery(request, roleName,userIdClaim,companyIdGuid);
+        //    var result = await sender.Send(getEmployeeProductsByEmployeeIdDateAndSlotIdQuery);
 
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
-        });
+        //    return Results.Ok(result);
+        //})
+        //.RequireAuthorization("RequireAnyRole")
+        //.WithOpenApi(x => new OpenApiOperation(x)
+        //{
+        //    Tags = new List<OpenApiTag> { new() { Name = "EmployeeProduct api" } }
+        //});
 
     }
 }

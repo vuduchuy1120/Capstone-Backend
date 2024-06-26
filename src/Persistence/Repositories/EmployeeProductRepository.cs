@@ -23,20 +23,20 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         _context.EmployeeProducts.RemoveRange(employeeProducts);
     }
 
-    public async Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date)
+    public async Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date, Guid companyId)
     {
         return await _context.EmployeeProducts
             .Include(ep => ep.Phase)
             .Include(ep => ep.Product)
             .ThenInclude(p => p.Images)
-            .Where(ep => ep.SlotId == slotId && ep.Date == date)
+            .Where(ep => ep.SlotId == slotId && ep.Date == date && ep.User.CompanyId == companyId)
             .ToListAsync();
     }
 
-    public Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(string userId, int slotId, DateOnly date)
+    public Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(string userId, int slotId, DateOnly date, Guid companyId)
     {
         return _context.EmployeeProducts.Include(ep => ep.Phase).Include(ep => ep.Product).ThenInclude(p => p.Images)
-            .Where(ep => ep.UserId == userId && ep.SlotId == slotId && ep.Date == date)
+            .Where(ep => ep.UserId == userId && ep.SlotId == slotId && ep.Date == date && ep.User.CompanyId == companyId)
             .ToListAsync();
     }
 

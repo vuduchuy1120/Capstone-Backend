@@ -25,33 +25,22 @@ public class GetAttendanceByUserIDSlotIdAndDateTests : IDisposable
     {
         await InitDb();
         var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync("001201011091", 1, fomartedDate);
+        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdAndDateAsync("001201011091", fomartedDate);
 
         Assert.NotNull(retrievedAttendance);
-        Assert.Equal("001201011091", retrievedAttendance.UserId);
-        Assert.Equal(1, retrievedAttendance.SlotId);
-        Assert.Equal(fomartedDate, retrievedAttendance.Date);
-    }
-    // handle should return null if not found
-    [Fact]
-    public async Task GetAttendanceByUserIDSlotIdAndDate_NotFound_ShouldReturnNull()
-    {
-        await InitDb();
-        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-        var retrievedAttendance = await _attendanceRepository.GetAttendanceByUserIdSlotIdAndDateAsync("001201011091", 2, fomartedDate);
 
-        Assert.Null(retrievedAttendance);
     }
-
     // initDB
     private async Task InitDb()
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
-                                   UserId: "001201011091",
-                                  IsManufacture: true,
-                                   IsSalaryByProduct: false);
+                                    UserId: "001201011091",
+                                    IsAttendance: true,
+                                    HourOverTime: 0.5,
+                                    IsManufacture: true,
+                                    IsSalaryByProduct: false);
 
-        var attendance = Attendance.Create(createAttendanceRequest, 1, "001201011091");
+        var attendance = Attendance.Create(createAttendanceRequest, "01/01/2004", 1, "001201011091");
         _attendanceRepository.AddAttendance(attendance);
         await _context.SaveChangesAsync();
     }

@@ -38,10 +38,8 @@ namespace Persistence.UnitTests.MaterialHistories
                 Id: materialHistory.Id,
                 MaterialId: 1,
                 Quantity: 20,
-                QuantityPerUnit: 10,
                 Price: 10,
                 Description: "Description 1",
-                QuantityInStock: 10,
                 ImportDate: "06/06/2024"
             );
             materialHistory.Update(updateMaterialHistoryRequest);
@@ -61,10 +59,8 @@ namespace Persistence.UnitTests.MaterialHistories
             (
                 MaterialId: 1,
                 Quantity: 10,
-                QuantityPerUnit: 10,
                 Price: 10,
                 Description: "Description 1",
-                QuantityInStock: 10,
                 ImportDate: "06/06/2024"
             );
 

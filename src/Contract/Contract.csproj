@@ -11,4 +11,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Company\Create\" />
+    <Folder Include="Services\Report\ShareDtos\" />
+    <Folder Include="Services\Report\Queries\" />
+  </ItemGroup>
+
 </Project>

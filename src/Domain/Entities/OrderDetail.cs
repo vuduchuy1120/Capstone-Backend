@@ -1,14 +1,32 @@
-﻿using Domain.Abstractions.Entities;
+﻿using Contract.Services.OrderDetail.Creates;
+using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
 
 public class OrderDetail : EntityBase<Guid>
 {
-    public Guid? OrderId { get; set; }
-    public Guid? ProductId { get; set; }
-    public Guid? SetId { get; set; }
-    public Order? Order { get; set; }
-    public Product? Product { get; set; }
-    public Set? Set { get; set; }
-    public int Quantity { get; set; }
+    public Guid OrderId { get;private set; }
+    public Guid? ProductId { get; private set; }
+    public Guid? SetId { get; private set; }
+    public Order Order { get; private set; }
+    public Product? Product { get; private set; }
+    public Set? Set { get; private set; }
+    public int Quantity { get; private set; }
+    public decimal UnitPrice { get; private set; }
+    public string? Note { get; private set; }
+
+
+    public static OrderDetail Create(Guid orderId, OrderDetailRequest request)
+    {
+        return new OrderDetail
+        {
+            OrderId = orderId,
+            ProductId = request.isProductId ? request.ProductIdOrSetId : null,
+            SetId = request.isProductId ? null : request.ProductIdOrSetId,
+            Quantity = request.Quantity,
+            UnitPrice = request.UnitPrice,
+            Note = request.Note
+        };
+    }
+
 }

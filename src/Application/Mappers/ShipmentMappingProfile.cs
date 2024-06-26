@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Services.Company.Shared;
+using Contract.Services.Company.ShareDtos;
 using Contract.Services.Shipment.Share;
 using Domain.Entities;
 

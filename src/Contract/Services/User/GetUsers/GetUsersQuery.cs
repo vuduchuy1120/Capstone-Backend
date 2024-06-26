@@ -10,3 +10,4 @@ public record GetUsersQuery(
     bool IsActive = true,
     int PageIndex = 1,
     int PageSize = 10) : IQuery<SearchResponse<List<UserResponse>>>;
+

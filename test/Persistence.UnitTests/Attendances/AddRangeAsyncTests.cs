@@ -25,17 +25,22 @@ public class AddRangeAttendanceTests : IDisposable
         // Arrange
         var createAttendanceRequest1 = new CreateAttendanceWithoutSlotIdRequest(
             UserId: "001201011091",
+            IsAttendance: true,
+            HourOverTime: 0.5,
             IsManufacture: true,
-            IsSalaryByProduct: false);
+            IsSalaryByProduct: false
+            );
 
-        var attendance1 = Attendance.Create(createAttendanceRequest1, 1, "001201011091");
+        var attendance1 = Attendance.Create(createAttendanceRequest1, "01/01/2004", 1, "001201011091");
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
             UserId: "034202001936",
+            IsAttendance: true,
+            HourOverTime: 0.5,
             IsManufacture: true,
             IsSalaryByProduct: false);
 
-        var attendance2 = Attendance.Create(createAttendanceRequest2, 5, "034202001936");
+        var attendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2004", 5, "034202001936");
 
         var attendances = new List<Attendance> { attendance1, attendance2 };
 
@@ -53,25 +58,30 @@ public class AddRangeAttendanceTests : IDisposable
         // Arrange
         var createAttendanceRequest1 = new CreateAttendanceWithoutSlotIdRequest(
             UserId: "001201011091",
+            IsAttendance: true,
+            HourOverTime: 0.5,
             IsManufacture: true,
-            IsSalaryByProduct: false);
+            IsSalaryByProduct: false
+            );
 
-        var attendance1 = Attendance.Create(createAttendanceRequest1, 1, "001201011091");
+        var attendance1 = Attendance.Create(createAttendanceRequest1, "01/01/2004", 1, "001201011091");
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
             UserId: "034202001936",
+            IsAttendance: true,
+            HourOverTime: 0.5,
             IsManufacture: true,
             IsSalaryByProduct: false);
 
-        var attendance2 = Attendance.Create(createAttendanceRequest2, 5, "034202001936");
+        var attendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2001", 5, "034202001936");
 
         var attendances = new List<Attendance> { attendance1, attendance2 };
 
         await _attendanceRepository.AddRangeAsync(attendances);
         await _context.SaveChangesAsync();
 
-        var duplicateAttendance1 = Attendance.Create(createAttendanceRequest1, 1, "001201011091");
-        var duplicateAttendance2 = Attendance.Create(createAttendanceRequest2, 5, "034202001936");
+        var duplicateAttendance1 = Attendance.Create(createAttendanceRequest1, "01/01/2001", 1, "001201011091");
+        var duplicateAttendance2 = Attendance.Create(createAttendanceRequest2, "01/01/2001",5, "034202001936");
 
         var duplicateAttendances = new List<Attendance> { duplicateAttendance1, duplicateAttendance2 };
 

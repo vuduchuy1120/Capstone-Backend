@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Services.EmployeeProduct.Creates;
 using Domain.Abstractions.Exceptions;
 using FluentValidation;
@@ -13,7 +14,11 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
                 .NotEmpty().WithMessage("Date is required")
                 .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Date must be in the format dd/MM/yyyy")
                 .Must(BeAValidDate).WithMessage("Date must be a valid date in the format dd/MM/yyyy")
-                ;
+                .Must(date =>
+                {
+                    return DateUtil.ConvertStringToDateTimeOnly(date) <= DateOnly.FromDateTime(DateTime.Now);
+                }).WithMessage("Date must be less than or equal to today");
+
             RuleFor(req => req.SlotId)
                 .NotEmpty().WithMessage("SlotId is required")
                 .MustAsync(async (slotId, cancellationToken) =>
@@ -44,6 +49,12 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
                     var phaseIds = createQuantityProducts.Select(c => c.PhaseId).Distinct().ToList();
                     return await phaseRepository.IsAllPhaseExistByIdAsync(phaseIds);
                 }).WithMessage("PhaseIds are invalid");
+            RuleFor(req => req.CreateQuantityProducts)
+                .MustAsync(async (request,createQuantityProducts, cancellationToken) =>
+                {
+                    var userIds = createQuantityProducts.Select(c => c.UserId).Distinct().ToList();
+                    return await userRepository.IsAllUserActiveByCompanyId(userIds, request.CompanyId);                    
+                }).WithMessage("One or more users are other companies, you do not have permission to create products of that employee");
 
         }
 

@@ -13,6 +13,7 @@ public class Material : EntityBase<int>
     public string Unit { get; private set; }
     public double? QuantityPerUnit { get; private set; }
     public string? Image { get; private set; }
+    public double QuantityInStock { get; private set; }
     public List<MaterialHistory>? MaterialHistories { get; private set; }
 
     public static Material Create(CreateMaterialRequest createMaterialRequest)
@@ -24,7 +25,8 @@ public class Material : EntityBase<int>
             Description = createMaterialRequest.Description,
             Unit = createMaterialRequest.Unit,
             QuantityPerUnit = createMaterialRequest.QuantityPerUnit,
-            Image = createMaterialRequest.Image
+            Image = createMaterialRequest.Image,
+            QuantityInStock = createMaterialRequest.QuantityInStock
         };
     }
 
@@ -36,6 +38,7 @@ public class Material : EntityBase<int>
         Unit = updateMaterialRequest.Unit;
         QuantityPerUnit = updateMaterialRequest.QuantityPerUnit;
         Image = updateMaterialRequest.Image;
+        QuantityInStock = updateMaterialRequest.QuantityInStock;
     }
 }
 

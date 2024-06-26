@@ -11,6 +11,7 @@ namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
 internal sealed class UpdateAttendancesCommandHandler(
     IAttendanceRepository _attendanceRepository,
+    IUserRepository _userRepository,
     IUnitOfWork _unitOfWork,
     IValidator<UpdateAttendancesRequest> _validator)
     : ICommandHandler<UpdateAttendancesCommand>
@@ -25,11 +26,21 @@ internal sealed class UpdateAttendancesCommandHandler(
 
         var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateAttendanceRequest.Date);
         var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
+        var roleName = request.RoleNameClaim;
+        var companyId = request.CompanyIdClaim;
 
-        var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
-        if (!isCanUpdateAttendance)
+        if(roleName != "MAIN_ADMIN")
         {
-            throw new MyValidationException("Can not update because over 2 days!");
+            var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
+            if (!isCanUpdateAttendance)
+            {
+                throw new MyValidationException("Can not update because over 2 days!");
+            }
+            var isUpdate = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
+            if (!isUpdate)
+            {
+                throw new MyValidationException("You dont have permission update attendance of other user companyID");
+            }
         }
         var attendances = await _attendanceRepository.GetAttendancesByKeys(request.UpdateAttendanceRequest.SlotId, formattedDate, userIds);
 

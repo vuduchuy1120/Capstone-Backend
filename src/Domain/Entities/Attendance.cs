@@ -20,16 +20,16 @@ namespace Domain.Entities
         public bool IsSalaryByProduct { get; set; } = false;
         public bool IsManufacture { get; set; } = false;
 
-        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest, int slotId, string CreatedBy)
+        public static Attendance Create(CreateAttendanceWithoutSlotIdRequest createAttendanceRequest, string Date, int SlotId, string CreatedBy)
         {
             return new Attendance()
             {
-                SlotId = slotId,
+                SlotId = SlotId,
                 UserId = createAttendanceRequest.UserId,
-                Date = ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.AddHours(7).ToString("dd/MM/yyyy")),
-                HourOverTime = 0,
-                IsAttendance = false,
-                IsOverTime = false,
+                Date = ConvertStringToDateTimeOnly(Date),
+                HourOverTime = createAttendanceRequest.HourOverTime,
+                IsAttendance = createAttendanceRequest.IsAttendance,
+                IsOverTime = createAttendanceRequest.HourOverTime > 0 ? true : false,
                 IsSalaryByProduct = createAttendanceRequest.IsSalaryByProduct,
                 IsManufacture = createAttendanceRequest.IsManufacture,
                 CreatedBy = CreatedBy,

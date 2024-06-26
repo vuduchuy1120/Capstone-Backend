@@ -1,4 +1,5 @@
-﻿using Domain.Abstractions.Exceptions;
+﻿using Contract.Services.Attendance.Create;
+using Domain.Abstractions.Exceptions;
 
 namespace Application.Utils;
 
@@ -22,4 +23,6 @@ public class DateUtil
     {
         return DateTime.UtcNow.AddHours(7);
     }
+
+    
 }

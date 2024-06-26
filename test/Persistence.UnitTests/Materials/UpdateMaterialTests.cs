@@ -33,7 +33,8 @@ public class UpdateMaterialTests : IDisposable
             Description: "Description 1",
             Unit: "Unit 1",
             QuantityPerUnit: 10,
-            Image: "Image 1"
+            Image: "Image 1",
+            QuantityInStock: 100
         );
         var material = Material.Create(createMaterialRequest);
 
@@ -47,7 +48,9 @@ public class UpdateMaterialTests : IDisposable
             Description: "Description 2",
             Unit: "Unit 2",
             QuantityPerUnit: 20,
-            Image: "Image 2"
+            Image: "Image 2",
+            QuantityInStock: 300
+
         );
         material.Update(updateMaterialRequest);
         _materialRepository.UpdateMaterial(material);
@@ -60,6 +63,7 @@ public class UpdateMaterialTests : IDisposable
         Assert.Equal("Unit 2", savedMaterial.Unit);
         Assert.Equal(20, savedMaterial.QuantityPerUnit);
         Assert.Equal("Image 2", savedMaterial.Image);
+        Assert.Equal(300, savedMaterial.QuantityInStock);
     }
 
     public void Dispose()

@@ -31,6 +31,7 @@ public class CreateAttendanceDefaultCommandHandlerTests
 
         _handler = new CreateAttendanceDefaultCommandHandler(
             _attendanceRepositoryMock.Object,
+            _userRepositoryMock.Object,
             _validator,
             _unitOfWorkMock.Object);
     }
@@ -40,23 +41,29 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-            slotId: 2,
+            SlotId: 2,
+            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
+            Date: "01/01/2001",
             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
             {
                 new CreateAttendanceWithoutSlotIdRequest(
                     UserId: "001201011091",
+                    IsAttendance: true,
+                    HourOverTime: 0.5,
                     IsManufacture: true,
-                    IsSalaryByProduct: false
+                    IsSalaryByProduct: true
                 ),
                 new CreateAttendanceWithoutSlotIdRequest(
                     UserId: "034202001936",
+                    IsAttendance: true,
+                    HourOverTime: 0.5,
                     IsManufacture: true,
                     IsSalaryByProduct: false
                 )
             });
 
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 
         _attendanceRepositoryMock
@@ -83,17 +90,21 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-                        slotId: -1,
+                        SlotId: -1,
+                        CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
+                        Date: "01/01/2001",
                         CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                         {
                             new CreateAttendanceWithoutSlotIdRequest(
                                 UserId: "001201011091",
+                                IsAttendance: true,
+                                HourOverTime: 0.5,
                                 IsManufacture: true,
                                 IsSalaryByProduct: false
                             )
                         });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 
@@ -115,17 +126,21 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-                    slotId: 1,
+                    SlotId: 1,
+                    CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
+                    Date: "01/01/2001",
                     CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                     {
                         new CreateAttendanceWithoutSlotIdRequest(
                             UserId: "",
+                            IsAttendance: true,
+                            HourOverTime: 0.5,
                             IsManufacture: true,
                             IsSalaryByProduct: false
                         )
                     });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(false);
 
@@ -146,17 +161,21 @@ public class CreateAttendanceDefaultCommandHandlerTests
     {
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
-                            slotId: 1,
+                            SlotId: 1,
+                            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
+                            Date: "01/01/2001",
                             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                             {
                                 new CreateAttendanceWithoutSlotIdRequest(
                                     UserId: "001201011091",
+                                    IsAttendance: true,
+                                    HourOverTime: 0.5,
                                     IsManufacture: true,
                                     IsSalaryByProduct: false
                                 )
                             });
 
-        var command = new CreateAttendanceDefaultCommand(request, "001201011091");
+        var command = new CreateAttendanceDefaultCommand(request, "001201011091", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
         _userRepositoryMock.Setup(x => x.IsAllUserActiveAsync(It.IsAny<List<string>>())).ReturnsAsync(true);
 

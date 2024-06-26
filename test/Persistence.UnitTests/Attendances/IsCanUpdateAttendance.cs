@@ -28,23 +28,27 @@ public class IsCanUpdateAttendance : IDisposable
     {
         var createAttendanceRequest = new CreateAttendanceWithoutSlotIdRequest(
                                               UserId: "001201011091",
-                                              IsManufacture: true,
-                                              IsSalaryByProduct: false);
-        var req = Domain.Entities.Attendance.Create(createAttendanceRequest, 1, "001201011091");
+                                              IsAttendance: true,
+                                            HourOverTime: 0.5,
+                                            IsManufacture: true,
+                                            IsSalaryByProduct: false);
+        var req = Domain.Entities.Attendance.Create(createAttendanceRequest, "25/06/2024", 1, "001201011091");
         _attendanceRepository.AddAttendance(req);
         _context.SaveChanges();
 
         var createAttendanceRequest2 = new CreateAttendanceWithoutSlotIdRequest(
                                                 UserId: "034202001936",
+                                                IsAttendance: true,
+                                                HourOverTime: 0.5,
                                                 IsManufacture: true,
                                                 IsSalaryByProduct: false);
-        var req2 = Domain.Entities.Attendance.Create(createAttendanceRequest2, 1, "001201011091");
+        var req2 = Domain.Entities.Attendance.Create(createAttendanceRequest2, "25/06/2024", 1, "001201011091");
         _attendanceRepository.AddAttendance(req2);
         _context.SaveChanges();
-        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
+        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly("25/06/2024");
 
         var attendance = _context.Attendances.FirstOrDefault(a => a.Date == fomartedDate && a.SlotId == 1 && a.UserId == "001201011091");
-        attendance.UpdatedDate = DateTime.Parse("2024-05-29 03:31:50.259009+00");
+        attendance.UpdatedDate = DateTime.Parse("2024-06-21 03:31:50.259009+00");
         attendance.UpdatedBy = "001201011091";
         _attendanceRepository.UpdateAttendance(attendance);
         _context.SaveChanges();
@@ -54,7 +58,7 @@ public class IsCanUpdateAttendance : IDisposable
     public async Task IsCanUpdateAttendance_Success_ShouldReturnFalse()
     {
         InitDatabase();
-        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
+        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly("25/06/2024");
         var canUpdate = await _attendanceRepository.IsCanUpdateAttendance("001201011091", 1, fomartedDate);
         Assert.False(canUpdate);
     }
@@ -63,7 +67,7 @@ public class IsCanUpdateAttendance : IDisposable
     public async Task IsCanUpdateAttendance_Success_ShouldReturnTrue()
     {
         InitDatabase();
-        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
+        var fomartedDate = DateUtil.ConvertStringToDateTimeOnly("25/06/2024");
         var canUpdate = await _attendanceRepository.IsCanUpdateAttendance("034202001936", 1, fomartedDate);
         Assert.True(canUpdate);
     }

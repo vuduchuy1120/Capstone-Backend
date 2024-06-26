@@ -3,6 +3,7 @@ using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Company.Shared;
+using Contract.Services.Company.ShareDtos;
 using Contract.Services.MaterialHistory.ShareDto;
 using Contract.Services.Phase.ShareDto;
 using Contract.Services.Product.SharedDto;

@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
 using Contract.Abstractions.Shared.Search;
+using Contract.Services.Attendance.Queries;
 using Contract.Services.Attendance.Query;
 using Contract.Services.Attendance.ShareDto;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -44,17 +46,33 @@ public class AttendanceRepository : IAttendanceRepository
             .ToListAsync();
     }
 
-    public async Task<Attendance?> GetAttendanceByUserIdSlotIdAndDateAsync(string userId, int slotId, DateOnly date)
+    public async Task<List<Attendance>> GetAttendanceByMonthAndUserIdAsync(int month, int year, string userId)
     {
-        var attendance = await _context.Attendances
+        var query = await _context.Attendances
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.UserId.Equals(userId) &&
-                                        a.SlotId == (slotId) &&
-                                        a.Date == (date));
-        return attendance;
+            .Where(a => a.Date.Month == month && a.Date.Year == year && a.UserId.Equals(userId))
+            .OrderByDescending(a => a.Date)
+            .ThenBy(a => a.SlotId)
+            .ToListAsync();
+        return query;
     }
 
-    public async Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
+    public async Task<List<Attendance>> GetAttendanceByUserIdAndDateAsync(string userId, DateOnly date)
+    {
+        var query = await _context.Attendances
+            .Include(a => a.User)
+                .ThenInclude(u => u.EmployeeProducts)
+                .ThenInclude(ep => ep.Product)
+                .ThenInclude(p => p.Images)
+            .Include(a => a.User)
+                .ThenInclude(u => u.EmployeeProducts)
+                .ThenInclude(ep => ep.Phase)
+            .Where(a => a.Date == date && a.UserId.Equals(userId)).ToListAsync();
+
+        return query;
+    }
+
+    public async Task<SearchResponse<List<AttendanceOverallResponse>>> GetAttendanceOverall1Async(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
     {
         var query = _context.Attendances.AsQueryable();
 
@@ -108,6 +126,76 @@ public class AttendanceRepository : IAttendanceRepository
             totalPages,
             groupedByDate);
     }
+
+    public async Task<(List<AttendanceOverallResponse>?, int)> GetAttendanceOverallAsync(DateOnly? startDate, DateOnly? endDate, int pageIndex, int pageSize)
+    {
+        var query = _context.Attendances.AsQueryable();
+
+        // Apply date filters if provided
+        if (startDate.HasValue)
+        {
+            query = query.Where(a => a.Date >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(a => a.Date <= endDate.Value);
+        }
+
+        // Get the total record count for pagination
+        var totalRecords = await query.CountAsync();
+
+        // Calculate total pages
+        var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        // If totalRecords is zero, return an empty list immediately
+        if (totalRecords == 0)
+        {
+            return (new List<AttendanceOverallResponse>(), totalPages);
+        }
+
+        // Ensure pageIndex is at least 1 and within totalPages
+        pageIndex = Math.Max(1, Math.Min(pageIndex, totalPages));
+
+        // Calculate the number of records to skip
+        int skip = (pageIndex - 1) * pageSize;
+
+        // Apply sorting, pagination, and include related entities
+        var pagedQuery = query
+            .OrderByDescending(a => a.Date)
+            .ThenBy(a => a.SlotId)
+            .Skip(skip)
+            .Take(pageSize)
+            .Include(a => a.Slot)
+            .Include(a => a.User);
+
+        // Execute the paged query and project the results
+        var groupedByDate = await pagedQuery
+            .GroupBy(a => new { a.Date, a.SlotId })
+            .Select(g => new
+            {
+                Date = g.Key.Date,
+                SlotId = g.Key.SlotId,
+                AttendanceStats = new AttendanceStatisticResponse(
+                    g.Key.SlotId,
+                    g.Count(),
+                    g.Count(a => a.IsManufacture),
+                    g.Count(a => a.IsSalaryByProduct),
+                    g.Sum(a => a.HourOverTime),
+                    g.Count(a => a.IsAttendance)
+                )
+            })
+            .GroupBy(x => x.Date)
+            .Select(g => new AttendanceOverallResponse(
+                g.Key,
+                g.Select(x => x.AttendanceStats).ToList()
+            ))
+            .ToListAsync();
+
+        // Return the paginated results and total pages
+        return (groupedByDate, totalPages);
+    }
+
 
     public async Task<List<Attendance>> GetAttendancesByKeys(int slotId, DateOnly date, List<string> userIds)
     {
@@ -180,26 +268,20 @@ public class AttendanceRepository : IAttendanceRepository
         return Task.FromResult(true);
     }
 
-    public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendancesQuery request)
+    public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendanceRequest request)
     {
-        DateOnly formatedDate;
-        if (!string.IsNullOrWhiteSpace(request.Date))
-        {
-            formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
-        }
-        else
-        {
-            formatedDate = DateOnly.FromDateTime(DateTime.Now);
-        }
+
+        var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
+
         var query = _context.Attendances
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)
-                .ThenInclude(p => p.Product)
-                .ThenInclude(p => p.Images)
+                    .ThenInclude(p => p.Product)
+                        .ThenInclude(p => p.Images)
             .Include(user => user.User)
                 .ThenInclude(emp => emp.EmployeeProducts)
-                .ThenInclude(p => p.Phase)
-            .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId);
+                    .ThenInclude(p => p.Phase)
+            .Where(a => a.Date == formatedDate && a.SlotId == request.SlotId && a.User.CompanyId == request.CompanyId);
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(attendance => (attendance.User.FirstName + ' ' + attendance.User.LastName).Contains(request.SearchTerm));

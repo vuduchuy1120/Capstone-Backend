@@ -8,7 +8,7 @@ public interface IEmployeeProductRepository
     void DeleteRangeEmployeeProduct(List<EmployeeProduct> employeeProducts);
     Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys);
     Task<List<EmployeeProduct>> GetEmployeeProductsByKeysAsync(List<CompositeKey> keys);
-    Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId(
-        string userId, int slotId, DateOnly date);
-    Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date);
+    Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId
+        (string userId, int slotId, DateOnly date, Guid companyId);
+    Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date, Guid companyId);
 }

@@ -35,9 +35,24 @@ internal class UserRepository : IUserRepository
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
+    public Task<List<User>> GetUsersByCompanyId(Guid companyId)
+    {
+        return _context.Users
+            .AsNoTracking()
+            .Include(user => user.Role)
+            .Where(user => user.CompanyId == companyId && user.IsActive == true)
+            .ToListAsync();
+    }
+
     public async Task<bool> IsAllUserActiveAsync(List<string> userIds)
     {
         var countUsers = await _context.Users.CountAsync(user => userIds.Contains(user.Id) && user.IsActive == true);
+        return countUsers == userIds.Count;
+    }
+
+    public async Task<bool> IsAllUserActiveByCompanyId(List<string> userIds, Guid companyId)
+    {
+        var countUsers = await _context.Users.CountAsync(user => userIds.Contains(user.Id) && user.IsActive == true && user.CompanyId == companyId);
         return countUsers == userIds.Count;
     }
 

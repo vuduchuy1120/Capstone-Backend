@@ -5,11 +5,6 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.MaterialHistory.Queries;
 using Contract.Services.MaterialHistory.ShareDto;
 using Domain.Exceptions.MaterialHistories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.UserCases.Queries.MaterialHistories;
 

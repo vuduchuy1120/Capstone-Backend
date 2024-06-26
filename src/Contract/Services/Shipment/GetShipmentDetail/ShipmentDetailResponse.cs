@@ -1,4 +1,4 @@
-﻿using Contract.Services.Company.Shared;
+﻿using Contract.Services.Company.ShareDtos;
 using Contract.Services.Shipment.Share;
 using Contract.Services.ShipmentDetail.Share;
 using Contract.Services.User.SharedDto;

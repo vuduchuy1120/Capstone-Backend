@@ -2,4 +2,8 @@
 
 namespace Contract.Services.Attendance.Update;
 
-public record UpdateAttendancesCommand(UpdateAttendancesRequest UpdateAttendanceRequest, string UpdatedBy) : ICommand;
+public record UpdateAttendancesCommand(
+    UpdateAttendancesRequest UpdateAttendanceRequest,
+    string UpdatedBy,
+    Guid CompanyIdClaim, 
+    string RoleNameClaim) : ICommand;

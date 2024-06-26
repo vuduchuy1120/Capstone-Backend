@@ -126,11 +126,17 @@ public class AppDbContext : DbContext, IUnitOfWork
             .WithMany(s => s.EmployeeProducts)
             .HasForeignKey(ep => ep.SlotId);
 
+        modelBuilder.Entity<Company>().ToTable("Companies");
+        modelBuilder.Entity<Order>().ToTable("Orders");
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Company)
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CompanyId);
         modelBuilder.Entity<Shipment>()
-            .HasOne(s => s.FromCompany)
-            .WithMany()
-            .HasForeignKey(s => s.FromId)
-            .OnDelete(DeleteBehavior.Restrict);
+           .HasOne(s => s.FromCompany)
+           .WithMany()
+           .HasForeignKey(s => s.FromId)
+           .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Shipment>()
             .HasOne(s => s.ToCompany)

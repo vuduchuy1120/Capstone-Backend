@@ -58,7 +58,8 @@ namespace Persistence.UnitTests.Materials
               Description: "Description 1",
               Unit: "Unit 1",
               QuantityPerUnit: 10,
-              Image: "Image 1"
+              Image: "Image 1",
+              QuantityInStock: 10
           );
             var material = Material.Create(createMaterialRequest);
             _context.Materials.Add(material);
