@@ -2,6 +2,7 @@
 using Contract.Services.Product.GetProducts;
 using Contract.Services.Set.GetSets;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -83,5 +84,22 @@ internal class SetRepository : ISetRepository
     public void Update(Set set)
     {
         _context.Sets.Update(set);
+    }
+
+    public async Task<List<Set>> SearchSetAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return null;
+        }
+
+        return await _context.Sets
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(s => s.SetProducts)
+                .ThenInclude(sp => sp.Product)
+                .ThenInclude(p => p.Images)
+            .Where(s => s.Name.Contains(searchTerm) || s.Code.Contains(searchTerm))
+            .ToListAsync();
     }
 }
