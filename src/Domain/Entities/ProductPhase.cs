@@ -7,7 +7,9 @@ public class ProductPhase
 {
     public Guid ProductId { get; set; }
     public Guid PhaseId { get; set; }
-    public int Quantity { get; set; }
+    public int Quantity { get; set; } = 0;
+    public int ErrorQuantity { get; set; } = 0;
+    public int AvailableQuantity { get; set; } = 0;
     public decimal SalaryPerProduct { get; set; }
     public Guid CompanyId { get; set; }
     public Company Company { get; set; }
@@ -29,6 +31,11 @@ public class ProductPhase
     {
         Quantity = request.Quantity;
         SalaryPerProduct = request.SalaryPerProduct;
+    }
+
+    public void UpdateAvailableQuantity(int quantity)
+    {
+        AvailableQuantity = quantity;
     }
 
 }
