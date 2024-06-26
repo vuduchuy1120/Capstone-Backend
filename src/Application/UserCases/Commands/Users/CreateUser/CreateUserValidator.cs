@@ -17,12 +17,15 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
             }).WithMessage("Id already exists");
 
         RuleFor(req => req.FirstName)
-            .NotEmpty().WithMessage("First name cannot be empty")
-            .Matches(@"^[a-zA-Z\s]*$").WithMessage("First name can only contain letters and spaces");
+    .NotEmpty().WithMessage("First name cannot be empty")
+    .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
+    .WithMessage("First name can only contain letters, spaces, and Vietnamese characters");
 
         RuleFor(req => req.LastName)
             .NotEmpty().WithMessage("Last name cannot be empty")
-            .Matches(@"^[a-zA-Z\s]*$").WithMessage("Last name can only contain letters and spaces");
+            .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
+            .WithMessage("Last name can only contain letters, spaces, and Vietnamese characters");
+
 
         RuleFor(req => req.Phone)
             .NotEmpty().WithMessage("Phone number cannot be empty")
