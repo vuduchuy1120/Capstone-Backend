@@ -10,6 +10,8 @@ public class CompanyMappingProfile : Profile
     public CompanyMappingProfile()
     {
         CreateMap<Company, CompanyResponse>()
+            .ForCtorParam("CompanyEnum",
+                                  opt => opt.MapFrom(src => src.CompanyType.ToString()))
             .ForCtorParam("CompanyTypeDescription",
                        opt => opt.MapFrom(src => src.CompanyType.GetDescription()));
     }

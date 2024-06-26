@@ -1,13 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.ProductPhase.Queries;
 using Domain.Entities;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories;
 
@@ -23,11 +17,23 @@ public class ProductPhaseRepository : IProductPhaseRepository
         _context.ProductPhases.Add(productPhase);
     }
 
+    public void AddProductPhaseRange(List<ProductPhase> productPhases)
+    {
+        _context.ProductPhases.AddRange(productPhases);
+    }
+
     public void DeleteProductPhase(ProductPhase productPhase)
     {
         _context.ProductPhases.Remove(productPhase);
     }
 
+    public async Task<ProductPhase> GetByProductIdPhaseIdCompanyID(Guid productId, Guid phaseId, Guid mainCompanyID)
+    {
+        return await _context.ProductPhases
+            .Include(pp => pp.Product)
+            .Include(pp => pp.Phase)
+            .FirstOrDefaultAsync(pp => pp.ProductId == productId && pp.PhaseId == phaseId && pp.CompanyId == mainCompanyID);
+    }
 
     public async Task<ProductPhase> GetProductPhaseByPhaseIdAndProductId(Guid productId, Guid phaseId)
     {
@@ -66,5 +72,10 @@ public class ProductPhaseRepository : IProductPhaseRepository
     public void UpdateProductPhase(ProductPhase productPhase)
     {
         _context.ProductPhases.Update(productPhase);
+    }
+
+    public void UpdateProductPhaseRange(List<ProductPhase> productPhases)
+    {
+        throw new NotImplementedException();
     }
 }
