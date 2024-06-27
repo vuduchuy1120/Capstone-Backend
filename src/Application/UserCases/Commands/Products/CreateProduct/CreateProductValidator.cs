@@ -31,7 +31,7 @@ namespace Application.UserCases.Commands.Products.CreateProduct
                 {
                     if (imageRequests is null || imageRequests.Count == 0)
                     {
-                        return true;
+                        return false;
                     }
                     return imageRequests.Count(image => image.IsMainImage == true) == 1;
                 }).WithMessage("Must have one main image");

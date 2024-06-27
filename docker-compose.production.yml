@@ -27,7 +27,7 @@ services:
       - capstone-backend
 
   capstone:
-    image: dihson103/capstone:v1.3
+    image: dihson103/capstone:v2.0
     container_name: capstone
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -36,6 +36,8 @@ services:
       - Jwt__Issuer=http://capstone:7001
       - Jwt__Audience=http://capstone:7001
       - Jwt__SecretKey=BSMiu0y9GwkHjCTy8J3gqfivqzdzNQp6
+      - GoogleCredentialFile=capstone-426620-071d9a42b286.json
+      - GoogleCloudStorageBucket=capston-storage
     ports:
       - 7001:8080
     depends_on:
