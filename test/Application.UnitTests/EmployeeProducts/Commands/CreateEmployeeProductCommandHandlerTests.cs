@@ -69,6 +69,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 _validator,
                 _unitOfWorkMock.Object);
 
+            _companyRepositoryMock.Setup(repo => repo.GetCompanyByNameAsync("Co so chinh"))
+                .ReturnsAsync(new List<Company> { new Company { Id = Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286") } });
             _slotRepositoryMock.Setup(repo => repo.IsSlotExisted(createEmployeeProductRequest.SlotId))
                 .ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
