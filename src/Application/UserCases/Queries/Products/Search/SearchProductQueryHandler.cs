@@ -26,7 +26,12 @@ internal sealed class SearchProductQueryHandler(
 
         var data = await Task.WhenAll(products.Select(async p =>
         {
-            var image = p.Images?.SingleOrDefault(i => i.IsMainImage)
+            if(p.Images is null || p.Images.Count == 0)
+            {
+                throw new FileNotFoundException();
+            }
+
+            var image = p.Images.SingleOrDefault(i => i.IsMainImage)
                        ?? throw new FileNotFoundException();
 
             var url = await _cloudStorage.GetSignedUrlAsync(image.ImageUrl);
