@@ -43,12 +43,6 @@ public sealed class CreateProductPhaseRequestValidator : AbstractValidator<Creat
             .NotEmpty()
             .WithMessage("Quantity is required")
             .GreaterThanOrEqualTo(0)
-            .WithMessage("Quantity must be greater than or equal 0");
-
-        RuleFor(x => x.SalaryPerProduct)
-            .NotEmpty()
-            .WithMessage("Price is required")
-            .GreaterThan(0)
-            .WithMessage("Price must be greater than 0");
+            .WithMessage("Quantity must be greater than or equal 0");       
     }
 }

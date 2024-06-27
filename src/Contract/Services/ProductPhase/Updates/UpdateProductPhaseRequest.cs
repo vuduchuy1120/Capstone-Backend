@@ -3,8 +3,7 @@ public record UpdateProductPhaseRequest
 (
     Guid ProductId,
     Guid PhaseId,
-    int Quantity,
-    decimal SalaryPerProduct
+    int Quantity
     );
 
 
