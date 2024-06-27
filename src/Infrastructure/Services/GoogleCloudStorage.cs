@@ -3,6 +3,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace Infrastructure.Services;
 
@@ -14,10 +15,11 @@ public class GoogleCloudStorage : ICloudStorage
 
     public GoogleCloudStorage(IConfiguration configuration)
     {
-        //string currentDirectory = "/home/vinhnqhe163166/backend";
+        //string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //string currentDirectory = "D://Ky9//CaptonProject";
         string keyName = configuration.GetValue<string>("GoogleCredentialFile");
         //string keyAddress = Path.Combine(currentDirectory, keyName);
+        //Console.WriteLine(">>>>>>>>>>", keyAddress);
         googleCredential = GoogleCredential.FromFile(keyName);
         storageClient = StorageClient.Create(googleCredential);
         bucketName = configuration.GetValue<string>("GoogleCloudStorageBucket");
