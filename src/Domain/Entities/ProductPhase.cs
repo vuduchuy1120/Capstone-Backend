@@ -10,7 +10,6 @@ public class ProductPhase
     public int Quantity { get; set; } = 0;
     public int ErrorQuantity { get; set; } = 0;
     public int AvailableQuantity { get; set; } = 0;
-    public decimal SalaryPerProduct { get; set; }
     public Guid CompanyId { get; set; }
     public Company Company { get; set; }
     public Product Product { get; set; }
@@ -23,16 +22,14 @@ public class ProductPhase
             ProductId = request.ProductId,
             PhaseId = request.PhaseId,
             Quantity = request.Quantity,
-            SalaryPerProduct = request.SalaryPerProduct
-            //CompanyId = request.CompanyId
-
+            CompanyId = request.CompanyId
         };
     }
 
     public void Update(UpdateProductPhaseRequest request)
     {
         Quantity = request.Quantity;
-        SalaryPerProduct = request.SalaryPerProduct;
+        //SalaryPerProduct = request.SalaryPerProduct;
     }
 
     public void UpdateAvailableQuantity(int quantity)

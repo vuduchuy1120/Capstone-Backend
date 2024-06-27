@@ -76,6 +76,6 @@ public class ProductPhaseRepository : IProductPhaseRepository
 
     public void UpdateProductPhaseRange(List<ProductPhase> productPhases)
     {
-        throw new NotImplementedException();
+        _context.ProductPhases.UpdateRange(productPhases);
     }
 }

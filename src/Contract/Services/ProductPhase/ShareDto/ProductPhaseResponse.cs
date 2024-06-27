@@ -6,6 +6,5 @@ public record ProductPhaseResponse
     Guid PhaseId,
     string ProductName,
     string PhaseName,
-    int Quantity,
-    decimal SalaryPerProduct
+    int Quantity
     );
