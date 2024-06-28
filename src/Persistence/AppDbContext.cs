@@ -34,6 +34,10 @@ public class AppDbContext : DbContext, IUnitOfWork
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Phone)
+            .IsUnique(true);
+
         modelBuilder.Entity<Role>()
             .HasIndex(role => role.RoleName)
             .IsUnique(true);

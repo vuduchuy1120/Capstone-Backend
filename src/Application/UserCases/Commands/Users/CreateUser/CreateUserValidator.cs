@@ -6,7 +6,7 @@ namespace Application.UserCases.Commands.Users.CreateUser;
 
 public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
 {
-    public CreateUserValidator(IUserRepository userRepository)
+    public CreateUserValidator(IUserRepository userRepository, ICompanyRepository companyRepository)
     {
         RuleFor(req => req.Id)
             .NotEmpty().WithMessage("Id cannot be empty")
@@ -16,10 +16,17 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
                 return !await userRepository.IsUserExistAsync(id);
             }).WithMessage("Id already exists");
 
+        RuleFor(req => req.CompanyId)
+            .NotNull().WithMessage("Cơ sở của nhân viên không được trống")
+            .MustAsync(async (companyId, _) =>
+            {
+                return await companyRepository.IsCompanyFactoryExistAsync(companyId);
+            }).WithMessage("Cơ sở không tồn tại");
+
         RuleFor(req => req.FirstName)
-    .NotEmpty().WithMessage("First name cannot be empty")
-    .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
-    .WithMessage("First name can only contain letters, spaces, and Vietnamese characters");
+            .NotEmpty().WithMessage("First name cannot be empty")
+            .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
+            .WithMessage("First name can only contain letters, spaces, and Vietnamese characters");
 
         RuleFor(req => req.LastName)
             .NotEmpty().WithMessage("Last name cannot be empty")
@@ -29,7 +36,11 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
 
         RuleFor(req => req.Phone)
             .NotEmpty().WithMessage("Phone number cannot be empty")
-            .Matches(@"^\d{10}$").WithMessage("Phone number must be exactly 10 digits");
+            .Matches(@"^\d{10}$").WithMessage("Phone number must be exactly 10 digits")
+            .MustAsync(async (phone, _) =>
+            {
+                return !await userRepository.IsPhoneNumberExistAsync(phone);
+            }).WithMessage("Số điện thoại đã được sử dụng");
 
         RuleFor(req => req.Password)
                 .NotEmpty().WithMessage("Password cannot be empty")

@@ -12,6 +12,7 @@ namespace Application.UnitTests.Users.Commands;
 public class UpdateUserCommandHandlerTest
 {
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<ICompanyRepository> _companyRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly IValidator<UpdateUserRequest> _validator;
 
@@ -19,18 +20,64 @@ public class UpdateUserCommandHandlerTest
     {
         _userRepositoryMock = new();
         _unitOfWorkMock = new();
-        _validator = new UpdateUserValidator(_userRepositoryMock.Object);
+        _companyRepositoryMock = new();
+        _validator = new UpdateUserValidator(_userRepositoryMock.Object, _companyRepositoryMock.Object);
     }
 
     [Fact]
     public async Task Handler_ShouldThrow_MyValidationException_WhenUserIdNotExist()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName", 
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, 1);
+            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
-        _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(false);
+        _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
+        _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        await Assert.ThrowsAsync<MyValidationException>(async () =>
+        {
+            await updateUserCommandHandler.Handle(updateUserCommand, default);
+        });
+    }
+
+    [Fact]
+    public async Task Handler_ShouldThrow_MyValidationException_WhenFactoryIdNotExist()
+    {
+        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
+            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+        var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
+        var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
+
+        _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(false);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        await Assert.ThrowsAsync<MyValidationException>(async () =>
+        {
+            await updateUserCommandHandler.Handle(updateUserCommand, default);
+        });
+    }
+
+    [Fact]
+    public async Task Handler_ShouldThrow_MyValidationException_WhenPhoneNumberExist()
+    {
+        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
+            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+        var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
+        var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
+
+        _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(true);
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
         {
@@ -65,11 +112,16 @@ public class UpdateUserCommandHandlerTest
         string id, string firstName, string lastName, string phone, string address,
         string gender, string dob, int salaryByDay, int roleId)
     {
-        var updateUserRequest = new UpdateUserRequest(id, firstName, lastName, phone, address, gender, dob, salaryByDay, roleId);
+        var updateUserRequest = new UpdateUserRequest(id, firstName, lastName, phone, address,
+            gender, dob, salaryByDay, Guid.NewGuid(), roleId);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
-        var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
+        var updateUserCommandHandler = new UpdateUserCommandHandler(
+            _userRepositoryMock.Object, 
+            _unitOfWorkMock.Object, _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
         {
@@ -81,12 +133,17 @@ public class UpdateUserCommandHandlerTest
     public async Task Handler_ShouldThrow_UserNotFoundException_WhenUserNotFound()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, 1);
+            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
-        _userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((User) null);
+        _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         await Assert.ThrowsAsync<UserNotFoundException>(async () =>
         {
@@ -98,12 +155,18 @@ public class UpdateUserCommandHandlerTest
     public async Task Handler_ShouldReturn_SuccessResult()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, 1);
+            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
-        var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
+        var updateUserCommandHandler = new UpdateUserCommandHandler(
+            _userRepositoryMock.Object, 
+            _unitOfWorkMock.Object, _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
         _userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+        _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         var result = await updateUserCommandHandler.Handle(updateUserCommand, default);
 
