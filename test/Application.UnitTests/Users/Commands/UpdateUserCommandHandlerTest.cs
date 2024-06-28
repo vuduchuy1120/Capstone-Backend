@@ -76,7 +76,7 @@ public class UpdateUserCommandHandlerTest
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(It.IsAny<string>())).ReturnsAsync(true);
         _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
             .ReturnsAsync(true);
-        _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
+        _userRepositoryMock.Setup(repo => repo.IsUpdatePhoneNumberExistAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(true);
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
