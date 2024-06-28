@@ -1,10 +1,7 @@
 ﻿using Application.Abstractions.Services;
-using Application.UserCases.Commands.Users;
+using Application.Utils;
 using Contract.Services.User.Login;
-using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Security.Claims;
 
 namespace WebApi.Middlewares;
 
@@ -28,7 +25,7 @@ public class CheckTokenMiddleware
 
             var redisService = context.RequestServices.GetRequiredService<IRedisService>();
 
-            var loginResponse = await redisService.GetAsync<LoginResponse>(LoginCommandHandler.User_Redis_Prefix + userId);
+            var loginResponse = await redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + userId);
 
             if(loginResponse is null || !loginResponse.AccessToken.Equals(token))
             {
@@ -36,7 +33,7 @@ public class CheckTokenMiddleware
                 return;
             }
         }
-
+         
         await _next(context);
     }
 }

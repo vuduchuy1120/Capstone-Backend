@@ -7,6 +7,7 @@ public record UpdateUserRequest(
         string Phone,
         string Address,
         string Gender,
-        DateOnly DOB,
+        string DOB,
         decimal SalaryByDay,
+        Guid CompanyId,
         int RoleId);

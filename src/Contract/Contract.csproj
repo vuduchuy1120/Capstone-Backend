@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Company\Create\**" />
+    <EmbeddedResource Remove="Services\Company\Create\**" />
+    <None Remove="Services\Company\Create\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Report\ShareDtos\" />
+    <Folder Include="Services\Report\Queries\" />
   </ItemGroup>
 
 </Project>

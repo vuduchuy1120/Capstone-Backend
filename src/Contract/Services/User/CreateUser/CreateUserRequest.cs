@@ -10,4 +10,5 @@ public record CreateUserRequest(
         string Gender,
         string DOB,
         decimal SalaryByDay,
+        Guid CompanyId,
         int RoleId);

@@ -34,6 +34,13 @@ public class Result
             message = "Action logout success",
             isSuccess = true
         };
+
+        public static Success RequestForgetPassword() => new Success()
+        {
+            status = (int)HttpStatusCode.OK,
+            message = "Action forget password request success",
+            isSuccess = true
+        };
     }
 
     public class Success<TData> : IResult
@@ -52,6 +59,14 @@ public class Result
         {
             status = (int)HttpStatusCode.OK,
             message = "Action login success",
+            data = tData,
+            isSuccess = true
+        };
+
+        public static Success<TData> Upload(TData tData) => new Success<TData>()
+        {
+            status = (int)HttpStatusCode.Created,
+            message = "Action upload file success",
             data = tData,
             isSuccess = true
         };

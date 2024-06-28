@@ -5,6 +5,12 @@ using MediatR;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Application.Utils;
+using Contract.Services.User.ForgetPassword;
+using Contract.Services.User.ConfirmVerifyCode;
+using Infrastructure.Services;
+using Application.Abstractions.Services;
+using Contract.Services.User.RefreshToken;
 
 namespace WebApi.ApiEndpoints;
 
@@ -27,7 +33,7 @@ public class AuthEndpoints : CarterModule
 
         app.MapPost("/logout/{id}", async (ISender sender, ClaimsPrincipal claim, [FromRoute] string id) =>
         {
-            var userId = claim.FindFirst("UserID").Value;
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var logoutCommand = new LogoutCommand(userId, id);
 
             var result = await sender.Send(logoutCommand);
@@ -37,5 +43,48 @@ public class AuthEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });
+
+        app.MapPost("/forget-password/{id}", async (ISender sender, [FromRoute] string id) =>
+        {
+            var forgetPasswordCommand = new ForgetPasswordCommand(id);
+
+            var result = await sender.Send(forgetPasswordCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("/confirm/forgetpassword", async (ISender sender, [FromBody] ConfirmVerifyCodeCommand confirmVerifyCodeCommand) =>
+        {
+            var result = await sender.Send(confirmVerifyCodeCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("test", () =>
+        {
+            return Results.Ok("Hello Nguyen Dinh Son");
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+        app.MapPost("refresh-token", async (ISender sender, [FromBody] RefreshTokenCommand refreshTokenCommand) =>
+        {
+            var result = await sender.Send(refreshTokenCommand);
+
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
+        });
+
+
+
     }
 }

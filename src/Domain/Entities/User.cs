@@ -19,6 +19,13 @@ public class User : EntityAuditBase<string>
     public bool IsActive { get; private set; }
     public int RoleId { get; private set; }
     public Role Role { get; private set; }
+    public Guid CompanyId { get; private set; }
+    public Company Company { get; private set; }
+    public List<Attendance>? Attendances { get; private set; }
+    public List<EmployeeProduct>? EmployeeProducts { get; private set; }
+    public List<Report>? Reports { get; private set; }
+    public List<Shipment>? Shipments { get; private set; }
+    public List<ShipOrder>? ShipOrders { get; private set; }
 
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {
@@ -39,6 +46,7 @@ public class User : EntityAuditBase<string>
             LastName = request.LastName,
             FirstName = request.FirstName,
             Gender = request.Gender,
+            CompanyId = request.CompanyId,
         };
     }
 
@@ -48,12 +56,13 @@ public class User : EntityAuditBase<string>
         Address = request.Address;
         RoleId = request.RoleId;
         SalaryByDay = request.SalaryByDay;
-        DOB = request.DOB;
+        DOB = CovertStringToDateTimeOnly(request.DOB);
         LastName = request.LastName;
         FirstName = request.FirstName;
         Gender = request.Gender;
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
+        CompanyId = request.CompanyId;
     }
 
     public void UpdateStatus(ChangeUserStatusCommand request)
@@ -61,6 +70,11 @@ public class User : EntityAuditBase<string>
         IsActive = request.isActive;
         UpdatedBy = request.updatedBy;
         UpdatedDate = DateTime.UtcNow;
+    }
+
+    public void UpdatePassword(string password)
+    {
+        Password = password;
     }
 
     private static DateOnly CovertStringToDateTimeOnly(string dateString)

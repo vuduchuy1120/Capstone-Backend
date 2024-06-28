@@ -6,3 +6,4 @@ namespace Contract.Abstractions.Messages;
 public interface IQuery<TResponse> : IRequest<Result.Success<TResponse>>
 {
 }
+

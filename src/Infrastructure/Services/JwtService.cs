@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Domain.Entities;
+using Domain.Exceptions.Users;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +12,8 @@ namespace Infrastructure.Services;
 
 internal class JwtService : IJwtService
 {
-    private const int Access_Token_Time_In_Minutes = 5;
+    //TODO change 5 to 50
+    private const int Access_Token_Time_In_Minutes = 50;
     private const int Refresh_Token_Time_In_Minutes = 10;
 
     private readonly JwtOptions _jwtOptions;
@@ -31,13 +33,24 @@ internal class JwtService : IJwtService
         return await GenerateToken(user, Refresh_Token_Time_In_Minutes);
     }
 
+    public string? GetUserIdFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(token);
+
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "UserID");
+
+        return userIdClaim?.Value;
+    }
+
     private async Task<string> GenerateToken(User user, int time)
     {
         var claims = new Claim[]
         {
             new Claim("UserID", user.Id),
             new Claim("UserName", user.FirstName + " " + user.LastName),
-            new Claim("Role", user.Role.RoleName)
+            new Claim("Role", user.Role.RoleName),
+            new Claim("CompanyID", user.CompanyId.ToString())
         };
 
         var signingCredentials = new SigningCredentials(
