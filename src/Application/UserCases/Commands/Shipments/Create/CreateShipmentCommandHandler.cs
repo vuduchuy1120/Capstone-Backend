@@ -79,7 +79,7 @@ internal sealed class CreateShipmentCommandHandler(
                     throw new ItemAvailableNotEnoughException();
                 }
 
-                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity - request.Quantity);
+                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity - (int) request.Quantity);
 
                 _productPhaseRepository.UpdateProductPhase(productPhase);
 

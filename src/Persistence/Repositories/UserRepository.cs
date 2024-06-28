@@ -69,6 +69,13 @@ internal class UserRepository : IUserRepository
             .AnyAsync(u => u.Phone ==  phoneNumber);    
     }
 
+    public async Task<bool> IsShipperExistAsync(string id)
+    {
+        return await _context.Users
+            .Include(u => u.Role)
+            .AnyAsync(u => u.Id == id && u.Role.RoleName == "DRIVER");
+    }
+
     public async Task<bool> IsUpdatePhoneNumberExistAsync(string phone, string userId)
     {
         return await _context.Users

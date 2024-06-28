@@ -31,11 +31,6 @@ internal class ShipmentRepository : IShipmentRepository
         .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.Phase)
         .Include(s => s.ShipmentDetails)
-            .ThenInclude(sd => sd.Set)
-            .ThenInclude(s => s.SetProducts)
-                .ThenInclude(sp => sp.Product)
-                .ThenInclude(p => p.Images)
-        .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.MaterialHistory)
              .ThenInclude(mh => mh.Material)
         .SingleOrDefaultAsync(s => s.Id == shipmentId);

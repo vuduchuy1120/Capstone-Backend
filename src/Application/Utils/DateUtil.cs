@@ -24,5 +24,13 @@ public class DateUtil
         return DateTime.UtcNow.AddHours(7);
     }
 
-    
+    public static DateTime FromDateTimeClientToDateTimeUtc(DateTime dateTimeClient)
+    {
+        return dateTimeClient.AddHours(-8).ToUniversalTime();
+    }
+
+    public static DateTime GetDateTimeForClient(DateTime dateTime)
+    {
+        return dateTime.AddHours(8);
+    }
 }

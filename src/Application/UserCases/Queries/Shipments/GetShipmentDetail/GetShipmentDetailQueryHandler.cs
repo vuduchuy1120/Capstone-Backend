@@ -74,12 +74,6 @@ internal sealed class GetShipmentDetailQueryHandler(
 
             return new DetailResponse(productResponse, phaseResponse, null, null, shipmentDetail.Quantity);
         }
-        else if (shipmentDetail.Set is not null)
-        {
-            var setResponse = _mapper.Map<SetResponse>(shipmentDetail.Set);
-
-            return new DetailResponse(null, null, setResponse, null, shipmentDetail.Quantity);
-        }
         else if (shipmentDetail.MaterialHistory is not null)
         {
             var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(shipmentDetail.MaterialHistory);
@@ -106,15 +100,6 @@ internal sealed class GetShipmentDetailQueryHandler(
             var productResponse = _mapper.Map<ProductResponse>(product);
 
             return new DetailResponse(productResponse, phaseResponse, null, null, shipmentDetail.Quantity);
-        }
-        else if (shipmentDetail.SetId is not null)
-        {
-            Guid setId = shipmentDetail.SetId ?? throw new SetNotFoundException();
-            var set = await _setRepository.GetByIdAsync(setId) ?? throw new SetNotFoundException();
-
-            var setResponse = _mapper.Map<SetResponse>(set);
-
-            return new DetailResponse(null, null, setResponse, null, shipmentDetail.Quantity);
         }
         else if (shipmentDetail.MaterialHistoryId is not null)
         {

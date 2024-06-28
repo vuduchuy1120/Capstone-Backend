@@ -10,4 +10,4 @@ public record DetailResponse(
     PhaseResponse Phase,
     SetResponse Set, 
     MaterialHistoryResponse Material,
-    int Quantity);
+    double Quantity);
