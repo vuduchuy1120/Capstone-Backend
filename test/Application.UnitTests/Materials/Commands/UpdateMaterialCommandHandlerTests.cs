@@ -33,7 +33,7 @@ public class UpdateMaterialCommandHandlerTests
     {
         // Arrange
         var request = new UpdateMaterialRequest(
-                                  Id: 1,
+                                  Id: Guid.NewGuid(),
                                   Name: "Material 1",
                                   Description: "Description 1",
                                   Unit: "Unit 1",
@@ -41,9 +41,9 @@ public class UpdateMaterialCommandHandlerTests
                                   Image: "No Image",
                                   QuantityInStock: 1);
 
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
-        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.Material());
 
         // Act
@@ -71,7 +71,7 @@ public class UpdateMaterialCommandHandlerTests
     {
         // Arrange
         var request = new UpdateMaterialRequest(
-                                 Id: id,
+                                 Id: Guid.NewGuid(),
                                  Name: name,
                                  Description: description,
                                  Unit: unit,
@@ -80,9 +80,9 @@ public class UpdateMaterialCommandHandlerTests
                                  QuantityInStock: quantityInStock);
 
         // Act
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
-        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.Material());
 
         Func<Task> act = async () => await _handler.Handle(new UpdateMaterialCommand(request), CancellationToken.None);

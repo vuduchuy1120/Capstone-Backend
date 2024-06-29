@@ -159,11 +159,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<double>("AvailableQuantity")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -207,8 +208,8 @@ namespace Persistence.Migrations
                     b.Property<DateOnly>("ImportDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -587,6 +588,38 @@ namespace Persistence.Migrations
                     b.ToTable("ShipOrders");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ItemStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShipOrderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("ShipOrderId");
+
+                    b.ToTable("ShipOrderDetails");
+                });
+
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -639,8 +672,11 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MaterialHistoryId")
+                    b.Property<Guid?>("MaterialId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("MaterialPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid?>("PhaseId")
                         .HasColumnType("uuid");
@@ -651,29 +687,19 @@ namespace Persistence.Migrations
                     b.Property<int>("ProductPhaseType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
+                    b.Property<double>("Quantity")
+                        .HasColumnType("double precision");
 
-                    b.Property<Guid?>("SetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ShipOrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ShipmentId")
+                    b.Property<Guid>("ShipmentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialHistoryId");
+                    b.HasIndex("MaterialId");
 
                     b.HasIndex("PhaseId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("SetId");
-
-                    b.HasIndex("ShipOrderId");
 
                     b.HasIndex("ShipmentId");
 
@@ -757,6 +783,9 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -949,6 +978,29 @@ namespace Persistence.Migrations
                     b.Navigation("Shipper");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrderDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Domain.Entities.Set", "Set")
+                        .WithMany()
+                        .HasForeignKey("SetId");
+
+                    b.HasOne("Domain.Entities.ShipOrder", "ShipOrder")
+                        .WithMany("ShipOrderDetails")
+                        .HasForeignKey("ShipOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Set");
+
+                    b.Navigation("ShipOrder");
+                });
+
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
                     b.HasOne("Domain.Entities.Company", "FromCompany")
@@ -978,9 +1030,9 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
                 {
-                    b.HasOne("Domain.Entities.MaterialHistory", "MaterialHistory")
+                    b.HasOne("Domain.Entities.Material", "Material")
                         .WithMany("ShipmentDetails")
-                        .HasForeignKey("MaterialHistoryId");
+                        .HasForeignKey("MaterialId");
 
                     b.HasOne("Domain.Entities.Phase", "Phase")
                         .WithMany("ShipmentDetails")
@@ -990,27 +1042,17 @@ namespace Persistence.Migrations
                         .WithMany("ShipmentDetails")
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("Domain.Entities.Set", "Set")
-                        .WithMany("ShipmentDetails")
-                        .HasForeignKey("SetId");
-
-                    b.HasOne("Domain.Entities.ShipOrder", "ShipOrder")
-                        .WithMany("ShipmentDetails")
-                        .HasForeignKey("ShipOrderId");
-
                     b.HasOne("Domain.Entities.Shipment", "Shipment")
                         .WithMany("ShipmentDetails")
-                        .HasForeignKey("ShipmentId");
+                        .HasForeignKey("ShipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("MaterialHistory");
+                    b.Navigation("Material");
 
                     b.Navigation("Phase");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Set");
-
-                    b.Navigation("ShipOrder");
 
                     b.Navigation("Shipment");
                 });
@@ -1046,10 +1088,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
                     b.Navigation("MaterialHistories");
-                });
 
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
                     b.Navigation("ShipmentDetails");
                 });
 
@@ -1094,13 +1133,11 @@ namespace Persistence.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("SetProducts");
-
-                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipOrder", b =>
                 {
-                    b.Navigation("ShipmentDetails");
+                    b.Navigation("ShipOrderDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Shipment", b =>

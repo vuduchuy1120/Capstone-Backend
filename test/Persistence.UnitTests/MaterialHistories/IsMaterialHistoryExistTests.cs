@@ -54,7 +54,7 @@ namespace Persistence.UnitTests.MaterialHistories
         {
             var createMaterialHistoryRequest = new CreateMaterialHistoryRequest
             (
-                MaterialId: 1,
+                MaterialId: Guid.NewGuid(),
                 Quantity: 10,
                 Price: 10,
                 Description: "Description 1",

@@ -27,6 +27,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<ShipOrder> ShipOrders { get; set; }
     public DbSet<ShipmentDetail> ShipmentDetails { get; set; }
+    public DbSet<ShipOrderDetail> ShipOrderDetails { get; set; }
     public DbSet<Shipment> Shipments { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
@@ -136,6 +137,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(o => o.Company)
             .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CompanyId);
+
         modelBuilder.Entity<Shipment>()
            .HasOne(s => s.FromCompany)
            .WithMany()

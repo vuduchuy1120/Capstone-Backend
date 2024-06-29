@@ -24,5 +24,36 @@ public class DateUtil
         return DateTime.UtcNow.AddHours(7);
     }
 
-    
+    public static DateTime FromDateTimeClientToDateTimeUtc(DateTime dateTimeClient)
+    {
+        return dateTimeClient.AddHours(-7).ToUniversalTime();
+    }
+
+    public static DateTime GetDateTimeForClient(DateTime dateTime)
+    {
+        return dateTime.AddHours(7);
+    }
+
+    public static bool BeAValidDate(string dob)
+    {
+        return DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
+    }
+
+    public static bool BeLessThanCurrentDate(string dob)
+    {
+        if (DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDob))
+        {
+            return parsedDob < DateTime.Today;
+        }
+        return false;
+    }
+
+    public static bool BeMoreThanMinDate(string dob)
+    {
+        if (DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDob))
+        {
+            return parsedDob > new DateTime(1900, 1, 1);
+        }
+        return false;
+    }
 }

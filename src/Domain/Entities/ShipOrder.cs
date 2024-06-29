@@ -11,5 +11,5 @@ public class ShipOrder : EntityAuditBase<Guid>
     public User Shipper { get; set; }
     public DateTime ShipDate { get; set; }
     public Status Status { get; set; }
-    public List<ShipmentDetail>? ShipmentDetails { get; set; }
+    public List<ShipOrderDetail>? ShipOrderDetails { get; set; }
 }

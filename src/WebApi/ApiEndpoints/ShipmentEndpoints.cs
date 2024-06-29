@@ -70,5 +70,20 @@ public class ShipmentEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
         });
+
+        app.MapPatch("{id}/status", async (
+            ISender sender,
+            ClaimsPrincipal claim,
+            [FromRoute] Guid id,
+            [FromBody] UpdateStatusRequest request) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new UpdateShipmentStatusCommand(id, request, userId));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
+        });
     }
 }

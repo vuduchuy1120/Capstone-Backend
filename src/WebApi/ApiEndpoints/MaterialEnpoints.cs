@@ -46,10 +46,10 @@ public class MaterialEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material api" } }
         });
 
-        app.MapGet("{id:int}", async (
+        app.MapGet("{id}", async (
             ISender sender,
             ClaimsPrincipal claim,
-            [FromRoute] int id) =>
+            [FromRoute] Guid id) =>
         {
             var getMaterialByIdQuery = new GetMaterialByIdQuery(id);
             var result = await sender.Send(getMaterialByIdQuery);

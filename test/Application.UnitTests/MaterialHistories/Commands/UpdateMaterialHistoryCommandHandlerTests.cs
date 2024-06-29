@@ -37,7 +37,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         // Arrange
         var request = new UpdateMaterialHistoryRequest(
                                 Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
-                                MaterialId: 1,
+                                MaterialId: Guid.NewGuid(),
                                 Quantity: 1,
                                 Price: 50000,
                                 Description: "Description",
@@ -48,7 +48,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.MaterialHistory());
 
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
 
         var result = await _handler.Handle(new UpdateMaterialHistoryCommand(request), default);
@@ -63,7 +63,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         // Arrange
         var request = new UpdateMaterialHistoryRequest(
                             Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
-                            MaterialId: 1,
+                            MaterialId: Guid.NewGuid(),
                             Quantity: 1,
                             Price: 50000,
                             Description: "Description",
@@ -84,7 +84,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         // Arrange
         var request = new UpdateMaterialHistoryRequest(
                             Id: new Guid("05a76796-e8ac-4a67-8633-950d00de864e"),
-                            MaterialId: 1,
+                            MaterialId: Guid.NewGuid(),
                             Quantity: 1,
                             Price: 50000,
                             Description: "Description",
@@ -95,7 +95,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.MaterialHistory());
 
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(false);
 
         // Act & Assert
@@ -107,13 +107,13 @@ public class UpdateMaterialHistoryCommandHandlerTests
 
 
     [Theory]
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 0.0, 50000.0, "Description", "03/06/2024")] // error quantity
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, -1.0, 50000.0, "Description", "03/06/2024")]
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 0.0, "Description", "03/06/2024")] // error price
-    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", 1, 1.0, 50000.0, "Description", "")] // error importDate
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", "05a76796-e8ac-4a67-8633-950d00de864e", 0.0, 50000.0, "Description", "03/06/2024")] // error quantity
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", "05a76796-e8ac-4a67-8633-950d00de864e", -1.0, 50000.0, "Description", "03/06/2024")]
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", "05a76796-e8ac-4a67-8633-950d00de864e", 1.0, 0.0, "Description", "03/06/2024")] // error price
+    [InlineData("05a76796-e8ac-4a67-8633-950d00de864e", "05a76796-e8ac-4a67-8633-950d00de864e", 1.0, 50000.0, "Description", "")] // error importDate
     public async Task Handle_Should_Throw_ValidationException(
         string id,
-        int materialId,
+        string materialId,
         double quantity,
         decimal price,
         string? description,
@@ -122,7 +122,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         // Arrange
         var request = new UpdateMaterialHistoryRequest(
             Id: new Guid(id),
-            MaterialId: materialId,
+            MaterialId: new Guid(materialId),
             Quantity: quantity,
             Price: price,
             Description: description,
@@ -134,7 +134,7 @@ public class UpdateMaterialHistoryCommandHandlerTests
         _materialHistoryRepositoryMock.Setup(x => x.GetMaterialHistoryByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.MaterialHistory());
 
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
         // Act
         Func<Task> act = async () => await _handler.Handle(new UpdateMaterialHistoryCommand(request), default);

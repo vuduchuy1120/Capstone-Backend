@@ -1,4 +1,7 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
+using Contract.Services.Material.Share;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.Shipment.Create;
 using Contract.Services.ShipmentDetail.Share;
 using FluentValidation;
@@ -9,16 +12,15 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
 {
     public CreateShipmentValidator(
         ICompanyRepository companyRepository,
-        IProductRepository productRepository, 
-        ISetRepository setRepository,
+        IMaterialRepository materialRepository,
+        IProductPhaseRepository productPhaseRepository,
         IUserRepository userRepository)
     {
         RuleFor(req => req.FromId)
             .MustAsync(async (fromId, _) =>
             {
-                // check company is not CUSTOMER_COMPANY
-                return await companyRepository.IsCompanyExistAsync(fromId);
-            }).WithMessage("Công ty không tồn tại");
+                return await companyRepository.IsCompanyNotCustomerCompanyAsync(fromId);
+            }).WithMessage("Cơ sở hay công ty bên thứ 3 không tồn tại");
 
         RuleFor(req => req.ToId)
             .Must((req, toId, _) =>
@@ -29,32 +31,32 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
         RuleFor(req => req.ToId)
             .MustAsync(async (ToId, _) =>
             {
-                return await companyRepository.IsCompanyExistAsync(ToId);
-            }).WithMessage("Công ty không tồn tại");
+                return await companyRepository.IsCompanyNotCustomerCompanyAsync(ToId);
+            }).WithMessage("Cơ sở hay công ty bên thứ 3 không tồn tại");
 
         RuleFor(req => req.ShipperId)
-            .NotEmpty().WithMessage("Không được để trống người giao hàng")
-            .Matches(@"^\d{12}$").WithMessage("Id must be exactly 12 digits")
+            .NotEmpty().WithMessage("Người giao hàng không được để trống")
+            .Matches(@"^\d{9}$|^\d{12}$").WithMessage("ID người giao hàng phải là 9 hoặc 12 chữ số")
             .MustAsync(async (id, _) =>
             {
-                //check is id input is ShipperID
-                return await userRepository.IsUserActiveAsync(id);
+                return await userRepository.IsShipperExistAsync(id);
             }).WithMessage("Người giao hàng không tồn tại");
 
         RuleFor(req => req.ShipDate)
             .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
             .Must((req, shipDate) =>
             {
-                return shipDate >= DateTime.UtcNow;
+                var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
+                var now = DateTime.UtcNow;
+                return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
             }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
 
         RuleForEach(req => req.ShipmentDetailRequests)
             .NotNull().WithMessage("Vật phẩm giao không được để trống")
             .Must((shipmentDetailRequest) =>
             {
-                return shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL
-                        || shipmentDetailRequest.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT;
-            }).WithMessage("Loại đơn giao phải là giao hàng cho các cơ sở")
+                return Enum.IsDefined(typeof(KindOfShip), shipmentDetailRequest.KindOfShip);
+            }).WithMessage("Loại đơn hàng không tồn tại")
             .Must((shipmentDetailRequest) =>
             {
                 return shipmentDetailRequest.Quantity > 0;
@@ -74,51 +76,39 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             }).WithMessage("Mã vật phẩm không được để trống");
 
         RuleFor(req => req.ShipmentDetailRequests)
-            .MustAsync(async (requests, _) =>
+            .MustAsync(async (req, requests, _) =>
             {
                 var shipProduct = requests
-                .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT)
-                .Select(s => s.ItemId)
-                .ToList();
+                    .Where(request => request.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT && request.PhaseId != null)
+                    .Select(request => new CheckQuantityInstockEnoughRequest(
+                        request.ItemId,
+                        (Guid)request.PhaseId,
+                        req.FromId,
+                        (int)request.Quantity))
+                    .ToList();
 
-                if(shipProduct is null)
+                if (shipProduct is null || shipProduct.Count == 0)
                 {
-                    return false;
+                    return true;
                 }
 
-                return await productRepository.IsAllSubProductIdsExist(shipProduct);
+                return await productPhaseRepository.IsAllShipDetailProductValid(shipProduct);
             }).WithMessage("Có một vài mã sản phẩm không hợp lệ");
-
-        //RuleFor(req => req.ShipmentDetailRequests)
-        //    .MustAsync(async (requests, _) =>
-        //    {
-        //        var shipSet = requests
-        //        .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_SET)
-        //        .Select(s => s.ItemId)
-        //        .ToList();
-
-        //        if (shipSet is null)
-        //        {
-        //            return false;
-        //        }
-
-        //        return await setRepository.IsAllSetExistAsync(shipSet);
-        //    }).WithMessage("Có một vài mã bộ không hợp lệ");
 
         RuleFor(req => req.ShipmentDetailRequests)
             .MustAsync(async (requests, _) =>
             {
                 var shipMaterial = requests
                 .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
-                .Select(s => s.ItemId)
+                .Select(s => new MaterialCheckQuantityRequest(s.ItemId, s.Quantity))
                 .ToList();
 
-                if (shipMaterial is null)
+                if (shipMaterial is null || shipMaterial.Count == 0)
                 {
-                    return false;
+                    return true;
                 }
 
-                return await setRepository.IsAllSetExistAsync(shipMaterial);
-            }).WithMessage("Có một vài mã nguyên liệu không hợp lệ");
+                return  await materialRepository.IsMaterialEnoughAsync(shipMaterial);
+            }).WithMessage("Có một vài mã nguyên liệu không hợp lệ hoặc trong kho không đủ");
     }
 }

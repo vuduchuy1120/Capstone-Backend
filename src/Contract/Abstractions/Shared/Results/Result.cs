@@ -10,35 +10,35 @@ public class Result
         public static Success Create() => new Success()
         {
             status = (int)HttpStatusCode.Created,
-            message = "Action create success",
+            message = "Tạo thành công",
             isSuccess = true
         };
 
         public static Success Update() => new Success()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action update success",
+            message = "Chỉnh sửa thành công",
             isSuccess = true
         };
 
         public static Success Delete() => new Success()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action delete success",
+            message = "Xóa thành công",
             isSuccess = true
         };
 
         public static Success Logout() => new Success()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action logout success",
+            message = "Đăng xuất thành công",
             isSuccess = true
         };
 
         public static Success RequestForgetPassword() => new Success()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action forget password request success",
+            message = "Yêu cầu đặt lại mật khẩu thành công",
             isSuccess = true
         };
     }
@@ -58,7 +58,7 @@ public class Result
         public static Success<TData> Login(TData tData) => new Success<TData>()
         {
             status = (int)HttpStatusCode.OK,
-            message = "Action login success",
+            message = "Đăng nhập thành công",
             data = tData,
             isSuccess = true
         };
