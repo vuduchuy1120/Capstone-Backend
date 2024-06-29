@@ -26,12 +26,12 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
         var userIds = request.CreateAttendanceDefaultRequest.CreateAttendances.Select(x => x.UserId).ToList();
         var roleName = request.RoleName;
         var companyId = request.CompanyId;
-        if(roleName != "MAIN_ADMIN" && companyId != request.CreateAttendanceDefaultRequest.CompanyId)
+        if(roleName != "MAIN_ADMIN")
         {
             var check = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
             if (!check)
             {
-                throw new MyValidationException("You dont have permission create attendance of other user companyID");
+                throw new UserNotPermissionException("You dont have permission create attendance of other user companyID");
             }
         }
 

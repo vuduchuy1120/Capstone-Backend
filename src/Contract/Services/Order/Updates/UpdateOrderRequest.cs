@@ -1,10 +1,12 @@
-﻿namespace Contract.Services.Order.Updates;
+﻿using Contract.Services.Order.ShareDtos;
+
+namespace Contract.Services.Order.Updates;
 
 public record UpdateOrderRequest
 (
     Guid OrderId,
     Guid CompanyId,
-    string Status,
+    StatusType Status,
     double VAT,
     string StartOrder,
     string EndOrder);

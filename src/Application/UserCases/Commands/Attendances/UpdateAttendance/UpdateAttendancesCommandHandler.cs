@@ -6,6 +6,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;
 using Domain.Exceptions.Attendances;
 using FluentValidation;
+using Domain.Exceptions.Users;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
@@ -29,7 +30,7 @@ internal sealed class UpdateAttendancesCommandHandler(
         var roleName = request.RoleNameClaim;
         var companyId = request.CompanyIdClaim;
 
-        if(roleName != "MAIN_ADMIN")
+        if (roleName != "MAIN_ADMIN")
         {
             var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
             if (!isCanUpdateAttendance)
@@ -39,7 +40,7 @@ internal sealed class UpdateAttendancesCommandHandler(
             var isUpdate = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
             if (!isUpdate)
             {
-                throw new MyValidationException("You dont have permission update attendance of other user companyID");
+                throw new UserNotPermissionException("You dont have permission update attendance of other user companyID");
             }
         }
         var attendances = await _attendanceRepository.GetAttendancesByKeys(request.UpdateAttendanceRequest.SlotId, formattedDate, userIds);

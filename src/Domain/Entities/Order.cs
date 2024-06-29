@@ -1,5 +1,6 @@
 ﻿using Contract.Abstractions.Shared.Utils;
 using Contract.Services.Order.Creates;
+using Contract.Services.Order.ShareDtos;
 using Contract.Services.Order.Updates;
 using Domain.Abstractions.Entities;
 using Domain.Exceptions.Common;
@@ -9,7 +10,7 @@ namespace Domain.Entities;
 public class Order : EntityAuditBase<Guid>
 {
     public Guid CompanyId { get; private set; }
-    public string Status { get; private set; }
+    public StatusType Status { get; private set; }
     public DateOnly? StartOrder { get; private set; }
     public DateOnly? EndOrder { get; private set; }
     public double VAT { get; private set; }

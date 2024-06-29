@@ -43,9 +43,7 @@ public class UpdateAttendancesCommandHandlerTests
     {
         // Arrange
         var request = new UpdateAttendancesRequest(
-            SlotId: 2,
-            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
-            Date: "01/06/2024",
+            SlotId: 2,            Date: "01/06/2024",
 
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -96,7 +94,6 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
-            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -153,7 +150,6 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: slotId,
-            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: date,
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -194,7 +190,6 @@ public class UpdateAttendancesCommandHandlerTests
         // Arrange
         var request = new UpdateAttendancesRequest(
             SlotId: 2,
-            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/06/2024",
             UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
             {
@@ -237,7 +232,6 @@ public class UpdateAttendancesCommandHandlerTests
     {
         var request = new UpdateAttendancesRequest(
              SlotId: 2,
-             CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
              Date: "01/06/2024",
              UpdateAttendances: new List<UpdateAttendanceWithoutSlotIdRequest>
              {
