@@ -14,6 +14,7 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
         {
             RuleFor(x => x.OrderId)
                 .NotEmpty().WithMessage("OrderId is required.")
+                .NotNull().WithMessage("OrderId must be not null.")
                 .MustAsync(async (orderId, cancellationToken) =>
                 {
                     return await orderRepository.IsOrderExist(orderId);
@@ -21,6 +22,7 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
 
             RuleFor(x => x.OrderDetailRequests)
                 .NotEmpty().WithMessage("OrderDetailRequests is required.")
+                .NotNull().WithMessage("OrderDetailRequests must be not null.")
                 .Must(x => x.Count > 0).WithMessage("OrderDetailRequests is required.");
 
             RuleFor(x => x.OrderDetailRequests)
@@ -56,6 +58,7 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
                     return productExists && setExists;
                 }).WithMessage("ProductId or SetId does not exist.");
             RuleFor(x => x.OrderDetailRequests)
+                .NotNull().WithMessage("OrderDetailRequests must be not null.")
                 .Must(orderDetailRequests =>
                 {
                     var distinctItems = orderDetailRequests

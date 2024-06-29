@@ -12,8 +12,9 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
         {
             RuleFor(req => req.Date)
                 .NotEmpty().WithMessage("Date is required")
+                .NotNull().WithMessage("Date must be not null")
                 .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Date must be in the format dd/MM/yyyy")
-                .Must(BeAValidDate).WithMessage("Date must be a valid date in the format dd/MM/yyyy")
+                .Must(BeAValidDate).WithMessage("Date is invalid.")
                 .Must(date =>
                 {
                     return DateUtil.ConvertStringToDateTimeOnly(date) <= DateOnly.FromDateTime(DateTime.Now);
@@ -21,12 +22,14 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
 
             RuleFor(req => req.SlotId)
                 .NotEmpty().WithMessage("SlotId is required")
+                .NotNull().WithMessage("SlotId must be not null")
                 .MustAsync(async (slotId, cancellationToken) =>
                 {
                     return await slotRepository.IsSlotExisted(slotId);
                 }).WithMessage("SlotId is invalid");
             RuleForEach(req => req.CreateQuantityProducts)
                     .NotEmpty().WithMessage("CreateQuantityProductRequest is required")
+                    .NotNull().WithMessage("CreateQuantityProductRequest must be not null")
                     .Must(createQuantityProductRequest =>
                     {
                         return createQuantityProductRequest.Quantity > 0;
@@ -50,10 +53,10 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
                     return await phaseRepository.IsAllPhaseExistByIdAsync(phaseIds);
                 }).WithMessage("PhaseIds are invalid");
             RuleFor(req => req.CreateQuantityProducts)
-                .MustAsync(async (request,createQuantityProducts, cancellationToken) =>
+                .MustAsync(async (request, createQuantityProducts, cancellationToken) =>
                 {
                     var userIds = createQuantityProducts.Select(c => c.UserId).Distinct().ToList();
-                    return await userRepository.IsAllUserActiveByCompanyId(userIds, request.CompanyId);                    
+                    return await userRepository.IsAllUserActiveByCompanyId(userIds, request.CompanyId);
                 }).WithMessage("One or more users are other companies, you do not have permission to create products of that employee");
 
         }
@@ -66,7 +69,7 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
             }
             catch (ArgumentException)
             {
-                throw new MyValidationException("Date must be a valid date in the format dd/MM/yyyy");
+                throw new MyValidationException("Date is invalid.");
             }
 
         }

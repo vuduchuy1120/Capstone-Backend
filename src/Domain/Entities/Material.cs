@@ -20,10 +20,10 @@ public class Material : EntityBase<int>
     {
         return new Material
         {
-            Name = createMaterialRequest.Name,
-            NameUnaccent = StringUtils.RemoveDiacritics(createMaterialRequest.Name),
-            Description = createMaterialRequest.Description,
-            Unit = createMaterialRequest.Unit,
+            Name = createMaterialRequest.Name.Trim(),
+            NameUnaccent = StringUtils.RemoveDiacritics(createMaterialRequest.Name.Trim()),
+            Description = createMaterialRequest.Description.Trim(),
+            Unit = createMaterialRequest.Unit.Trim(),
             QuantityPerUnit = createMaterialRequest.QuantityPerUnit,
             Image = createMaterialRequest.Image,
             QuantityInStock = createMaterialRequest.QuantityInStock
@@ -32,13 +32,18 @@ public class Material : EntityBase<int>
 
     public void Update(UpdateMaterialRequest updateMaterialRequest)
     {
-        Name = updateMaterialRequest.Name;
-        NameUnaccent = StringUtils.RemoveDiacritics(updateMaterialRequest.Name).ToLower();
-        Description = updateMaterialRequest.Description;
-        Unit = updateMaterialRequest.Unit;
+        Name = updateMaterialRequest.Name.Trim();
+        NameUnaccent = StringUtils.RemoveDiacritics(updateMaterialRequest.Name.Trim()).ToLower();
+        Description = updateMaterialRequest.Description.Trim();
+        Unit = updateMaterialRequest.Unit.Trim();
         QuantityPerUnit = updateMaterialRequest.QuantityPerUnit;
         Image = updateMaterialRequest.Image;
         QuantityInStock = updateMaterialRequest.QuantityInStock;
+    }
+
+    public void UpdateQuantityInStock(double quantity)
+    {
+        QuantityInStock += quantity;
     }
 }
 

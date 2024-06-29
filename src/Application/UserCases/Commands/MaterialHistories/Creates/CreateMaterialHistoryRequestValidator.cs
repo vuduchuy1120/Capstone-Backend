@@ -31,8 +31,8 @@ public sealed class CreateMaterialHistoryRequestValidator : AbstractValidator<Cr
             .Must(ImportDate =>
             {
                 var formatedDate = DateUtil.ConvertStringToDateTimeOnly(ImportDate);
-                return formatedDate.Year > 1900;
-            }).WithMessage("Import Date must be greater than 1900");
+                return formatedDate.Year > 1900 && formatedDate <= DateOnly.FromDateTime(DateTime.Now.Date);
+            }).WithMessage("Import Date must be greater than 1900 and less than or equal date now");
     }
     private bool BeAValidDate(string dob)
     {

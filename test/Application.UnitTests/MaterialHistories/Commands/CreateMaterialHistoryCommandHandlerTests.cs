@@ -27,6 +27,7 @@ public class CreateMaterialHistoryCommandHandlerTests
             _materialRepositoryMock.Object);
         _handler = new CreateMaterialHistoryCommandHandler(
                                     _materialHistoryRepositoryMock.Object,
+                                    _materialRepositoryMock.Object,
                                     _unitOfWorkMock.Object,
                                     _validator);
     }
@@ -45,6 +46,8 @@ public class CreateMaterialHistoryCommandHandlerTests
         _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
             .ReturnsAsync(true);
 
+        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(new Domain.Entities.Material());
         var result = await _handler.Handle(new CreateMaterialHistoryCommand(request), default);
 
         // Assert

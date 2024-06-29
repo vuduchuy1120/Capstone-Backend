@@ -11,6 +11,5 @@ public record CreateQuantityProductRequest
     Guid ProductId,
     Guid PhaseId,
     int Quantity,
-    string UserId,
-    bool IsMold
+    string UserId
     );

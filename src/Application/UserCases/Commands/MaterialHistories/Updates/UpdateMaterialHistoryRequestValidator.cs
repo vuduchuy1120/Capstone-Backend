@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Services.MaterialHistory.Update;
 using FluentValidation;
 using System;
@@ -36,13 +37,25 @@ public sealed class UpdateMaterialHistoryRequestValidator : AbstractValidator<Up
             .WithMessage("Quantity is required")
             .GreaterThan(0)
             .WithMessage("Quantity must be greater than 0");
-
+        RuleFor(x => x.ImportDate)
+           .NotEmpty().WithMessage("Import Date cannot be empty")
+           .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Import Date must be in the format dd/MM/yyyy")
+           .Must(BeAValidDate).WithMessage("Date is invalid.");
+        RuleFor(x => x.ImportDate)
+            .Must(ImportDate =>
+            {
+                var formatedDate = DateUtil.ConvertStringToDateTimeOnly(ImportDate);
+                return formatedDate.Year > 1900 && formatedDate <= DateOnly.FromDateTime(DateTime.Now.Date);
+            }).WithMessage("Import Date must be greater than 1900 and less than or equal date now");
         RuleFor(x => x.Price)
             .NotEmpty()
             .WithMessage("Price is required")
             .GreaterThan(0)
             .WithMessage("Price must be greater than 0");
 
-
+    }
+    private bool BeAValidDate(string dob)
+    {
+        return DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
     }
 }
