@@ -5,6 +5,7 @@ using Contract.Services.Shipment.Create;
 using Contract.Services.ShipmentDetail.Share;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.Materials;
 using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
@@ -17,6 +18,7 @@ internal sealed class CreateShipmentCommandHandler(
     IShipmentRepository _shipmentRepository,
     IShipmentDetailRepository _shipmentDetailRepository,
     IProductPhaseRepository _productPhaseRepository,
+    IMaterialRepository _materialRepository,
     IUnitOfWork _unitOfWork,
     IValidator<CreateShipmentRequest> _validator) : ICommandHandler<CreateShipmentCommand>
 {
@@ -86,6 +88,17 @@ internal sealed class CreateShipmentCommandHandler(
                 return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
 
             case KindOfShip.SHIP_FACTORY_MATERIAL:
+                var material = await _materialRepository.GetMaterialByIdAsync(request.ItemId)
+                    ?? throw new MaterialNotFoundException();
+
+                if (material.AvailableQuantity < request.Quantity)
+                {
+                    throw new ItemAvailableNotEnoughException();
+                }
+
+                material.UpdateAvailableQuantity(material.AvailableQuantity - request.Quantity);
+                _materialRepository.UpdateMaterial(material);
+
                 return ShipmentDetail.CreateShipmentMaterialDetail (shipmentId, request);
 
             default:

@@ -8,6 +8,5 @@ namespace Contract.Services.ShipmentDetail.Share;
 public record DetailResponse(
     ProductResponse Product, 
     PhaseResponse Phase,
-    SetResponse Set, 
     MaterialHistoryResponse Material,
     double Quantity);

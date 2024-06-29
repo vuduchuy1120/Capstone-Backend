@@ -1,4 +1,5 @@
 ﻿using Contract.Services.ProductPhase.Queries;
+using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
 
 namespace Application.Abstractions.Data;
@@ -17,5 +18,6 @@ public interface IProductPhaseRepository
     void UpdateProductPhaseRange(List<ProductPhase> productPhases);
     Task<ProductPhase> GetByProductIdPhaseIdCompanyID(Guid productId, Guid phaseId,Guid mainCompanyID);
     //Task<List<ProductPhase>> GetByProductIdPhaseIdCompanyID(Guid companyId);
-
+    Task<bool> IsAllShipDetailProductValid(List<CheckQuantityInstockEnoughRequest> requests);
+    Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId);
 }

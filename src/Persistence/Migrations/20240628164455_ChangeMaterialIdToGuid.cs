@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialMigrations : Migration
+    public partial class ChangeMaterialIdToGuid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,8 +36,7 @@ namespace Persistence.Migrations
                 name: "Materials",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     NameUnaccent = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -162,7 +161,7 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    MaterialId = table.Column<int>(type: "integer", nullable: false),
+                    MaterialId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<double>(type: "double precision", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -512,18 +511,18 @@ namespace Persistence.Migrations
                     ShipmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<Guid>(type: "uuid", nullable: true),
                     PhaseId = table.Column<Guid>(type: "uuid", nullable: true),
-                    MaterialHistoryId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    ProductPhaseType = table.Column<int>(type: "integer", nullable: false),
-                    SetId = table.Column<Guid>(type: "uuid", nullable: true)
+                    MaterialId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MaterialPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Quantity = table.Column<double>(type: "double precision", nullable: false),
+                    ProductPhaseType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShipmentDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ShipmentDetails_MaterialHistories_MaterialHistoryId",
-                        column: x => x.MaterialHistoryId,
-                        principalTable: "MaterialHistories",
+                        name: "FK_ShipmentDetails_Materials_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Materials",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ShipmentDetails_Phases_PhaseId",
@@ -534,11 +533,6 @@ namespace Persistence.Migrations
                         name: "FK_ShipmentDetails_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ShipmentDetails_Sets_SetId",
-                        column: x => x.SetId,
-                        principalTable: "Sets",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ShipmentDetails_Shipments_ShipmentId",
@@ -657,9 +651,9 @@ namespace Persistence.Migrations
                 column: "SetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShipmentDetails_MaterialHistoryId",
+                name: "IX_ShipmentDetails_MaterialId",
                 table: "ShipmentDetails",
-                column: "MaterialHistoryId");
+                column: "MaterialId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentDetails_PhaseId",
@@ -670,11 +664,6 @@ namespace Persistence.Migrations
                 name: "IX_ShipmentDetails_ProductId",
                 table: "ShipmentDetails",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShipmentDetails_SetId",
-                table: "ShipmentDetails",
-                column: "SetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShipmentDetails_ShipmentId",
@@ -748,6 +737,9 @@ namespace Persistence.Migrations
                 name: "EmployeeProducts");
 
             migrationBuilder.DropTable(
+                name: "MaterialHistories");
+
+            migrationBuilder.DropTable(
                 name: "OrderDetails");
 
             migrationBuilder.DropTable(
@@ -772,7 +764,7 @@ namespace Persistence.Migrations
                 name: "Slots");
 
             migrationBuilder.DropTable(
-                name: "MaterialHistories");
+                name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "Phases");
@@ -788,9 +780,6 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShipOrders");
-
-            migrationBuilder.DropTable(
-                name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "Orders");

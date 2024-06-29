@@ -25,14 +25,16 @@ internal class ShipmentRepository : IShipmentRepository
         .AsSplitQuery()
         .AsNoTracking()
         .Include(s => s.Shipper)
+            .ThenInclude(u => u.Company)
+        .Include(s => s.Shipper)
+            .ThenInclude(u => u.Role)
         .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.Product)
                 .ThenInclude(p => p.Images)
         .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.Phase)
         .Include(s => s.ShipmentDetails)
-            .ThenInclude(sd => sd.MaterialHistory)
-             .ThenInclude(mh => mh.Material)
+            .ThenInclude(sd => sd.Material)
         .SingleOrDefaultAsync(s => s.Id == shipmentId);
     }
 

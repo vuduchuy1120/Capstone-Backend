@@ -8,12 +8,12 @@ public class ShipmentDetail : EntityBase<Guid>
     public Guid ShipmentId { get; private set; }
     public Guid? ProductId { get; private set; }
     public Guid? PhaseId { get; private set; }
-    public Guid? MaterialHistoryId { get; private set; }
+    public Guid? MaterialId { get; private set; }
     public decimal MaterialPrice { get; private set; }
     public Shipment Shipment { get; private set; }
     public Product? Product { get; private set; }
     public Phase? Phase { get; private set; }
-    public MaterialHistory? MaterialHistory { get; private set; }
+    public Material? Material { get; private set; }
     public double Quantity { get; private set; }
     public ProductPhaseType ProductPhaseType { get; private set; }
     private ShipmentDetail() { }
@@ -39,7 +39,7 @@ public class ShipmentDetail : EntityBase<Guid>
         {
             Id = Guid.NewGuid(),
             ShipmentId = shipId,
-            MaterialHistoryId = request.ItemId,
+            MaterialId = request.ItemId,
             Quantity = request.Quantity,
         };
     }

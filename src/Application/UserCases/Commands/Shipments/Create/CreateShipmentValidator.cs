@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
+using Contract.Services.Material.Share;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.Shipment.Create;
 using Contract.Services.ShipmentDetail.Share;
 using FluentValidation;
@@ -10,7 +12,8 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
 {
     public CreateShipmentValidator(
         ICompanyRepository companyRepository,
-        IProductRepository productRepository, 
+        IMaterialRepository materialRepository,
+        IProductPhaseRepository productPhaseRepository,
         IUserRepository userRepository)
     {
         RuleFor(req => req.FromId)
@@ -32,8 +35,8 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             }).WithMessage("Cơ sở hay công ty bên thứ 3 không tồn tại");
 
         RuleFor(req => req.ShipperId)
-            .NotEmpty().WithMessage("Không được để trống người giao hàng")
-            .Matches(@"^\d{12}$").WithMessage("Id must be exactly 12 digits")
+            .NotEmpty().WithMessage("Người giao hàng không được để trống")
+            .Matches(@"^\d{9}$|^\d{12}$").WithMessage("ID người giao hàng phải là 9 hoặc 12 chữ số")
             .MustAsync(async (id, _) =>
             {
                 return await userRepository.IsShipperExistAsync(id);
@@ -43,6 +46,8 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
             .Must((req, shipDate) =>
             {
+                var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
+                var now = DateTime.UtcNow;
                 return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
             }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
 
@@ -50,7 +55,7 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             .NotNull().WithMessage("Vật phẩm giao không được để trống")
             .Must((shipmentDetailRequest) =>
             {
-                return Enum.IsDefined(typeof(KindOfShip), shipmentDetailRequest);
+                return Enum.IsDefined(typeof(KindOfShip), shipmentDetailRequest.KindOfShip);
             }).WithMessage("Loại đơn hàng không tồn tại")
             .Must((shipmentDetailRequest) =>
             {
@@ -71,19 +76,23 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             }).WithMessage("Mã vật phẩm không được để trống");
 
         RuleFor(req => req.ShipmentDetailRequests)
-            .MustAsync(async (requests, _) =>
+            .MustAsync(async (req, requests, _) =>
             {
                 var shipProduct = requests
-                .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT)
-                .Select(s => s.ItemId)
-                .ToList();
+                    .Where(request => request.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT && request.PhaseId != null)
+                    .Select(request => new CheckQuantityInstockEnoughRequest(
+                        request.ItemId,
+                        (Guid)request.PhaseId,
+                        req.FromId,
+                        (int)request.Quantity))
+                    .ToList();
 
-                if(shipProduct is null)
+                if (shipProduct is null || shipProduct.Count == 0)
                 {
-                    return false;
+                    return true;
                 }
 
-                return await productRepository.IsAllSubProductIdsExist(shipProduct);
+                return await productPhaseRepository.IsAllShipDetailProductValid(shipProduct);
             }).WithMessage("Có một vài mã sản phẩm không hợp lệ");
 
         RuleFor(req => req.ShipmentDetailRequests)
@@ -91,15 +100,15 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             {
                 var shipMaterial = requests
                 .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
-                .Select(s => s.ItemId)
+                .Select(s => new MaterialCheckQuantityRequest(s.ItemId, s.Quantity))
                 .ToList();
 
-                if (shipMaterial is null)
+                if (shipMaterial is null || shipMaterial.Count == 0)
                 {
-                    return false;
+                    return true;
                 }
 
-                return await setRepository.IsAllSetExistAsync(shipMaterial);
-            }).WithMessage("Có một vài mã nguyên liệu không hợp lệ");
+                return  await materialRepository.IsMaterialEnoughAsync(shipMaterial);
+            }).WithMessage("Có một vài mã nguyên liệu không hợp lệ hoặc trong kho không đủ");
     }
 }

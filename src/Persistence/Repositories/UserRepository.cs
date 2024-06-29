@@ -39,6 +39,7 @@ internal class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(user => user.Role)
+            .Include(user => user.Company)
             .SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive);
     }
 
@@ -99,7 +100,9 @@ internal class UserRepository : IUserRepository
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(user => user.Id.Contains(request.SearchTerm));
+            query = query.Where(user => user.Phone.Contains(request.SearchTerm) 
+            || user.FirstName.ToLower().Contains(request.SearchTerm.ToLower())
+            || user.LastName.ToLower().Contains(request.SearchTerm.ToLower()));
         }
 
         var totalItems = await query.CountAsync();
@@ -107,6 +110,8 @@ internal class UserRepository : IUserRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
 
         var users = await query
+            .Include(user => user.Role)
+            .Include(user => user.Company)
             .OrderBy(user => user.CreatedDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)

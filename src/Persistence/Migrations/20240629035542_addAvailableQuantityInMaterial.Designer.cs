@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240628132219_IntialMigrations")]
-    partial class IntialMigrations
+    [Migration("20240629035542_addAvailableQuantityInMaterial")]
+    partial class addAvailableQuantityInMaterial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,11 +162,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<double>("AvailableQuantity")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -210,8 +211,8 @@ namespace Persistence.Migrations
                     b.Property<DateOnly>("ImportDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -674,8 +675,11 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MaterialHistoryId")
+                    b.Property<Guid?>("MaterialId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("MaterialPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid?>("PhaseId")
                         .HasColumnType("uuid");
@@ -686,24 +690,19 @@ namespace Persistence.Migrations
                     b.Property<int>("ProductPhaseType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("SetId")
-                        .HasColumnType("uuid");
+                    b.Property<double>("Quantity")
+                        .HasColumnType("double precision");
 
                     b.Property<Guid>("ShipmentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialHistoryId");
+                    b.HasIndex("MaterialId");
 
                     b.HasIndex("PhaseId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("SetId");
 
                     b.HasIndex("ShipmentId");
 
@@ -1034,9 +1033,9 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
                 {
-                    b.HasOne("Domain.Entities.MaterialHistory", "MaterialHistory")
+                    b.HasOne("Domain.Entities.Material", "Material")
                         .WithMany("ShipmentDetails")
-                        .HasForeignKey("MaterialHistoryId");
+                        .HasForeignKey("MaterialId");
 
                     b.HasOne("Domain.Entities.Phase", "Phase")
                         .WithMany("ShipmentDetails")
@@ -1046,17 +1045,13 @@ namespace Persistence.Migrations
                         .WithMany("ShipmentDetails")
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("Domain.Entities.Set", null)
-                        .WithMany("ShipmentDetails")
-                        .HasForeignKey("SetId");
-
                     b.HasOne("Domain.Entities.Shipment", "Shipment")
                         .WithMany("ShipmentDetails")
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MaterialHistory");
+                    b.Navigation("Material");
 
                     b.Navigation("Phase");
 
@@ -1096,10 +1091,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
                     b.Navigation("MaterialHistories");
-                });
 
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
                     b.Navigation("ShipmentDetails");
                 });
 
@@ -1144,8 +1136,6 @@ namespace Persistence.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("SetProducts");
-
-                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipOrder", b =>

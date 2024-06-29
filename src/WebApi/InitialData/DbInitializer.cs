@@ -1,11 +1,15 @@
 ﻿using Application.Abstractions.Services;
 using Contract.Services.Company.Create;
 using Contract.Services.Company.Shared;
+using Contract.Services.Phase.Creates;
+using Contract.Services.Product.CreateProduct;
+using Contract.Services.Product.SharedDto;
 using Contract.Services.Role.Create;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
 using Persistence;
+using System.Collections.Generic;
 
 namespace WebApi.InitialData;
 
@@ -43,6 +47,73 @@ public class DbInitializer
             SeedSlotData(context);
         }
 
+        if (!context.Products.Any())
+        {
+            SeedProductData(context);
+        }
+
+        if (!context.Phases.Any())
+        {
+            SeedPhaseData(context);
+        }
+    }
+
+    public static void SeedPhaseData(AppDbContext context)
+    {
+        var phases = new List<Phase>
+        {
+            Phase.Create(new CreatePhaseRequest("PH_001", "Giai đoạn tạo khung")),
+            Phase.Create(new CreatePhaseRequest("PH_002", "Giai đoạn gia công")),
+            Phase.Create(new CreatePhaseRequest("PH_003", "Giai đoạn hoàn thiện đóng gói")),
+        };
+
+        context.Phases.AddRange(phases);
+        context.SaveChanges();
+    }
+
+    public static void SeedProductData(AppDbContext context)
+    {
+        var products = new List<Product>
+        {
+            Product.Create(
+                new CreateProductRequest(
+                    Code: "PD001",
+                    Price: 50.00m,
+                    Size: "M",
+                    Description: "First product",
+                    Name: "Product 1",
+                    ImageRequests: new List<ImageRequest>
+                    {
+                        new ImageRequest("image_01.png", false, true),
+                        new ImageRequest("image_02.png", true, false),
+                    }
+                ),
+                createdBy: "001201011091"
+            ),
+            Product.Create(
+                new CreateProductRequest(
+                    Code: "PD002",
+                    Price: 100.00m,
+                    Size: "L",
+                    Description: "Second product",
+                    Name: "Product 2",
+                    ImageRequests: null
+                ),
+                createdBy: "001201011091"
+            ),
+        };
+
+        var images = new List<ProductImage>
+        {
+            ProductImage.Create(products[0].Id, new ImageRequest("image_01.png", false, true)),
+            ProductImage.Create(products[0].Id, new ImageRequest("image_02.png", true, false)),
+            ProductImage.Create(products[1].Id, new ImageRequest("image_03.png", false, true)),
+            ProductImage.Create(products[1].Id, new ImageRequest("image_04.png", true, false)),
+        };
+
+        context.Products.AddRange(products);
+        context.ProductImages.AddRange(images);
+        context.SaveChanges();
     }
 
     public static void SeedRoleData(AppDbContext context)

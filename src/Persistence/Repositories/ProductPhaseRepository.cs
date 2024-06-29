@@ -1,6 +1,8 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.ProductPhase.Queries;
+using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -40,6 +42,27 @@ public class ProductPhaseRepository : IProductPhaseRepository
         return await _context.ProductPhases.SingleOrDefaultAsync(pp => pp.ProductId == productId && pp.PhaseId == phaseId);
     }
 
+    public async Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId)
+    {
+        var queryRequests = shipmentDetails
+        .Select(s => new { s.ProductId, s.PhaseId })
+        .Distinct()
+        .ToList();
+
+        var query = _context.ProductPhases.AsQueryable();
+        foreach (var request in queryRequests)
+        {
+            query = query.Where(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == companyId);
+        }
+
+        var productPhases = await query.ToListAsync();
+
+        return productPhases;
+    }
+
     public async Task<(List<ProductPhase>?, int)> GetProductPhases(GetProductPhasesQuery request)
     {
         var query = _context.ProductPhases.Include(pp => pp.Phase).Include(pp => pp.Product).AsNoTracking().AsQueryable();
@@ -62,6 +85,45 @@ public class ProductPhaseRepository : IProductPhaseRepository
     public async Task<List<ProductPhase>> GetProductPhasesByProductId(Guid productId)
     {
         return await _context.ProductPhases.Where(pp => pp.ProductId == productId).ToListAsync();
+    }
+
+    public async Task<bool> IsAllShipDetailProductValid(List<CheckQuantityInstockEnoughRequest> requests)
+    {
+        var distinctRequests = requests
+        .Select(r => new { r.ProductId, r.PhaseId, r.FromCompanyId })
+        .Distinct()
+        .ToList();
+
+        var query = _context.ProductPhases.AsQueryable();
+        foreach (var request in distinctRequests)
+        {
+            query = query.Where(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == request.FromCompanyId);
+        }
+
+        var productPhases = await query.ToListAsync();
+
+        if (productPhases.Count != requests.Count)
+        {
+            return false;
+        }
+
+        foreach (var request in requests)
+        {
+            var productPhase = productPhases.SingleOrDefault(ph
+                => ph.ProductId == request.ProductId
+                && ph.PhaseId == request.PhaseId
+                && ph.CompanyId == request.FromCompanyId);
+
+            if (productPhase == null || productPhase.AvailableQuantity < request.Quantity)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public async Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId)
