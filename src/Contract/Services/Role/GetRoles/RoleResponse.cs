@@ -1,3 +1,3 @@
 ﻿namespace Contract.Services.Role.GetRoles;
 
-public record RoleResponse(string RoleName, string Decription);
+public record RoleResponse(string RoleName, string Decription, string Id);
