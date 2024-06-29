@@ -85,4 +85,10 @@ public class CompanyRepository : ICompanyRepository
     {
         return await _context.Companies.Where(c => c.CompanyType == CompanyType).ToListAsync();
     }
+
+    public async Task<bool> IsCompanyFactoryExistAsync(Guid Id)
+    {
+        return await _context.Companies
+            .AnyAsync(c => c.Id == Id && c.CompanyType == CompanyType.FACTORY);
+    }
 }

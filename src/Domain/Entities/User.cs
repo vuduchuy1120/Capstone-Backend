@@ -62,6 +62,7 @@ public class User : EntityAuditBase<string>
         Gender = request.Gender;
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
+        CompanyId = request.CompanyId;
     }
 
     public void UpdateStatus(ChangeUserStatusCommand request)

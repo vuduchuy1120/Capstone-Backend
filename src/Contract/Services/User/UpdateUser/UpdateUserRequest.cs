@@ -9,4 +9,5 @@ public record UpdateUserRequest(
         string Gender,
         string DOB,
         decimal SalaryByDay,
+        Guid CompanyId,
         int RoleId);

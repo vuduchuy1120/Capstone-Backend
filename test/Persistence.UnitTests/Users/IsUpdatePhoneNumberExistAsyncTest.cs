@@ -2,52 +2,27 @@
 using Contract.Services.Role.Create;
 using Contract.Services.User.BanUser;
 using Contract.Services.User.CreateUser;
-using Contract.Services.User.UpdateUser;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories;
 
 namespace Persistence.UnitTests.Users;
 
-public class UpdateUserTest : IDisposable
+public class IsUpdatePhoneNumberExistAsyncTest : IDisposable
 {
     private readonly AppDbContext _context;
     private readonly IUserRepository _userRepository;
 
-    public UpdateUserTest()
+    public IsUpdatePhoneNumberExistAsyncTest()
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
                     .UseInMemoryDatabase(Guid.NewGuid().ToString());
         _context = new AppDbContext(optionsBuilder.Options);
         _userRepository = new UserRepository(_context);
     }
-
-    [Fact]
-    public async Task UpdateUserSuccess()
+    public void Dispose()
     {
-        await InitDb();
-
-        var updateUserRequest = new UpdateUserRequest(
-            Id: "001201011091",
-            FirstName: "Jane",
-            LastName: "Doe",
-            Phone: "987-654-3210",
-            Address: "456 Another St, Othertown, USA",
-            Gender: "Female",
-            DOB: "10/03/2001",
-            SalaryByDay: 200,
-            CompanyId: Guid.NewGuid(),
-            RoleId: 1
-        );
-        var user = await _context.Users.SingleOrDefaultAsync(user => user.Id == "001201011091");
-        user.Update(updateUserRequest, updateUserRequest.Id);
-
-        _userRepository.Update(user);
-        await _context.SaveChangesAsync();
-
-        var newUser = await _userRepository.GetUserByIdAsync(updateUserRequest.Id);
-        Assert.NotNull(newUser);
-        Assert.Equal(updateUserRequest.SalaryByDay, newUser.SalaryByDay);
+        _context.Dispose();
     }
 
     private async Task InitDb()
@@ -57,7 +32,7 @@ public class UpdateUserTest : IDisposable
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
-            Phone: "123-456-7890",
+            Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
             Password: "SecurePassword123",
             Gender: "Male",
@@ -72,7 +47,7 @@ public class UpdateUserTest : IDisposable
             Id: "001201011092",
             FirstName: "John",
             LastName: "Doe",
-            Phone: "123-456-7890",
+            Phone: "0976099352",
             Address: "123 Main St, Anytown, USA",
             Password: "SecurePassword123",
             Gender: "Male",
@@ -90,8 +65,33 @@ public class UpdateUserTest : IDisposable
         await _context.SaveChangesAsync();
     }
 
-    public void Dispose()
+    [Fact]
+    public async Task PhoneNumberNotExist_ShouldReturnFalse()
     {
-        _context.Dispose();
+        await InitDb();
+
+        var isPhoneExist = await _userRepository.IsUpdatePhoneNumberExistAsync("0976099111", "123123");
+
+        Assert.False(isPhoneExist);
+    }
+
+    [Fact]
+    public async Task PhoneNumberExist_ButUseByThisUser_ShouldReturnFalse()
+    {
+        await InitDb();
+
+        var isPhoneExist = await _userRepository.IsUpdatePhoneNumberExistAsync("0976099352", "001201011092");
+
+        Assert.False(isPhoneExist);
+    }
+
+    [Fact]
+    public async Task PhoneNumberExist_UseByOtherUser_ShouldReturnFalse()
+    {
+        await InitDb();
+
+        var isPhoneExist = await _userRepository.IsUpdatePhoneNumberExistAsync("0976099352", "001201011091");
+
+        Assert.True(isPhoneExist);
     }
 }

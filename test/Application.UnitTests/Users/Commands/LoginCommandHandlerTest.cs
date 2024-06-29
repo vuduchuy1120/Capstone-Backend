@@ -31,7 +31,7 @@ public class LoginCommandHandlerTest
     public async Task Handler_ShouldThrow_UserNotFoundException_WhenUserIdNotExist()
     {
         var loginCommand = new LoginCommand("userID", "Passsord");
-        _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(loginCommand.Id)).ReturnsAsync((User) null);
+        _userRepositoryMock.Setup(repo => repo.GetUserByPhoneNumberOrIdAsync(loginCommand.Id)).ReturnsAsync((User) null);
 
         var loginCommandHandler = new LoginCommandHandler(
             _userRepositoryMock.Object,
@@ -51,7 +51,7 @@ public class LoginCommandHandlerTest
     {
         var loginCommand = new LoginCommand("userID", "Password");
 
-        _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(loginCommand.Id)).ReturnsAsync(new User());
+        _userRepositoryMock.Setup(repo => repo.GetUserByPhoneNumberOrIdAsync(loginCommand.Id)).ReturnsAsync(new User());
         _passwordServiceMock.Setup(service => service.IsVerify(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
 
         var loginCommandHandler = new LoginCommandHandler(
@@ -72,7 +72,7 @@ public class LoginCommandHandlerTest
     {
         var loginCommand = new LoginCommand("userID", "Password");
 
-        _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(loginCommand.Id)).ReturnsAsync(new User());
+        _userRepositoryMock.Setup(repo => repo.GetUserByPhoneNumberOrIdAsync(loginCommand.Id)).ReturnsAsync(new User());
         _passwordServiceMock.Setup(service => service.IsVerify(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
         _jwtServiceMock.Setup(jwt => jwt.CreateAccessToken(It.IsAny<User>())).ReturnsAsync("accessToken");
         _jwtServiceMock.Setup(jwt => jwt.CreateRefreshToken(It.IsAny<User>())).ReturnsAsync("refreshToken");

@@ -35,6 +35,13 @@ internal class UserRepository : IUserRepository
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
+    public async Task<User> GetUserByPhoneNumberOrIdAsync(string search)
+    {
+        return await _context.Users
+            .Include(user => user.Role)
+            .SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive);
+    }
+
     public Task<List<User>> GetUsersByCompanyId(Guid companyId)
     {
         return _context.Users
@@ -54,6 +61,18 @@ internal class UserRepository : IUserRepository
     {
         var countUsers = await _context.Users.CountAsync(user => userIds.Contains(user.Id) && user.IsActive == true && user.CompanyId == companyId);
         return countUsers == userIds.Count;
+    }
+
+    public async Task<bool> IsPhoneNumberExistAsync(string phoneNumber)
+    {
+        return await _context.Users
+            .AnyAsync(u => u.Phone ==  phoneNumber);    
+    }
+
+    public async Task<bool> IsUpdatePhoneNumberExistAsync(string phone, string userId)
+    {
+        return await _context.Users
+            .AnyAsync (u => u.Phone == phone && u.Id != userId);
     }
 
     public async Task<bool> IsUserActiveAsync(string id)

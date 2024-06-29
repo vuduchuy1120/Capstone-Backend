@@ -15,4 +15,7 @@ public interface IUserRepository
     void Update(User user);
     Task<bool> IsAllUserActiveByCompanyId(List<string> userIds, Guid companyId);
     Task<List<User>> GetUsersByCompanyId(Guid companyId);
+    Task<bool> IsPhoneNumberExistAsync(string phoneNumber);
+    Task<bool> IsUpdatePhoneNumberExistAsync(string phone, string userId);
+    Task<User> GetUserByPhoneNumberOrIdAsync(string search);
 }

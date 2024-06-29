@@ -52,20 +52,15 @@ public class CreateProductCommandHandlerTest
     }
 
     [Fact]
-    public async Task Handler_Should_ReturnSuccessResult_WhenProductImageNull()
+    public async Task Handler_Should_ThrowMyValidationException_WhenProductImageNull()
     {
         var createProductRequest = new CreateProductRequest("CD123", 123, "Size", "Description", "Name", null);
         var createProductCommand = new CreateProductCommand(createProductRequest, "CreatedBy");
 
         _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync(default)).ReturnsAsync(1);
 
-        var result = await _createProductCommandHandler.Handle(createProductCommand, default);
-
-        Assert.True(result.isSuccess);
-
-        _productImageRepositoryMock.Verify(pImage => pImage.AddRange(It.IsAny<List<ProductImage>>()), Times.Never);
-        _productRepositoryMock.Verify(p => p.Add(It.IsAny<Product>()), Times.Once);
-        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        await Assert.ThrowsAsync<MyValidationException>(() => 
+        _createProductCommandHandler.Handle(createProductCommand, default));
     }
 
     [Theory]

@@ -27,14 +27,14 @@ internal sealed class LoginCommandHandler(
 
         var loginResponse = await CreateLoginResponseAsync(user);
 
-        await CacheLoginResponseAsync(request.Id, loginResponse, cancellationToken);
+        await CacheLoginResponseAsync(user.Id, loginResponse, cancellationToken);
 
         return Result.Success<LoginResponse>.Login(loginResponse);
     }
 
     private async Task<User> GetUserAndVerifyPasswordAsync(string userId, string password)
     {
-        var user = await _userRepository.GetUserActiveByIdAsync(userId) ?? throw new UserNotFoundException(userId);
+        var user = await _userRepository.GetUserByPhoneNumberOrIdAsync(userId) ?? throw new UserNotFoundException(userId);
 
         var isPasswordValid = _passwordService.IsVerify(user.Password, password);
 
