@@ -68,7 +68,8 @@ internal sealed class ProductRepository : IProductRepository
         var searchTerm = getProductsQuery.SearchTerm;
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(p => p.Name.Contains(searchTerm) || p.Code.Contains(searchTerm));
+            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) 
+            || p.Code.ToLower().Contains(searchTerm.ToLower()));
         }
 
         var totalItems = await query.CountAsync();
