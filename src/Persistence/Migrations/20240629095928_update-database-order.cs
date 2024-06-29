@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class updateDBMerge : Migration
+    public partial class updatedatabaseorder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -137,7 +137,7 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     StartOrder = table.Column<DateOnly>(type: "date", nullable: true),
                     EndOrder = table.Column<DateOnly>(type: "date", nullable: true),
                     VAT = table.Column<double>(type: "double precision", nullable: false),
@@ -209,8 +209,7 @@ namespace Persistence.Migrations
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     ErrorQuantity = table.Column<int>(type: "integer", nullable: false),
-                    AvailableQuantity = table.Column<int>(type: "integer", nullable: false),
-                    SalaryPerProduct = table.Column<decimal>(type: "numeric", nullable: false)
+                    AvailableQuantity = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -375,7 +374,6 @@ namespace Persistence.Migrations
                     SlotId = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    IsMold = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -689,6 +687,12 @@ namespace Persistence.Migrations
                 name: "IX_Users_CompanyId",
                 table: "Users",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Phone",
+                table: "Users",
+                column: "Phone",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

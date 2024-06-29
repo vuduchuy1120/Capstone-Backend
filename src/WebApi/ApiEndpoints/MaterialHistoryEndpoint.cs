@@ -1,6 +1,8 @@
-﻿using Carter;
+﻿using Application.UserCases.Commands.MaterialHistories;
+using Carter;
 using Contract.Services.Material.Get;
 using Contract.Services.MaterialHistory.Create;
+using Contract.Services.MaterialHistory.Deletes;
 using Contract.Services.MaterialHistory.Queries;
 using Contract.Services.MaterialHistory.Update;
 using MediatR;
@@ -69,6 +71,18 @@ public class MaterialHistoryEndpoint : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material History api" } }
         });
 
+        app.MapDelete("{id}", async (
+                    ISender sender,
+                    Guid id) =>
+        {
+            var deleteMaterialHistoryCommand = new DeleteMaterialHistoryByIdCommand(id);
+            var result = await sender.Send(deleteMaterialHistoryCommand);
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Material History api" } }
+        });
 
     }
 }

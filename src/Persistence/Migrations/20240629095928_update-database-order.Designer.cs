@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240626065130_updateDBMerge")]
-    partial class updateDBMerge
+    [Migration("20240629095928_update-database-order")]
+    partial class updatedatabaseorder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,9 +137,6 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsMold")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
@@ -248,9 +245,8 @@ namespace Persistence.Migrations
                     b.Property<DateOnly?>("StartOrder")
                         .HasColumnType("date");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -412,9 +408,6 @@ namespace Persistence.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("SalaryPerProduct")
-                        .HasColumnType("numeric");
 
                     b.HasKey("PhaseId", "ProductId", "CompanyId");
 
@@ -763,6 +756,9 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 

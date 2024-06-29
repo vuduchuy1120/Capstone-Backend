@@ -22,6 +22,7 @@ public class ProductPhase
             ProductId = request.ProductId,
             PhaseId = request.PhaseId,
             Quantity = request.Quantity,
+            AvailableQuantity = request.Quantity,
             CompanyId = request.CompanyId
         };
     }
@@ -29,6 +30,7 @@ public class ProductPhase
     public void Update(UpdateProductPhaseRequest request)
     {
         Quantity = request.Quantity;
+        AvailableQuantity = request.Quantity;
         //SalaryPerProduct = request.SalaryPerProduct;
     }
 

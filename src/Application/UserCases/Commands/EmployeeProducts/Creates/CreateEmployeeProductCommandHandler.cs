@@ -109,6 +109,7 @@ public sealed class CreateEmployeeProductCommandHandler
                         ProductId: item.ProductId,
                         PhaseId: item.PhaseId,
                         Quantity: item.Quantity,
+                        AvailableQuantity: item.Quantity,
                         CompanyId: companyId
                     ));
                     phaseProductsNew?.Add(productPhase);
@@ -122,6 +123,7 @@ public sealed class CreateEmployeeProductCommandHandler
             if (productPhase != null)
             {
                 productPhase.Quantity += decrement ? -item.Quantity : item.Quantity;
+                productPhase.AvailableQuantity += decrement ? -item.Quantity : item.Quantity;
             }
         }
     }

@@ -6,7 +6,7 @@ public record UpdateOrderRequest
 (
     Guid OrderId,
     Guid CompanyId,
-    StatusType Status,
+    StatusOrder Status,
     double VAT,
     string StartOrder,
     string EndOrder);

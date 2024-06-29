@@ -10,7 +10,7 @@ namespace Domain.Entities;
 public class Order : EntityAuditBase<Guid>
 {
     public Guid CompanyId { get; private set; }
-    public StatusType Status { get; private set; }
+    public StatusOrder Status { get; private set; }
     public DateOnly? StartOrder { get; private set; }
     public DateOnly? EndOrder { get; private set; }
     public double VAT { get; private set; }

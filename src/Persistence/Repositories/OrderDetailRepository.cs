@@ -1,7 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Contract.Services.OrderDetail.Queries;
 using Domain.Entities;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -21,6 +19,11 @@ public class OrderDetailRepository : IOrderDetailRepository
     public void AddRange(List<OrderDetail> orderDetails)
     {
         _context.OrderDetails.AddRange(orderDetails);
+    }
+
+    public void Delete(OrderDetail orderDetail)
+    {
+        _context.OrderDetails.Remove(orderDetail);
     }
 
     public void DeleteRange(List<OrderDetail> orderDetails)
