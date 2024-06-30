@@ -39,7 +39,6 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
         RuleFor(x => x.Id)
             .MustAsync(async (id, _) => await _companyRepository.IsExistAsync(id))
             .WithMessage("CompanyId not found!");
-
     }
     private bool BeCompanyType1(CompanyType companyType)
     {

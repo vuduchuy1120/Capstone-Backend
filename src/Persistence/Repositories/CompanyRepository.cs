@@ -50,9 +50,12 @@ public class CompanyRepository : ICompanyRepository
         {
             query = query.Where(company => company.DirectorPhone.Contains(request.PhoneNumber));
         }
-        if (request.CompanyType != null)
+        if (!string.IsNullOrWhiteSpace(request.CompanyType))
         {
-            query = query.Where(company => company.CompanyType == request.CompanyType);
+            if (Enum.TryParse<CompanyType>(request.CompanyType, true, out var companyType))
+            {
+                query = query.Where(company => company.CompanyType == companyType);
+            }
         }
 
         var totalItems = await query.CountAsync();
