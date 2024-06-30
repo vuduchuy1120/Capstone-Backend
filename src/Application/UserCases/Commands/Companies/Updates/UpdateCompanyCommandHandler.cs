@@ -15,9 +15,9 @@ public sealed class UpdateCompanyCommandHandler(
 {
     public async Task<Result.Success> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var updateCompanyRequest = request.UpdateCompanyRequest;
+        var updateCompanyRequest = request.updateCompanyRequest;
         var validationResult = await _validator.ValidateAsync(updateCompanyRequest);
-        if (validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }

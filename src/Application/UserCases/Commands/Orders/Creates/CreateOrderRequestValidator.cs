@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Company.Shared;
 using Contract.Services.Order.Creates;
 using FluentValidation;
 
@@ -15,6 +16,11 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             {
                 return await _companyRepository.IsExistAsync(companyId);
             }).WithMessage("Company does not exist.");
+        RuleFor(x => x.CompanyId)
+            .MustAsync(async (companyId, cancellationToken) =>
+            {
+                return !await _companyRepository.IsCompanyNotCustomerCompanyAsync(companyId);
+            }).WithMessage("Company is must be customer company.");
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status is not valid. Status should be 0,1,2,3");
     }
