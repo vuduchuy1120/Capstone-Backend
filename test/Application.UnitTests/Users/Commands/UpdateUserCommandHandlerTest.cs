@@ -28,7 +28,7 @@ public class UpdateUserCommandHandlerTest
     public async Task Handler_ShouldThrow_MyValidationException_WhenUserIdNotExist()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName", 
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+            "0976099351", "image", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
@@ -48,8 +48,8 @@ public class UpdateUserCommandHandlerTest
     [Fact]
     public async Task Handler_ShouldThrow_MyValidationException_WhenFactoryIdNotExist()
     {
-        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName", 
+            "0976099351", "image", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
@@ -68,8 +68,8 @@ public class UpdateUserCommandHandlerTest
     [Fact]
     public async Task Handler_ShouldThrow_MyValidationException_WhenPhoneNumberExist()
     {
-        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+        var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName", 
+            "0976099351", "image", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
@@ -112,7 +112,7 @@ public class UpdateUserCommandHandlerTest
         string id, string firstName, string lastName, string phone, string address,
         string gender, string dob, int salaryByDay, int roleId)
     {
-        var updateUserRequest = new UpdateUserRequest(id, firstName, lastName, phone, address,
+        var updateUserRequest = new UpdateUserRequest(id, firstName, lastName, phone, "image", address,
             gender, dob, salaryByDay, Guid.NewGuid(), roleId);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(
@@ -133,7 +133,7 @@ public class UpdateUserCommandHandlerTest
     public async Task Handler_ShouldThrow_UserNotFoundException_WhenUserNotFound()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+            "0976099351", "image", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(_userRepositoryMock.Object, _unitOfWorkMock.Object, _validator);
 
@@ -155,7 +155,7 @@ public class UpdateUserCommandHandlerTest
     public async Task Handler_ShouldReturn_SuccessResult()
     {
         var updateUserRequest = new UpdateUserRequest("001201011091", "FirstName", "LastName",
-            "0976099351", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
+            "0976099351", "image", "Hanoi", "Male", "10/03/2001", 123, Guid.NewGuid(), 1);
         var updateUserCommand = new UpdateUserCommand(updateUserRequest, "UpdateBy");
         var updateUserCommandHandler = new UpdateUserCommandHandler(
             _userRepositoryMock.Object, 

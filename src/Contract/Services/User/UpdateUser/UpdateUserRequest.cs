@@ -5,6 +5,7 @@ public record UpdateUserRequest(
         string FirstName,
         string LastName,
         string Phone,
+        string? Avatar,
         string Address,
         string Gender,
         string DOB,

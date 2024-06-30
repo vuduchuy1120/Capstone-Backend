@@ -171,6 +171,7 @@ public class DbInitializer
             "001201011091",
             "Son",
             "Nguyen",
+            "iamge",
             "0976099351",
             "Ha Noi",
             "12345",
