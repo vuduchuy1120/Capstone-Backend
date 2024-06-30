@@ -32,6 +32,8 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Report> Reports { get; set; }
     public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
     public DbSet<ProductPhaseSalary> ProductPhaseSalaries { get; set; }
+    public DbSet<SalaryPay> SalaryPays { get; set; }
+    public DbSet<SalaryHistory> SalaryHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
