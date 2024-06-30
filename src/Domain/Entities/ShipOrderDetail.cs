@@ -12,5 +12,4 @@ public class ShipOrderDetail : EntityBase<Guid>
     public Product? Product { get; private set; }
     public Set? Set { get; private set; }
     public int Quantity { get; private set; }
-    public ItemStatus ItemStatus { get; private set; }
 }
