@@ -22,6 +22,11 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
             {
                 return await _companyRepository.IsExistAsync(companyId);
             }).WithMessage("Company does not exist.");
+        RuleFor(x => x.CompanyId)
+            .MustAsync(async (companyId, cancellationToken) =>
+            {
+                return !await _companyRepository.IsCompanyNotCustomerCompanyAsync(companyId);
+            }).WithMessage("Company is must be customer company.");
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status is not valid. Status should be 0,1,2,3");
     }

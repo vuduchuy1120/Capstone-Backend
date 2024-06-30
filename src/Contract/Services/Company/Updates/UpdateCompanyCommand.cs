@@ -2,4 +2,4 @@
 
 namespace Contract.Services.Company.Updates;
 
-public record UpdateCompanyCommand(UpdateCompanyRequest UpdateCompanyRequest) : ICommand;
+public record UpdateCompanyCommand(UpdateCompanyRequest updateCompanyRequest) : ICommand;

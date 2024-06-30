@@ -22,12 +22,11 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
         RuleFor(x => x.CompanyRequest.DirectorName)
             .NotEmpty().WithMessage("DirectorName is required.")
             .NotNull().WithMessage("DirectorName must be not null")
-            .Matches(@"^[a-zA-Z\s]*$").WithMessage("DirectorName must be only characters.")
+            .Matches(@"^[a-zA-ZÀ-ỹ\s]*$").WithMessage("DirectorName must be only characters and spaces.")
             .MaximumLength(100)
             .WithMessage("DirectorName cannot exceed 100 characters.");
         RuleFor(x => x.CompanyRequest.DirectorPhone)
             .NotEmpty().WithMessage("Phone is required.")
-            .NotNull().WithMessage("Phone must be not null")
             .Matches(@"^0\d{9}$")
             .WithMessage("Phone must be exactly 10 chracters.");
         RuleFor(x => x.CompanyRequest.Email)
@@ -35,14 +34,10 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
             .MaximumLength(100)
             .WithMessage("Email cannot exceed 100 characters.");
         RuleFor(x => x.CompanyRequest.CompanyType)
-            .Must(BeCompanyType1).WithMessage("Company type must be 1.");
+            .IsInEnum().WithMessage("Company type must be 0,1,2.");
         RuleFor(x => x.Id)
             .MustAsync(async (id, _) => await _companyRepository.IsExistAsync(id))
             .WithMessage("CompanyId not found!");
 
-    }
-    private bool BeCompanyType1(CompanyType companyType)
-    {
-        return companyType == CompanyType.CUSTOMER_COMPANY;
-    }
+    }    
 }
