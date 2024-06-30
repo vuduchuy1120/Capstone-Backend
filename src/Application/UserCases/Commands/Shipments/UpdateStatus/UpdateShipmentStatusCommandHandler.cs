@@ -196,7 +196,7 @@ internal sealed class UpdateShipmentStatusCommandHandler(
             if(productPhase is null)
             {
                 productPhase = ProductPhase.Create(
-                    new CreateProductPhaseRequest(productId, phaseId, (int) shipmentDetail.Quantity, companyId));
+                    new CreateProductPhaseRequest(productId, phaseId, (int) shipmentDetail.Quantity, (int)shipmentDetail.Quantity, companyId));
             }
             else
             {

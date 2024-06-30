@@ -36,10 +36,10 @@ public class Material : EntityBase<Guid>
 
     public void Update(UpdateMaterialRequest updateMaterialRequest)
     {
-        Name = updateMaterialRequest.Name;
-        NameUnaccent = StringUtils.RemoveDiacritics(updateMaterialRequest.Name).ToLower();
-        Description = updateMaterialRequest.Description;
-        Unit = updateMaterialRequest.Unit;
+        Name = updateMaterialRequest.Name.Trim();
+        NameUnaccent = StringUtils.RemoveDiacritics(updateMaterialRequest.Name.Trim()).ToLower();
+        Description = updateMaterialRequest.Description.Trim();
+        Unit = updateMaterialRequest.Unit.Trim();
         QuantityPerUnit = updateMaterialRequest.QuantityPerUnit;
         Image = updateMaterialRequest.Image;
         QuantityInStock = updateMaterialRequest.QuantityInStock;
@@ -53,6 +53,11 @@ public class Material : EntityBase<Guid>
     public void UpdateQuantityInStock(double quantity)
     {
         QuantityInStock = quantity;
+    }
+
+    public void UpdateQuantityInStock1(double quantity)
+    {
+        QuantityInStock += quantity;
     }
 }
 

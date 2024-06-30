@@ -10,6 +10,7 @@ namespace Application.UserCases.Commands.MaterialHistories.Create;
 
 public sealed class CreateMaterialHistoryCommandHandler(
     IMaterialHistoryRepository _materialHistoryRepository,
+    IMaterialRepository _materialRepository,
     IUnitOfWork _unitOfWork,
     IValidator<CreateMaterialHistoryRequest> _validator
     ) : ICommandHandler<CreateMaterialHistoryCommand>
@@ -24,6 +25,10 @@ public sealed class CreateMaterialHistoryCommandHandler(
         }
         var materialHistory = MaterialHistory.Create(createMaterialHistoryCommand);
         _materialHistoryRepository.AddMaterialHistory(materialHistory);
+
+        var material = await _materialRepository.GetMaterialByIdAsync(createMaterialHistoryCommand.MaterialId);
+        material.UpdateQuantityInStock(createMaterialHistoryCommand.Quantity);
+        _materialRepository.UpdateMaterial(material);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Create();
     }

@@ -9,6 +9,7 @@ public interface IOrderDetailRepository
     void AddRange(List<OrderDetail> orderDetails);
     void UpdateRange(List<OrderDetail> orderDetails);
     void DeleteRange(List<OrderDetail> orderDetails);
+    void Delete(OrderDetail orderDetail);
     Task<OrderDetail> GetOrderDetailByIdAsync(Guid id);
     Task<List<OrderDetail>> GetOrderDetailsByOrderIdAsync(Guid id);
     Task<bool> IsOrderDetailExistedAsync(Guid id);

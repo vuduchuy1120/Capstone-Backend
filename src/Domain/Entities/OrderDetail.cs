@@ -5,7 +5,7 @@ namespace Domain.Entities;
 
 public class OrderDetail : EntityBase<Guid>
 {
-    public Guid OrderId { get;private set; }
+    public Guid OrderId { get; private set; }
     public Guid? ProductId { get; private set; }
     public Guid? SetId { get; private set; }
     public Order Order { get; private set; }
@@ -15,7 +15,6 @@ public class OrderDetail : EntityBase<Guid>
     public int ShippedQuantity { get; private set; } = 0;
     public decimal UnitPrice { get; private set; }
     public string? Note { get; private set; }
-
 
     public static OrderDetail Create(Guid orderId, OrderDetailRequest request)
     {

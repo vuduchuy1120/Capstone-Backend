@@ -31,6 +31,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Shipment> Shipments { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
+    public DbSet<ProductPhaseSalary> ProductPhaseSalaries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -149,5 +150,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             .WithMany()
             .HasForeignKey(s => s.ToId)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProductPhaseSalary>()
+            .HasKey(s => new { s.ProductId, s.PhaseId });
     }
 }

@@ -11,6 +11,7 @@ public class Phase : EntityBase<Guid>
     public List<ProductPhase>? ProductPhases { get; set; }
     public List<EmployeeProduct>? EmployeeProducts { get; set; }
     public List<ShipmentDetail>? ShipmentDetails { get; set; }
+    public List<ProductPhaseSalary>? ProductPhaseSalaries { get; set; }
 
     public static Phase Create(CreatePhaseRequest createPhaseRequest)
     {

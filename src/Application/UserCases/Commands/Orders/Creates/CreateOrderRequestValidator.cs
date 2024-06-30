@@ -10,12 +10,12 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     {
         RuleFor(x => x.CompanyId)
             .NotEmpty().WithMessage("CompanyId is required.")
+            .NotNull().WithMessage("CompanyId must be not null.")
             .MustAsync(async (companyId, cancellationToken) =>
             {
                 return await _companyRepository.IsExistAsync(companyId);
             }).WithMessage("Company does not exist.");
         RuleFor(x => x.Status)
-            .NotEmpty()
-            .WithMessage("Status is required.");            
+            .IsInEnum().WithMessage("Status is not valid. Status should be 0,1,2,3");
     }
 }

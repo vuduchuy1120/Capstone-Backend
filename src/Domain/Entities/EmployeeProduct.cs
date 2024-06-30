@@ -13,7 +13,6 @@ public class EmployeeProduct : EntityAuditBaseWithoutId
     public int SlotId { get; set; }
     public DateOnly Date { get; set; }
     public int Quantity { get; set; }
-    public bool IsMold { get; set; } = false;
     public User? User { get; set; }
     public Product? Product { get; set; }
     public Phase? Phase { get; set; }
@@ -31,7 +30,6 @@ public class EmployeeProduct : EntityAuditBaseWithoutId
             Quantity = createQuantityProductRequest.Quantity,
             CreatedBy = CreatedBy,
             CreatedDate = DateUtils.GetNow(),
-            IsMold = createQuantityProductRequest.IsMold,
         };
     }
     private static DateOnly ConvertStringToDateTimeOnly(string dateString)

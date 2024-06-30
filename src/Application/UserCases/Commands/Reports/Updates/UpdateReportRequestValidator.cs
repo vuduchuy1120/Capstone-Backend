@@ -18,11 +18,6 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
         RuleFor(x => x.ReplyMessage)
             .NotEmpty().WithMessage("ReplyMessage is required")
             .MaximumLength(500).WithMessage("ReplyMessage must not exceed 500 characters");
-        RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required")
-            .Must(status =>
-            {
-                return status == "Approved" || status == "Rejected";
-            }).WithMessage("Status must be either 'Approved' or 'Rejected'");
+        
     }
 }

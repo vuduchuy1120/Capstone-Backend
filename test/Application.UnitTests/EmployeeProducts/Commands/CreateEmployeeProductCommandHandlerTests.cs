@@ -57,7 +57,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -99,7 +99,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -134,7 +134,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: slotId,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -168,7 +168,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                     SlotId: 1,
                     CreateQuantityProducts: new List<CreateQuantityProductRequest>
                     {
-                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                     });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -199,7 +199,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                     SlotId: 1,
                     CreateQuantityProducts: new List<CreateQuantityProductRequest>
                     {
-                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                     });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -232,7 +232,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                             SlotId: 1,
                             CreateQuantityProducts: new List<CreateQuantityProductRequest>
                             {
-                                new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                                new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                             });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -263,7 +263,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 

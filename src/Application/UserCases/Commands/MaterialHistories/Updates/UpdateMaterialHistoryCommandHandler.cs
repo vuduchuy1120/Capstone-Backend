@@ -3,47 +3,89 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.MaterialHistory.Update;
 using Domain.Abstractions.Exceptions;
+using Domain.Entities;
 using FluentValidation;
 using System.Text.RegularExpressions;
 
 namespace Application.UserCases.Commands.MaterialHistories.Update;
 
-public sealed class UpdateMaterialHistoryCommandHandler(
-       IMaterialHistoryRepository _materialHistoryRepository,
-       IUnitOfWork _unitOfWork,
-       IValidator<UpdateMaterialHistoryRequest> _validator
-       ) : ICommandHandler<UpdateMaterialHistoryCommand>
+public sealed class UpdateMaterialHistoryCommandHandler : ICommandHandler<UpdateMaterialHistoryCommand>
 {
+    private readonly IMaterialHistoryRepository _materialHistoryRepository;
+    private readonly IMaterialRepository _materialRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidator<UpdateMaterialHistoryRequest> _validator;
+
+    public UpdateMaterialHistoryCommandHandler(
+        IMaterialHistoryRepository materialHistoryRepository,
+        IMaterialRepository materialRepository,
+        IUnitOfWork unitOfWork,
+        IValidator<UpdateMaterialHistoryRequest> validator)
+    {
+        _materialHistoryRepository = materialHistoryRepository;
+        _materialRepository = materialRepository;
+        _unitOfWork = unitOfWork;
+        _validator = validator;
+    }
+
     public async Task<Result.Success> Handle(UpdateMaterialHistoryCommand request, CancellationToken cancellationToken)
     {
         var updateMaterialHistoryRequest = request.updateMaterialHistoryRequest;
-        var validationResult = await _validator.ValidateAsync(updateMaterialHistoryRequest);
+        var validationResult = await _validator.ValidateAsync(updateMaterialHistoryRequest, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        if (!string.IsNullOrEmpty(updateMaterialHistoryRequest.ImportDate))
-        {
-            // Validate format using regex
-            if (!Regex.IsMatch(updateMaterialHistoryRequest.ImportDate, @"^\d{2}/\d{2}/\d{4}$"))
-            {
-                throw new MyValidationException("Import Date must be in the format dd/MM/yyyy");
-            }
-        }
+        ValidateImportDateFormat(updateMaterialHistoryRequest.ImportDate);
 
-        var materialHistory = await _materialHistoryRepository.GetMaterialHistoryByIdAsync(updateMaterialHistoryRequest.Id);
+        var materialHistory = await GetMaterialHistory(updateMaterialHistoryRequest.Id);
+        var material = await GetMaterial(updateMaterialHistoryRequest.MaterialId);
+
+        UpdateMaterialQuantities(material, materialHistory, updateMaterialHistoryRequest.Quantity);
+
+        materialHistory.Update(updateMaterialHistoryRequest);
+        _materialHistoryRepository.UpdateMaterialHistory(materialHistory);
+        _materialRepository.UpdateMaterial(material);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success.Update();
+    }
+
+    private static void ValidateImportDateFormat(string? importDate)
+    {
+        if (!string.IsNullOrEmpty(importDate) && !Regex.IsMatch(importDate, @"^\d{2}/\d{2}/\d{4}$"))
+        {
+            throw new MyValidationException("Import Date must be in the format dd/MM/yyyy");
+        }
+    }
+
+    private async Task<MaterialHistory> GetMaterialHistory(Guid id)
+    {
+        var materialHistory = await _materialHistoryRepository.GetMaterialHistoryByIdAsync(id);
         if (materialHistory is null)
         {
             throw new Domain.Exceptions.MaterialHistories.MaterialHistoryNotFoundException();
         }
+        return materialHistory;
+    }
 
-        materialHistory.Update(updateMaterialHistoryRequest);
-        _materialHistoryRepository.UpdateMaterialHistory(materialHistory);
-        await _unitOfWork.SaveChangesAsync();
+    private async Task<Material> GetMaterial(Guid id)
+    {
+        var material = await _materialRepository.GetMaterialByIdAsync(id);
+        if (material is null)
+        {
+            throw new Domain.Exceptions.Materials.MaterialNotFoundException();
+        }
+        return material;
+    }
 
-        return Result.Success.Update();
-
+    private void UpdateMaterialQuantities(Material material, MaterialHistory materialHistory, double newQuantity)
+    {
+        material.UpdateQuantityInStock1(material.QuantityInStock - materialHistory.Quantity);
+        material.UpdateQuantityInStock1(material.QuantityInStock + newQuantity);
+        _materialRepository.UpdateMaterial(material);
     }
 }

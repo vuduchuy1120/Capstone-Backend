@@ -25,7 +25,7 @@ public class DbInitializer
 
     public static void SeedData(IServiceProvider provider)
     {
-        var context = provider.GetService<AppDbContext>() as AppDbContext;
+        var context = provider.GetService<AppDbContext>();
         if (!context.Roles.Any())
         {
             SeedRoleData(context);
@@ -56,6 +56,7 @@ public class DbInitializer
         {
             SeedPhaseData(context);
         }
+
     }
 
     public static void SeedPhaseData(AppDbContext context)

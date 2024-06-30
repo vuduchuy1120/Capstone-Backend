@@ -23,4 +23,9 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="UserCases\Commands\OrderDetails\Deletes\" />
+	  <Folder Include="UserCases\Commands\OrderDetails\Updates\" />
+	</ItemGroup>
+
 </Project>

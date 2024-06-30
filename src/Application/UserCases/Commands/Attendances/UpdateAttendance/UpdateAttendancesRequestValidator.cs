@@ -38,7 +38,7 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
             {
                 var userIds = updateAttendances.Select(x => x.UserId).ToList();
                 return await userRepository.IsAllUserActiveAsync(userIds);
-            }).WithMessage("One or more UserId is invalid");
+            }).WithMessage("One or more UserId is invalid or doesn't exist!");
 
         //IsAllAttendanceExist
         RuleFor(x => x.UpdateAttendances)
@@ -48,7 +48,7 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
                 var userIds = updateAttendances.Select(x => x.UserId).ToList();
 
                 return await attendanceRepository.IsAllAttendancesExist(request.SlotId, formattedDate, userIds);
-            }).WithMessage("One or more Attendance is invalid");
+            }).WithMessage("One or more Attendance is invalid or doesn't exist");
 
         // validate each attendance with user, date, hourOverTIme
         RuleForEach(x => x.UpdateAttendances)
@@ -72,7 +72,7 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
                     return attendance.IsOverTime == false && attendance.HourOverTime == 0;
                 }
                 return true;
-            }).WithMessage("IsAttendance must be true");
+            }).WithMessage("IsAttendance must be true when hour over time has value!");
 
     }
 }

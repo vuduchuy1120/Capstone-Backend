@@ -48,8 +48,7 @@ namespace Persistence.UnitTests.EmployeeProducts
                     PhaseId = Guid.NewGuid(),
                     Quantity = 10,
                     CreatedBy = "huyvu",
-                    CreatedDate = DateUtils.GetNow(),
-                    IsMold = false
+                    CreatedDate = DateUtils.GetNow()
                 },
                 new EmployeeProduct
                 {
@@ -60,8 +59,7 @@ namespace Persistence.UnitTests.EmployeeProducts
                     PhaseId = Guid.NewGuid(),
                     Quantity = 10,
                     CreatedBy = "huyvu",
-                    CreatedDate = DateUtils.GetNow(),
-                    IsMold = false
+                    CreatedDate = DateUtils.GetNow()
                 }
             };
 

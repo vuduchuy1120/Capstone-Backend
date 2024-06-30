@@ -9,8 +9,10 @@ public class ProductPhase
     public Guid PhaseId { get; private set; }
     public int Quantity { get; set; } = 0;
     public int ErrorQuantity { get; private set; } = 0;
+    public int ErrorAvailableQuantity { get; private set; } = 0;
     public int AvailableQuantity { get; set; } = 0;
     public int FailureQuantity { get; private set; } = 0;
+    public int BrokenQuantity { get; private set; } = 0;
     public Guid CompanyId { get; private set; }
     public Company Company { get; private set; }
     public Product Product { get; private set; }
@@ -23,14 +25,15 @@ public class ProductPhase
             ProductId = request.ProductId,
             PhaseId = request.PhaseId,
             Quantity = request.Quantity,
-            CompanyId = request.CompanyId,
-            AvailableQuantity = request.Quantity
+            AvailableQuantity = request.Quantity,
+            CompanyId = request.CompanyId
         };
     }
 
     public void Update(UpdateProductPhaseRequest request)
     {
         Quantity = request.Quantity;
+        AvailableQuantity = request.Quantity;
         //SalaryPerProduct = request.SalaryPerProduct;
     }
 

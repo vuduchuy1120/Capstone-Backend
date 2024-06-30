@@ -12,7 +12,7 @@ public record SearchCompanyQuery
     string? PhoneNumber,
     string? Email,
     string? DirectorName,
-    CompanyType? CompanyType,
+    string? CompanyType,
     int PageIndex = 1,
     int PageSize = 10
     ) : IQuery<SearchResponse<List<CompanyResponse>>>;
