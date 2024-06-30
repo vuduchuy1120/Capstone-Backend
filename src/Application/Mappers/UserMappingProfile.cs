@@ -10,6 +10,23 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
-        CreateMap<User, UserResponse>();
+        CreateMap<User, UserResponse>()
+           .ConstructUsing(src => new UserResponse(
+               src.Id,
+               src.FirstName,
+               src.LastName,
+               src.Phone,
+               src.Address,
+               src.Gender,
+               src.DOB,
+               src.SalaryByDay,
+               src.IsActive,
+               src.RoleId,
+               src.Role.RoleName,
+               src.Company.Name,
+               src.CompanyId
+               ))
+           .ForMember(dest => dest.RoleDescription, opt => opt.MapFrom(src => src.Role.RoleName))
+           .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.Name));
     }
 }

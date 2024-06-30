@@ -45,7 +45,7 @@ public class UpdateUserTest : IDisposable
         _userRepository.Update(user);
         await _context.SaveChangesAsync();
 
-        var newUser = await _userRepository.GetUserByIdAsync(updateUserRequest.Id);
+        var newUser = await _context.Users.SingleOrDefaultAsync(user => user.Id == updateUserRequest.Id);
         Assert.NotNull(newUser);
         Assert.Equal(updateUserRequest.SalaryByDay, newUser.SalaryByDay);
     }

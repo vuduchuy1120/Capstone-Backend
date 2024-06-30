@@ -72,7 +72,7 @@ public sealed class UpdateMaterialHistoryCommandHandler : ICommandHandler<Update
         return materialHistory;
     }
 
-    private async Task<Material> GetMaterial(int id)
+    private async Task<Material> GetMaterial(Guid id)
     {
         var material = await _materialRepository.GetMaterialByIdAsync(id);
         if (material is null)
@@ -84,8 +84,8 @@ public sealed class UpdateMaterialHistoryCommandHandler : ICommandHandler<Update
 
     private void UpdateMaterialQuantities(Material material, MaterialHistory materialHistory, double newQuantity)
     {
-        material.UpdateQuantityInStock(material.QuantityInStock - materialHistory.Quantity);
-        material.UpdateQuantityInStock(material.QuantityInStock + newQuantity);
+        material.UpdateQuantityInStock1(material.QuantityInStock - materialHistory.Quantity);
+        material.UpdateQuantityInStock1(material.QuantityInStock + newQuantity);
         _materialRepository.UpdateMaterial(material);
     }
 }

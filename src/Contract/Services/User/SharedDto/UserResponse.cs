@@ -10,4 +10,7 @@ public record UserResponse(
         DateOnly DOB,
         decimal SalaryByDay,
         bool IsActive,
-        int RoleId);
+        int RoleId,
+        string RoleDescription,
+        string CompanyName,
+        Guid CompanyId);

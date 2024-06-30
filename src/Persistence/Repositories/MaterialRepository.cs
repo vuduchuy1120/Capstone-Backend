@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Shared.Utils;
 using Contract.Services.Material.Get;
+using Contract.Services.Material.Share;
 using Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -19,9 +21,16 @@ public class MaterialRepository : IMaterialRepository
         _context.Materials.Add(material);
     }
 
-    public async Task<Material?> GetMaterialByIdAsync(int id)
+    public async Task<Material?> GetMaterialByIdAsync(Guid id)
     {
         return await _context.Materials.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
+    }
+
+    public async Task<List<Material>> GetMaterialsByIdsAsync(List<Guid> ids)
+    {
+        return await _context.Materials
+            .Where(m => ids.Contains(m.Id))
+            .ToListAsync();
     }
 
     public async Task<List<Material?>> GetMaterialsByNameAsync(string name)
@@ -34,7 +43,32 @@ public class MaterialRepository : IMaterialRepository
         return _context.Materials.AsNoTracking().Select(m => m.Unit).Distinct().ToListAsync();
     }
 
-    public async Task<bool> IsMaterialExist(int id)
+    public async Task<bool> IsMaterialEnoughAsync(List<MaterialCheckQuantityRequest> requests)
+    {
+        var materialIds = requests.Select(r => r.id).ToList();
+
+        var materials = await _context.Materials
+            .Where(m => materialIds.Contains(m.Id))
+            .ToListAsync();
+
+        if (materials.Count != requests.Count)
+        {
+            return false;
+        }
+
+        foreach (var request in requests)
+        {
+            var material = materials.FirstOrDefault(m => m.Id == request.id);
+            if (material == null || material.QuantityInStock < request.quantity)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> IsMaterialExist(Guid id)
     {
         return await _context.Materials.AnyAsync(material => material.Id == id);
 
@@ -66,5 +100,10 @@ public class MaterialRepository : IMaterialRepository
     public void UpdateMaterial(Material material)
     {
         _context.Materials.Update(material);
+    }
+
+    public void UpdateRange(List<Material> materials)
+    {
+        _context.Materials.UpdateRange(materials);
     }
 }

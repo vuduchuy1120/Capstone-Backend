@@ -42,6 +42,10 @@ public class GoogleCloudStorage : ICloudStorage
 
     public async Task<string> GetSignedUrlAsync(string fileNameForStorage)
     {
+        if (string.IsNullOrWhiteSpace(fileNameForStorage))
+        {
+            fileNameForStorage = "no_image.jpg";
+        }
         var sac = googleCredential.UnderlyingCredential as ServiceAccountCredential;
         var urlSigned = UrlSigner.FromServiceAccountCredential(sac);
         var signedUrl = await urlSigned.SignAsync(bucketName, fileNameForStorage, TimeSpan.FromMinutes(30));

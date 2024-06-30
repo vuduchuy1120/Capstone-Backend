@@ -5,15 +5,18 @@ namespace Domain.Entities;
 
 public class ProductPhase
 {
-    public Guid ProductId { get; set; }
-    public Guid PhaseId { get; set; }
+    public Guid ProductId { get; private set; }
+    public Guid PhaseId { get; private set; }
     public int Quantity { get; set; } = 0;
-    public int ErrorQuantity { get; set; } = 0;
+    public int ErrorQuantity { get; private set; } = 0;
+    public int ErrorAvailableQuantity { get; private set; } = 0;
     public int AvailableQuantity { get; set; } = 0;
-    public Guid CompanyId { get; set; }
-    public Company Company { get; set; }
-    public Product Product { get; set; }
-    public Phase Phase { get; set; }
+    public int FailureQuantity { get; private set; } = 0;
+    public int BrokenQuantity { get; private set; } = 0;
+    public Guid CompanyId { get; private set; }
+    public Company Company { get; private set; }
+    public Product Product { get; private set; }
+    public Phase Phase { get; private set; }
 
     public static ProductPhase Create(CreateProductPhaseRequest request)
     {
@@ -37,6 +40,21 @@ public class ProductPhase
     public void UpdateAvailableQuantity(int quantity)
     {
         AvailableQuantity = quantity;
+    }
+
+    public void UpdateQuantity(int quantity)
+    {
+        Quantity = quantity;
+    }
+
+    public void UpdateErrorQuantity(int quantity)
+    {
+        ErrorQuantity = quantity;
+    }
+
+    public void UpdateFailureQuantity(int quantity)
+    {
+        FailureQuantity = quantity;
     }
 
 }

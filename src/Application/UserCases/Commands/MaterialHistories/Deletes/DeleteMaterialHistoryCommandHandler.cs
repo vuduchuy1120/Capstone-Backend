@@ -21,7 +21,7 @@ public sealed class DeleteMaterialHistoryCommandHandler
         }
         _materialHistoryRepository.DeleteMaterialHistory(materialHistory);
         var material = await _materialRepository.GetMaterialByIdAsync(materialHistory.MaterialId);
-        material.UpdateQuantityInStock(-materialHistory.Quantity);
+        material.UpdateQuantityInStock1(-materialHistory.Quantity);
         _materialRepository.UpdateMaterial(material);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Delete();

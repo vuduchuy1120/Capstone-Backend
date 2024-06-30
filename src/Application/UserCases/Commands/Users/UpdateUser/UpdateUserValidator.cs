@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Services.User.UpdateUser;
 using FluentValidation;
 
@@ -9,12 +10,12 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
     public UpdateUserValidator(IUserRepository userRepository, ICompanyRepository companyRepository)
     {
         RuleFor(req => req.Id)
-            .NotEmpty().WithMessage("Id cannot be empty")
-            .Matches(@"^\d{12}$").WithMessage("Id must be exactly 12 digits")
+            .NotEmpty().WithMessage("Id không được trống")
+            .Matches(@"^\d{9}$|^\d{12}$").WithMessage("ID nhân viên phải là 9 hoặc 12 chữ số")
             .MustAsync(async (id, _) =>
             {
                 return await userRepository.IsUserExistAsync(id);
-            }).WithMessage("Id already not exists");
+            }).WithMessage("Không tìm thấy id nhân viên");
 
         RuleFor(req => req.CompanyId)
             .NotNull().WithMessage("Cơ sở của nhân viên không được trống")
@@ -24,39 +25,37 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
             }).WithMessage("Cơ sở không tồn tại");
 
         RuleFor(req => req.FirstName)
-            .NotEmpty().WithMessage("First name cannot be empty")
+            .NotEmpty().WithMessage("Họ không được trống")
             .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
-            .WithMessage("First name can only contain letters, spaces, and Vietnamese characters");
+            .WithMessage("Họ chỉ chứa các chữ cái, dấu cách và ký tự tiếng Việt");
 
         RuleFor(req => req.LastName)
-            .NotEmpty().WithMessage("Last name cannot be empty")
+            .NotEmpty().WithMessage("Tên không được trống")
             .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
-            .WithMessage("Last name can only contain letters, spaces, and Vietnamese characters");
+            .WithMessage("Tên chỉ chứa các chữ cái, dấu cách và ký tự tiếng Việt");
 
         RuleFor(req => req.Phone)
-            .NotEmpty().WithMessage("Phone number cannot be empty")
-            .Matches(@"^\d{10}$").WithMessage("Phone number must be exactly 10 digits")
+            .NotEmpty().WithMessage("Số điện thoại không được trống")
+            .Matches(@"^\d{10}$").WithMessage("Số điện thoại phải có đúng 10 chữ số")
             .MustAsync(async (req, phone, _) =>
             {
                 return !await userRepository.IsUpdatePhoneNumberExistAsync(phone, req.Id);
             }).WithMessage("Số điện thoại đã được sử dụng");
 
         RuleFor(req => req.Gender)
-                .NotEmpty().WithMessage("Gender cannot be empty")
+                .NotEmpty().WithMessage("Giới tính không được trống")
                 .Must(gender => gender == "Male" || gender == "Female")
-                .WithMessage("Gender must be either 'Male' or 'Female'");
+                .WithMessage("Giới tính phải là 'Nam' hoặc 'Nữ'");
 
         RuleFor(req => req.DOB)
-                .NotEmpty().WithMessage("Date of birth cannot be empty")
-                .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Date of birth must be in the format dd/MM/yyyy")
-                .Must(BeAValidDate).WithMessage("Date of birth must be a valid date in the format dd/MM/yyyy");
+                 .NotEmpty().WithMessage("Ngày sinh không được trống")
+                 .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Ngày sinh phải đúng định dạng dd/MM/yyyy")
+                 .Must(DateUtil.BeAValidDate).WithMessage("Ngày sinh phải là một ngày hợp lệ theo định dạng dd/MM/yyyy")
+                 .Must(DateUtil.BeLessThanCurrentDate).WithMessage("Ngày sinh phải nhỏ hơn ngày hiện tại")
+                 .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày sinh phải lớn hơn 01/01/1900");
 
         RuleFor(req => req.SalaryByDay)
-               .GreaterThanOrEqualTo(0).WithMessage("Salary must be greater than or equal to 0");
+               .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
     }
 
-    private bool BeAValidDate(string dob)
-    {
-        return DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);
-    }
 }

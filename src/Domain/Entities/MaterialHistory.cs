@@ -8,13 +8,12 @@ namespace Domain.Entities;
 
 public class MaterialHistory : EntityBase<Guid>
 {
-    public int MaterialId { get; private set; }
+    public Guid MaterialId { get; private set; }
     public double Quantity { get; private set; }
     public decimal Price { get; private set; }
     public string? Description { get; private set; }
     public DateOnly ImportDate { get; private set; }
     public Material? Material { get; private set; }
-    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static MaterialHistory Create(CreateMaterialHistoryRequest createMaterialHistoryRequest)
     {

@@ -94,4 +94,10 @@ public class CompanyRepository : ICompanyRepository
         return await _context.Companies
             .AnyAsync(c => c.Id == Id && c.CompanyType == CompanyType.FACTORY);
     }
+
+    public async Task<bool> IsCompanyNotCustomerCompanyAsync(Guid CompanyId)
+    {
+        return await _context.Companies
+            .AnyAsync(c => c.Id == CompanyId && c.CompanyType != CompanyType.CUSTOMER_COMPANY);
+    }
 }

@@ -32,7 +32,7 @@ internal sealed class GetShipmentDetailQueryHandler(
     IMapper _mapper) : IQueryHandler<GetShipmentDetailQuery, ShipmentDetailResponse>
 {
     public async Task<Result.Success<ShipmentDetailResponse>> Handle(
-        GetShipmentDetailQuery request, 
+        GetShipmentDetailQuery request,
         CancellationToken cancellationToken)
     {
         var shipment = await _shipmentRepository.GetByIdAsync(request.ShipmentId)
@@ -72,62 +72,13 @@ internal sealed class GetShipmentDetailQueryHandler(
             var phaseResponse = _mapper.Map<PhaseResponse>(shipmentDetail.Phase);
             var productResponse = _mapper.Map<ProductResponse>(shipmentDetail.Product);
 
-            return new DetailResponse(productResponse, phaseResponse, null, null, shipmentDetail.Quantity);
+            return new DetailResponse(productResponse, phaseResponse, null, shipmentDetail.Quantity);
         }
-        else if (shipmentDetail.Set is not null)
+        else if (shipmentDetail.Material is not null)
         {
-            var setResponse = _mapper.Map<SetResponse>(shipmentDetail.Set);
+            var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(shipmentDetail.Material);
 
-            return new DetailResponse(null, null, setResponse, null, shipmentDetail.Quantity);
-        }
-        else if (shipmentDetail.MaterialHistory is not null)
-        {
-            var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(shipmentDetail.MaterialHistory);
-
-            return new DetailResponse(null, null, null, materialHistoryResponse, shipmentDetail.Quantity);
-        }
-
-        throw new ShipDetailItemNullException();
-    }
-
-    private async Task<DetailResponse> MapShipmentDetailToResponse_2(ShipmentDetail shipmentDetail)
-    {
-        if (shipmentDetail.ProductId is not null && shipmentDetail.PhaseId is not null)
-        {
-            Guid productId = shipmentDetail.ProductId ?? throw new ProductNotFoundException();
-            var product = await _productRepository.GetProductById(productId)
-                ?? throw new ProductNotFoundException();
-
-            Guid phaseId = shipmentDetail.PhaseId ?? throw new PhaseNotFoundException();
-            var phase = await _phaseRepository.GetPhaseById(phaseId)
-                ?? throw new PhaseNotFoundException();
-
-            var phaseResponse = _mapper.Map<PhaseResponse>(phase);
-            var productResponse = _mapper.Map<ProductResponse>(product);
-
-            return new DetailResponse(productResponse, phaseResponse, null, null, shipmentDetail.Quantity);
-        }
-        else if (shipmentDetail.SetId is not null)
-        {
-            Guid setId = shipmentDetail.SetId ?? throw new SetNotFoundException();
-            var set = await _setRepository.GetByIdAsync(setId) ?? throw new SetNotFoundException();
-
-            var setResponse = _mapper.Map<SetResponse>(set);
-
-            return new DetailResponse(null, null, setResponse, null, shipmentDetail.Quantity);
-        }
-        else if (shipmentDetail.MaterialHistoryId is not null)
-        {
-            var materialHistoryId = shipmentDetail.MaterialHistoryId
-                ?? throw new MaterialHistoryNotFoundException();
-
-            var materialHistory = await _materialHistoryRepository
-                .GetMaterialHistoryByIdAsync(materialHistoryId)
-                ?? throw new MaterialHistoryNotFoundException();
-
-            var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(materialHistory);
-
-            return new DetailResponse(null, null, null, materialHistoryResponse, shipmentDetail.Quantity);
+            return new DetailResponse(null, null, materialHistoryResponse, shipmentDetail.Quantity);
         }
 
         throw new ShipDetailItemNullException();
