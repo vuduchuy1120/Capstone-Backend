@@ -1,5 +1,5 @@
-﻿namespace Contract.Services.ShipOrder.Create;
+﻿using Contract.Abstractions.Messages;
 
-internal class CreateShipOrderCommand
-{
-}
+namespace Contract.Services.ShipOrder.Create;
+
+public record CreateShipOrderCommand(string createdBy, CreateShipOrderRequest CreateShipOrderRequest) : ICommand;

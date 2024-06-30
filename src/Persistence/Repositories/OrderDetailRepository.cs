@@ -41,14 +41,15 @@ public class OrderDetailRepository : IOrderDetailRepository
             .Where(x => x.OrderId.Equals(id)).ToListAsync();
     }
 
-    public async Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid?> productIds)
+    public async Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid> productIds)
     {
         if (productIds == null || !productIds.Any())
         {
             throw new ArgumentException("ProductIds must contain at least one ID.", nameof(productIds));
         }
 
-        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && productIds.Contains(x.ProductId));
+        var query = _context.OrderDetails
+            .Where(x => x.OrderId.Equals(orderId) && productIds.Contains((Guid) x.ProductId));
 
         var count = await query.CountAsync();
 
@@ -56,13 +57,13 @@ public class OrderDetailRepository : IOrderDetailRepository
 
     }
 
-    public async Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid?> setIds)
+    public async Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid> setIds)
     {
         if (setIds == null || !setIds.Any())
         {
             throw new ArgumentException("SetIds must contain at least one ID.", nameof(setIds));
         }
-        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && setIds.Contains(x.SetId));
+        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && setIds.Contains((Guid)x.SetId));
         var count = await query.CountAsync();
         return (count == setIds.Count());
     }

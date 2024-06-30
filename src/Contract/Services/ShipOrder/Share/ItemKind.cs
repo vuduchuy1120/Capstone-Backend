@@ -1,7 +1,7 @@
 ﻿namespace Contract.Services.ShipOrder.Share;
 
-public enum ItemStatus
+public enum ItemKind
 {
-    NO_PROBLEM,
-    ERROR
+    PRODUCT,
+    SET
 }

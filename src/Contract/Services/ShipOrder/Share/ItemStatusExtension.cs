@@ -2,13 +2,13 @@
 
 public static class ItemStatusExtension
 {
-    private static readonly Dictionary<ItemStatus, string> _itemStatusDescriptions = new()
+    private static readonly Dictionary<ItemKind, string> _itemStatusDescriptions = new()
     {
-        { ItemStatus.NO_PROBLEM, "Vật phẩm không lỗi" },
-        { ItemStatus.ERROR, "Vật phẩm lỗi" }
+        { ItemKind.PRODUCT, "sản phẩm đơn" },
+        { ItemKind.SET, "sản phẩm bộ" }
     };
 
-    public static string GetDescription(this ItemStatus status)
+    public static string GetDescription(this ItemKind status)
     {
         return _itemStatusDescriptions[status];
     }
