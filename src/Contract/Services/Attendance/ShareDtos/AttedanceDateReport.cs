@@ -2,9 +2,8 @@
 
 public record AttedanceDateReport
 (
-    bool IsPresentSlot1,
-    bool IsPresentSlot2,
-    bool IsPresentSlot3,
+    bool IsHalfWork,
+    bool IsOneWork,
     bool IsSalaryByProduct,
     bool IsOverTime
     );
