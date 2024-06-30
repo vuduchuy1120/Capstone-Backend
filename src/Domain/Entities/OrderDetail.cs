@@ -12,6 +12,7 @@ public class OrderDetail : EntityBase<Guid>
     public Product? Product { get; private set; }
     public Set? Set { get; private set; }
     public int Quantity { get; private set; }
+    public int ShippedQuantity { get; private set; } = 0;
     public decimal UnitPrice { get; private set; }
     public string? Note { get; private set; }
 

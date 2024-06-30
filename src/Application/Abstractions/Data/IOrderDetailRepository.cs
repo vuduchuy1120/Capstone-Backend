@@ -12,7 +12,7 @@ public interface IOrderDetailRepository
     Task<OrderDetail> GetOrderDetailByIdAsync(Guid id);
     Task<List<OrderDetail>> GetOrderDetailsByOrderIdAsync(Guid id);
     Task<bool> IsOrderDetailExistedAsync(Guid id);
-    Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid?> productIds);
-    Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid?> setIds);
+    Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid> productIds);
+    Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid> setIds);
     //Task<(List<OrderDetail>?, int)> SearchByOrderId(GetOrderDetailsByOrderIdQuery request);
 }
