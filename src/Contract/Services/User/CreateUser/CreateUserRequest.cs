@@ -4,6 +4,7 @@ public record CreateUserRequest(
         string Id,
         string FirstName,
         string LastName,
+        string? Avatar,
         string Phone,
         string Address,
         string Password,

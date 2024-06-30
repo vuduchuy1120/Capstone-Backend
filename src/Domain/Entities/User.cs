@@ -14,6 +14,7 @@ public class User : EntityAuditBase<string>
     public string Address { get; private set; }
     public string Password { get; private set; }
     public string Gender { get; private set; }
+    public string? Avatar { get; private set; } 
     public DateOnly DOB { get; set; }
     public decimal SalaryByDay { get; private set; }
     public bool IsActive { get; private set; }
@@ -26,6 +27,8 @@ public class User : EntityAuditBase<string>
     public List<Report>? Reports { get; private set; }
     public List<Shipment>? Shipments { get; private set; }
     public List<ShipOrder>? ShipOrders { get; private set; }
+    public List<SalaryHistory>? SalaryHistories { get; private set; }
+    public List<SalaryPay>? SalaryPays { get; private set; }
 
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {
@@ -47,6 +50,7 @@ public class User : EntityAuditBase<string>
             FirstName = request.FirstName,
             Gender = request.Gender,
             CompanyId = request.CompanyId,
+            Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar,
         };
     }
 
@@ -63,6 +67,7 @@ public class User : EntityAuditBase<string>
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
         CompanyId = request.CompanyId;
+        Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar;
     }
 
     public void UpdateStatus(ChangeUserStatusCommand request)

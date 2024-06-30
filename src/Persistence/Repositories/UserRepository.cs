@@ -49,6 +49,7 @@ internal class UserRepository : IUserRepository
         return _context.Users
             .AsNoTracking()
             .Include(user => user.Role)
+            .Include(user => user.Company)
             .Where(user => user.CompanyId == companyId && user.IsActive == true)
             .ToListAsync();
     }
