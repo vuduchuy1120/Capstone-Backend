@@ -54,8 +54,24 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserRequest>
                  .Must(DateUtil.BeLessThanCurrentDate).WithMessage("Ngày sinh phải nhỏ hơn ngày hiện tại")
                  .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày sinh phải lớn hơn 01/01/1900");
 
-        RuleFor(req => req.SalaryByDay)
-               .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
+        RuleFor(req => req.SalaryByDayRequest)
+            .NotEmpty().WithMessage("SalaryByDayRequest không được trống");
+        RuleFor(req => req.SalaryOverTimeRequest)
+            .NotEmpty().WithMessage("SalaryOverTimeRequest không được trống");
+        RuleFor(req => req.SalaryByDayRequest.Salary)
+            .NotEmpty().WithMessage("Salary không được trống")
+            .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
+        RuleFor(req => req.SalaryByDayRequest.StartDate)
+            .Must(DateUtil.BeAValidDate).WithMessage("Ngày bắt đầu tính lương phải là một ngày hợp lệ theo định dạng dd/MM/yyyy")
+            .Must(DateUtil.BeLessThanOrEqualCurrentDate).WithMessage("Ngày bắt đầu tính lương phải nhỏ hơn ngày hiện tại")
+            .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày bắt đầu tính lương phải lớn hơn 01/01/1900");
+        RuleFor(req => req.SalaryOverTimeRequest.Salary)
+            .NotEmpty().WithMessage("Salary không được trống")
+            .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
+        RuleFor(req => req.SalaryOverTimeRequest.StartDate)
+            .Must(DateUtil.BeAValidDate).WithMessage("Ngày bắt đầu tính lương phải là một ngày hợp lệ theo định dạng dd/MM/yyyy")
+            .Must(DateUtil.BeLessThanOrEqualCurrentDate).WithMessage("Ngày bắt đầu tính lương phải nhỏ hơn ngày hiện tại")
+            .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày bắt đầu tính lương phải lớn hơn 01/01/1900");
     }
 
 }

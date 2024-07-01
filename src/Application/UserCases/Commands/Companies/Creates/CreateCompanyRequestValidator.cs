@@ -23,7 +23,7 @@ public sealed class CreateCompanyRequestValidator : AbstractValidator<CreateComp
         RuleFor(x => x.CompanyRequest.DirectorName)
             .NotEmpty().WithMessage("Tên giám đốc là bắt buộc.")
             .NotNull().WithMessage("Tên giám đốc không được bỏ trống.")
-            .Matches(@"^[a-zA-Z\s]*$").WithMessage("Tên giám đốc chỉ được chứa ký tự chữ.")
+            .Matches(@"^[a-zA-ZÀ-ỹ\s]*$").WithMessage("Tên giám đốc chỉ được chứa ký tự và khoảng trắng.")
             .MaximumLength(100)
             .WithMessage("Tên giám đốc không được vượt quá 100 ký tự.");
 
@@ -39,11 +39,7 @@ public sealed class CreateCompanyRequestValidator : AbstractValidator<CreateComp
             .WithMessage("Email không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.CompanyRequest.CompanyType)
-            .Must(BeCompanyType1).WithMessage("Loại công ty phải là 1.");
+            .IsInEnum().WithMessage("Loại công ty phải là 0, 1, hoặc 2.");
     }
 
-    private bool BeCompanyType1(CompanyType companyType)
-    {
-        return companyType == CompanyType.CUSTOMER_COMPANY;
-    }
 }

@@ -16,7 +16,6 @@ public class User : EntityAuditBase<string>
     public string Gender { get; private set; }
     public string? Avatar { get; private set; } 
     public DateOnly DOB { get; set; }
-    public decimal SalaryByDay { get; private set; }
     public bool IsActive { get; private set; }
     public int RoleId { get; private set; }
     public Role Role { get; private set; }
@@ -44,7 +43,6 @@ public class User : EntityAuditBase<string>
             UpdatedDate = DateTime.UtcNow,
             RoleId = request.RoleId,
             IsActive = true,
-            SalaryByDay = request.SalaryByDay,
             DOB = CovertStringToDateTimeOnly(request.DOB),
             LastName = request.LastName,
             FirstName = request.FirstName,
@@ -59,7 +57,6 @@ public class User : EntityAuditBase<string>
         Phone = request.Phone;
         Address = request.Address;
         RoleId = request.RoleId;
-        SalaryByDay = request.SalaryByDay;
         DOB = CovertStringToDateTimeOnly(request.DOB);
         LastName = request.LastName;
         FirstName = request.FirstName;

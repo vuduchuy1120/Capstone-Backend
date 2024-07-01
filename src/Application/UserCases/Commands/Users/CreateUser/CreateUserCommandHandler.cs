@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Services;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
+using Contract.Services.SalaryHistory.ShareDtos;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
 using Domain.Abstractions.Exceptions;
@@ -12,11 +14,12 @@ namespace Application.UserCases.Commands.Users.CreateUser;
 
 internal sealed class CreateUserCommandHandler(
     IUserRepository _userRepository,
+    ISalaryHistoryRepository _salaryHistoryRepository,
     IUnitOfWork _unitOfWork,
     IPasswordService _passwordService,
     IValidator<CreateUserRequest> _validator) : ICommandHandler<CreateUserCommand>
 {
-    
+
     public async Task<Result.Success> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var createUserRequest = request.CreateUserRequest;
@@ -30,8 +33,16 @@ internal sealed class CreateUserCommandHandler(
 
         string hashPassword = _passwordService.Hash(createUserRequest.Password);
         var user = User.Create(createUserRequest, hashPassword, request.CreatedBy);
-
+        var salaryByDay = createUserRequest.SalaryByDayRequest;
+        var salaryOverTime = createUserRequest.SalaryOverTimeRequest;
+        var salaryhistories = new List<SalaryHistory>
+        {
+            SalaryHistory.Create(user.Id, salaryByDay.Salary,DateUtil.ConvertStringToDateTimeOnly(salaryByDay.StartDate), SalaryType.SALARY_BY_DAY),
+            SalaryHistory.Create(user.Id, salaryOverTime.Salary,DateUtil.ConvertStringToDateTimeOnly(salaryOverTime.StartDate), SalaryType.SALARY_OVER_TIME)
+        };
         _userRepository.AddUser(user);
+        _salaryHistoryRepository.AddRangeSalaryHistory(salaryhistories);
+
         await _unitOfWork.SaveChangesAsync();
 
         return Result.Success.Create();

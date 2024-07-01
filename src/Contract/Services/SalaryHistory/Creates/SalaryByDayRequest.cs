@@ -3,5 +3,5 @@
 public record SalaryByDayRequest
 (
     decimal Salary,
-    DateOnly StartDate
+    string StartDate
     );

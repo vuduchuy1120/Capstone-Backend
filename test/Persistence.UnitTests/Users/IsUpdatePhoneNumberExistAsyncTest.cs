@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.Role.Create;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.BanUser;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
@@ -38,7 +39,8 @@ public class IsUpdatePhoneNumberExistAsyncTest : IDisposable
             Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );
@@ -54,7 +56,8 @@ public class IsUpdatePhoneNumberExistAsyncTest : IDisposable
             Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );

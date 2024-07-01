@@ -8,7 +8,6 @@ public record UserResponse(
         string Address,
         string Gender,
         DateOnly DOB,
-        decimal SalaryByDay,
         bool IsActive,
         int RoleId,
         string RoleDescription,

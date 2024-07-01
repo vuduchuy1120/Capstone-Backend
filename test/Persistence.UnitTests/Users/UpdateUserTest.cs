@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.Role.Create;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.BanUser;
 using Contract.Services.User.CreateUser;
 using Contract.Services.User.UpdateUser;
@@ -36,7 +37,8 @@ public class UpdateUserTest : IDisposable
             Address: "456 Another St, Othertown, USA",
             Gender: "Female",
             DOB: "10/03/2001",
-            SalaryByDay: 200,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             CompanyId: Guid.NewGuid(),
             RoleId: 1
         );
@@ -48,7 +50,6 @@ public class UpdateUserTest : IDisposable
 
         var newUser = await _context.Users.SingleOrDefaultAsync(user => user.Id == updateUserRequest.Id);
         Assert.NotNull(newUser);
-        Assert.Equal(updateUserRequest.SalaryByDay, newUser.SalaryByDay);
     }
 
     private async Task InitDb()
@@ -64,7 +65,8 @@ public class UpdateUserTest : IDisposable
             Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );
@@ -80,7 +82,8 @@ public class UpdateUserTest : IDisposable
             Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );
