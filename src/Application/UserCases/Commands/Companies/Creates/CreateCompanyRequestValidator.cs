@@ -9,40 +9,41 @@ public sealed class CreateCompanyRequestValidator : AbstractValidator<CreateComp
     public CreateCompanyRequestValidator()
     {
         RuleFor(x => x.CompanyRequest.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .NotNull().WithMessage("Name must be not null")
+            .NotEmpty().WithMessage("Tên công ty là bắt buộc.")
+            .NotNull().WithMessage("Tên công ty không được bỏ trống.")
             .MaximumLength(100)
-            .WithMessage("Name cannot exceed 100 characters.");
+            .WithMessage("Tên công ty không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.CompanyRequest.Address)
-            .NotEmpty().WithMessage("Address is required.")
-            .NotNull().WithMessage("Address must be not null")
+            .NotEmpty().WithMessage("Địa chỉ là bắt buộc.")
+            .NotNull().WithMessage("Địa chỉ không được bỏ trống.")
             .MaximumLength(100)
-            .WithMessage("Address cannot exceed 100 characters.");
+            .WithMessage("Địa chỉ không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.CompanyRequest.DirectorName)
-            .NotEmpty().WithMessage("DirectorName is required.")
-             .NotNull().WithMessage("DirectorName must be not null")
-            .Matches(@"^[a-zA-Z\s]*$").WithMessage("DirectorName must be only characters.")
+            .NotEmpty().WithMessage("Tên giám đốc là bắt buộc.")
+            .NotNull().WithMessage("Tên giám đốc không được bỏ trống.")
+            .Matches(@"^[a-zA-Z\s]*$").WithMessage("Tên giám đốc chỉ được chứa ký tự chữ.")
             .MaximumLength(100)
-            .WithMessage("DirectorName cannot exceed 100 characters.");
+            .WithMessage("Tên giám đốc không được vượt quá 100 ký tự.");
 
         RuleFor(x => x.CompanyRequest.DirectorPhone)
-            .NotEmpty().WithMessage("Phone is required.")
-            .NotNull().WithMessage("Phone must be not null")
+            .NotEmpty().WithMessage("Số điện thoại là bắt buộc.")
+            .NotNull().WithMessage("Số điện thoại không được bỏ trống.")
             .Matches(@"^0\d{9}$")
-            .WithMessage("Phone must be exactly 10 chracters.");
+            .WithMessage("Số điện thoại phải đúng 10 ký tự.");
 
         RuleFor(x => x.CompanyRequest.Email)
-            .Matches(@"^$|^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$").WithMessage("Email is not valid.")
+            .Matches(@"^$|^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$").WithMessage("Email không hợp lệ.")
             .MaximumLength(100)
-            .WithMessage("Email cannot exceed 100 characters.");
+            .WithMessage("Email không được vượt quá 100 ký tự.");
+
         RuleFor(x => x.CompanyRequest.CompanyType)
-            .Must(BeCompanyType1).WithMessage("Company type must be 1.");
+            .Must(BeCompanyType1).WithMessage("Loại công ty phải là 1.");
     }
+
     private bool BeCompanyType1(CompanyType companyType)
     {
         return companyType == CompanyType.CUSTOMER_COMPANY;
     }
-
 }
