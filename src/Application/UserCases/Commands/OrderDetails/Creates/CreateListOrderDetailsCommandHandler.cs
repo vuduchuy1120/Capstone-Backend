@@ -11,6 +11,7 @@ namespace Application.UserCases.Commands.OrderDetails.Creates;
 public sealed class CreateListOrderDetailsCommandHandler
     (IOrderDetailRepository _orderDetailRepository,
     IValidator<CreateListOrderDetailsRequest> _validator,
+
     IUnitOfWork _unitOfWork
     ) : ICommandHandler<CreateOrderDetailsCommand>
 
@@ -22,15 +23,27 @@ public sealed class CreateListOrderDetailsCommandHandler
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }
-        var orderDetailsDelete = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(request.CreateListOrderDetailsRequest.OrderId);
-        if (orderDetailsDelete != null)
+        var existingOrderDetails = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(request.CreateListOrderDetailsRequest.OrderId);
+        var shippedQuantityMap = existingOrderDetails.ToDictionary(od => od.ProductId ?? od.SetId, od => od.ShippedQuantity);
+
+        if (existingOrderDetails.Any())
         {
-            _orderDetailRepository.DeleteRange(orderDetailsDelete);
+            _orderDetailRepository.DeleteRange(existingOrderDetails);
         }
 
         var orderDetails = request.CreateListOrderDetailsRequest.OrderDetailRequests
-            .Select(orderDetailRequest => OrderDetail.Create(request.CreateListOrderDetailsRequest.OrderId, orderDetailRequest))
-            .ToList();
+                 .Select(orderDetailRequest =>
+                 {
+                     var productIdOrSetId = orderDetailRequest.isProductId ? orderDetailRequest.ProductIdOrSetId : (Guid?)null;
+                     var setId = !orderDetailRequest.isProductId ? orderDetailRequest.ProductIdOrSetId : (Guid?)null;
+
+                     var shippedQuantity = shippedQuantityMap.ContainsKey(productIdOrSetId ?? setId)
+                         ? shippedQuantityMap[productIdOrSetId ?? setId]
+                         : 0;
+
+                     return OrderDetail.Create(request.CreateListOrderDetailsRequest.OrderId, shippedQuantity, orderDetailRequest);
+                 })
+                 .ToList();
         _orderDetailRepository.AddRange(orderDetails);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success.Create();

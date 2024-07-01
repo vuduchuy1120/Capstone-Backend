@@ -16,7 +16,7 @@ public class OrderDetail : EntityBase<Guid>
     public decimal UnitPrice { get; private set; }
     public string? Note { get; private set; }
 
-    public static OrderDetail Create(Guid orderId, OrderDetailRequest request)
+    public static OrderDetail Create(Guid orderId, int shippedQuantity, OrderDetailRequest request)
     {
         return new OrderDetail
         {
@@ -25,7 +25,8 @@ public class OrderDetail : EntityBase<Guid>
             SetId = request.isProductId ? null : request.ProductIdOrSetId,
             Quantity = request.Quantity,
             UnitPrice = request.UnitPrice,
-            Note = request.Note
+            Note = request.Note,
+            ShippedQuantity = shippedQuantity
         };
     }
 

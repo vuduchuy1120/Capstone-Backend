@@ -1,21 +1,18 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Order.Creates;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.UserCases.Commands.Orders.Creates;
 
 public sealed class CreateOrderCommandHandler
     (IOrderRepository _orderRepository,
     ICompanyRepository _companyRepository,
+    IOrderDetailRepository _orderDetailRepository,
     IValidator<CreateOrderRequest> _validator,
     IUnitOfWork _unitOfWork
     ) : ICommandHandler<CreateOrderCommand>
@@ -27,10 +24,21 @@ public sealed class CreateOrderCommandHandler
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }
+        var startDate = DateUtil.ConvertStringToDateTimeOnly(request.CreateOrderRequest.StartOrder);
+        var endDate = DateUtil.ConvertStringToDateTimeOnly(request.CreateOrderRequest.EndOrder);
+        if (startDate > endDate)
+        {
+            throw new MyValidationException("Ngày kết thúc đơn hàng phải lớn hơn ngày bắt đầu đơn hàng.");
+        }
 
-        var oder = Order.Create(request.CreateOrderRequest, request.CreatedBy);
+        var order = Order.Create(request.CreateOrderRequest, request.CreatedBy);
+        _orderRepository.AddOrder(order);
 
-        _orderRepository.AddOrder(oder);
+        var orderDetails = request.CreateOrderRequest.OrderDetailRequests
+            .Select(orderDetailRequest => OrderDetail.Create(order.Id, 0, orderDetailRequest))
+            .ToList();
+        _orderDetailRepository.AddRange(orderDetails);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success.Create();
