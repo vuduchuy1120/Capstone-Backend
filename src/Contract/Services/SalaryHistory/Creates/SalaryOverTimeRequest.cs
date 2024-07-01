@@ -3,5 +3,5 @@
 public record SalaryOverTimeRequest
 (
     decimal Salary,
-    DateOnly StartDate
+    string StartDate
     );

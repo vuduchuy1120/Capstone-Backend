@@ -5,6 +5,7 @@ using Contract.Services.Phase.Creates;
 using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.SharedDto;
 using Contract.Services.Role.Create;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
@@ -177,7 +178,8 @@ public class DbInitializer
             "12345",
             "Male",
             "10/03/2001",
-            200000,
+            SalaryByDayRequest: new SalaryByDayRequest(100000, "01/01/2024"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(150000, "01/01/2024"),
             companyId,
             adminRole.Id
             );

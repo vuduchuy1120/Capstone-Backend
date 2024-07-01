@@ -56,4 +56,12 @@ public class DateUtil
         }
         return false;
     }
+    public static bool BeLessThanOrEqualCurrentDate(string dob)
+    {
+        if (DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDob))
+        {
+            return parsedDob <= DateTime.Today;
+        }
+        return false;
+    }
 }

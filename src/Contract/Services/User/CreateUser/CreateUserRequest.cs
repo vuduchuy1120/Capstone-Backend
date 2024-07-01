@@ -1,4 +1,6 @@
-﻿namespace Contract.Services.User.CreateUser;
+﻿using Contract.Services.SalaryHistory.Creates;
+
+namespace Contract.Services.User.CreateUser;
 
 public record CreateUserRequest(
         string Id,
@@ -10,6 +12,7 @@ public record CreateUserRequest(
         string Password,
         string Gender,
         string DOB,
-        decimal SalaryByDay,
+        SalaryByDayRequest SalaryByDayRequest,
+        SalaryOverTimeRequest SalaryOverTimeRequest,
         Guid CompanyId,
         int RoleId);

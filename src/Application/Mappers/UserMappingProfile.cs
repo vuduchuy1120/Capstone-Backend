@@ -19,7 +19,6 @@ public class UserMappingProfile : Profile
                src.Address,
                src.Gender,
                src.DOB,
-               src.SalaryByDay,
                src.IsActive,
                src.RoleId,
                src.Role.RoleName,

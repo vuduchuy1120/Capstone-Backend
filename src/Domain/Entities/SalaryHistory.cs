@@ -21,4 +21,9 @@ public class SalaryHistory : EntityBase<Guid>
             SalaryType = salaryType
         };
     }
+
+    public void Update(decimal salary)
+    {
+        Salary = salary;
+    }
 }
