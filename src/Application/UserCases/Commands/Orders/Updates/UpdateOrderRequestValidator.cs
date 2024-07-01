@@ -9,25 +9,34 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
     public UpdateOrderRequestValidator(IOrderRepository _orderRepository, ICompanyRepository _companyRepository)
     {
         RuleFor(x => x.OrderId)
-            .NotEmpty().WithMessage("OrderId is required.")
-            .NotNull().WithMessage("OrderId must be not null.")
+            .NotEmpty().WithMessage("Mã đơn hàng là bắt buộc.")
+            .NotNull().WithMessage("Mã đơn hàng không được bỏ trống.")
             .MustAsync(async (orderId, cancellationToken) =>
             {
                 return await _orderRepository.IsOrderExist(orderId);
-            }).WithMessage("Order does not exist.");
+            }).WithMessage("Đơn hàng không tồn tại.");
+
         RuleFor(x => x.CompanyId)
-            .NotEmpty().WithMessage("CompanyId is required")
-            .NotNull().WithMessage("CompanyId must be not")
+            .NotEmpty().WithMessage("Mã công ty là bắt buộc.")
+            .NotNull().WithMessage("Mã công ty không được bỏ trống.")
             .MustAsync(async (companyId, cancellationToken) =>
             {
                 return await _companyRepository.IsExistAsync(companyId);
-            }).WithMessage("Company does not exist.");
+            }).WithMessage("Công ty không tồn tại.");
+
         RuleFor(x => x.CompanyId)
             .MustAsync(async (companyId, cancellationToken) =>
             {
                 return !await _companyRepository.IsCompanyNotCustomerCompanyAsync(companyId);
-            }).WithMessage("Company is must be customer company.");
+            }).WithMessage("Công ty phải là công ty khách hàng.");
+
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("Status is not valid. Status should be 0,1,2,3");
+            .IsInEnum().WithMessage("Trạng thái không hợp lệ. Trạng thái phải là 0, 1, 2 hoặc 3.");
+
+        RuleFor(x => x.EndOrder)
+            .GreaterThan(x => x.StartOrder).WithMessage("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+
+        RuleFor(x => x.VAT)
+            .GreaterThanOrEqualTo(0).WithMessage("VAT phải lớn hơn hoặc bằng 0.");
     }
 }

@@ -13,17 +13,17 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
             ISetRepository setRepository)
         {
             RuleFor(x => x.OrderId)
-                .NotEmpty().WithMessage("OrderId is required.")
-                .NotNull().WithMessage("OrderId must be not null.")
+                .NotEmpty().WithMessage("Mã đơn hàng là bắt buộc.")
+                .NotNull().WithMessage("Mã đơn hàng không được bỏ trống.")
                 .MustAsync(async (orderId, cancellationToken) =>
                 {
                     return await orderRepository.IsOrderExist(orderId);
-                }).WithMessage("OrderId does not exist.");
+                }).WithMessage("Mã đơn hàng không tồn tại.");
 
             RuleFor(x => x.OrderDetailRequests)
-                .NotEmpty().WithMessage("OrderDetailRequests is required.")
-                .NotNull().WithMessage("OrderDetailRequests must be not null.")
-                .Must(x => x.Count > 0).WithMessage("OrderDetailRequests is required.");
+                .NotEmpty().WithMessage("Chi tiết đơn hàng là bắt buộc.")
+                .NotNull().WithMessage("Chi tiết đơn hàng không được bỏ trống.")
+                .Must(x => x.Count > 0).WithMessage("Chi tiết đơn hàng là bắt buộc.");
 
             RuleFor(x => x.OrderDetailRequests)
                 .MustAsync(async (request, orderDetailRequests, cancellationToken) =>
@@ -56,9 +56,10 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
                         setExists = await setRepository.IsAllSetIdExistAsync(setIds);
                     }
                     return productExists && setExists;
-                }).WithMessage("ProductId or SetId does not exist.");
+                }).WithMessage("Mã sản phẩm hoặc mã bộ sản phẩm không tồn tại.");
+
             RuleFor(x => x.OrderDetailRequests)
-                .NotNull().WithMessage("OrderDetailRequests must be not null.")
+                .NotNull().WithMessage("Chi tiết đơn hàng không được bỏ trống.")
                 .Must(orderDetailRequests =>
                 {
                     var distinctItems = orderDetailRequests
@@ -66,22 +67,21 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
                         .Distinct()
                         .Count();
                     return distinctItems == orderDetailRequests.Count;
-                }).WithMessage("Duplicate ProductIdOrSetId found in OrderDetailRequests.");
+                }).WithMessage("Tìm thấy mã sản phẩm hoặc mã bộ sản phẩm trùng lặp trong chi tiết đơn hàng.");
 
             RuleForEach(x => x.OrderDetailRequests)
                 .Must((request, orderDetailRequest) =>
                 {
-                    // Quantity must be greater than 0
+                    // Số lượng phải lớn hơn 0
                     return orderDetailRequest.Quantity > 0;
-                }).WithMessage("Quantity must be greater than 0.");
+                }).WithMessage("Số lượng phải lớn hơn 0.");
 
             RuleForEach(x => x.OrderDetailRequests)
                 .Must((request, orderDetailRequest) =>
                 {
-                    // UnitPrice must be greater than 0
+                    // Đơn giá phải lớn hơn 0
                     return orderDetailRequest.UnitPrice > 0;
-                }).WithMessage("UnitPrice must be greater than 0.");            
-
+                }).WithMessage("Đơn giá phải lớn hơn 0.");
         }
     }
 }
