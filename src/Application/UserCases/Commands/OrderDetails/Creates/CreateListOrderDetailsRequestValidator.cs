@@ -8,7 +8,6 @@ namespace Application.UserCases.Commands.OrderDetails.Creates
     {
         public CreateListOrderDetailsRequestValidator(
             IOrderRepository orderRepository,
-            IOrderDetailRepository orderDetailRepository,
             IProductRepository productRepository,
             ISetRepository setRepository)
         {

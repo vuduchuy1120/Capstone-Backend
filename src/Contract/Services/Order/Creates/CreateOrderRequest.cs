@@ -10,5 +10,5 @@ public record CreateOrderRequest
     string StartOrder,
     string EndOrder,
     double VAT,
-    CreateListOrderDetailsRequest CreateListOrderDetailsRequest
+    List<OrderDetailRequest> OrderDetailRequests
     );

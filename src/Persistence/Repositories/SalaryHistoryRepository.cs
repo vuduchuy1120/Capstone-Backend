@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Persistence.Repositories;
 
-public class SalaryHistoryRepository : ISalaryHistory
+public class SalaryHistoryRepository : ISalaryHistoryRepository
 {
     private readonly AppDbContext _context;
     public SalaryHistoryRepository(AppDbContext context)
