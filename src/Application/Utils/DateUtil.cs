@@ -16,7 +16,7 @@ public class DateUtil
         }
         else
         {
-            throw new MyValidationException("Date is wrong format");
+            throw new MyValidationException("Date is wrong format dd/MM/yyy or invalid");
         }
     }
     public static DateTime GetNow()
