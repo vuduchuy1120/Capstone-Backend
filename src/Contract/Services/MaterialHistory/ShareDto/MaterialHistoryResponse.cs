@@ -1,12 +1,12 @@
 ﻿namespace Contract.Services.MaterialHistory.ShareDto;
 public record MaterialHistoryResponse(
     Guid Id,
-    int MaterialId,
+    Guid MaterialId,
     double Quantity,
     decimal Price,
     string? Description,
+    DateOnly ImportDate,
     string? Image,
     string MaterialName,
-    string MaterialUnit,
-    DateOnly ImportDate
+    string MaterialUnit
     );
