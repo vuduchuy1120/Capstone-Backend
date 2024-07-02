@@ -18,13 +18,13 @@ public class Phase : EntityBase<Guid>
         return new()
         {
             Id = Guid.NewGuid(),
-            Name = createPhaseRequest.Name,
-            Description = createPhaseRequest.Description
+            Name = createPhaseRequest.Name.Trim(),
+            Description = createPhaseRequest.Description.Trim()
         };
     }
     public void Update(UpdatePhaseRequest updatePhaseRequest)
     {
-        Name = updatePhaseRequest.Name;
-        Description = updatePhaseRequest.Description;
+        Name = updatePhaseRequest.Name.Trim();
+        Description = updatePhaseRequest.Description.Trim();
     }
 }

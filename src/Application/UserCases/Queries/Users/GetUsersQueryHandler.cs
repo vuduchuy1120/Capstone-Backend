@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
@@ -9,7 +10,10 @@ using Domain.Exceptions.Users;
 
 namespace Application.UserCases.Queries.Users;
 
-internal sealed class GetUsersQueryHandler(IUserRepository _userRepository, IMapper _mapper)
+internal sealed class GetUsersQueryHandler(
+    IUserRepository _userRepository,
+    IMapper _mapper,
+    ICloudStorage _cloudStorage)
     : IQueryHandler<GetUsersQuery, SearchResponse<List<UserResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<UserResponse>>>> Handle(
@@ -25,8 +29,14 @@ internal sealed class GetUsersQueryHandler(IUserRepository _userRepository, IMap
         {
             throw new UserNotFoundException();
         }
-
-        var data = users.ConvertAll(user => _mapper.Map<UserResponse>(user));
+        var data = new List<UserResponse>();
+        foreach (var user in users)
+        {
+            var userResponse = _mapper.Map<UserResponse>(user);
+            var avatarUrl = await _cloudStorage.GetSignedUrlAsync(user.Avatar);
+            userResponse = userResponse with { Avatar = avatarUrl };
+            data.Add(userResponse);
+        }
 
         var searchResponse = new SearchResponse<List<UserResponse>>(request.PageIndex, totalPage, data);
 
