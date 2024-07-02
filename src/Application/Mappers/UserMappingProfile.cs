@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Contract.Services.User.Command;
-using Contract.Services.User.CreateUser;
+using Contract.Services.SalaryHistory.ShareDtos;
+
 using Contract.Services.User.SharedDto;
 using Domain.Entities;
 
@@ -17,10 +17,23 @@ public class UserMappingProfile : Profile
                src.LastName,
                src.Phone,
                src.Address,
+               src.Avatar,
                src.Gender,
                src.DOB,
+               new SalaryHistoryResponse(
+                       src.SalaryHistories
+                           .Where(sh => sh.SalaryType == SalaryType.SALARY_BY_DAY)
+                           .Select(sh => new SalaryByDayResponse(sh.Salary, sh.StartDate))
+                           .OrderByDescending(sh => sh.StartDate)
+                           .FirstOrDefault(),
+                       src.SalaryHistories
+                           .Where(sh => sh.SalaryType == SalaryType.SALARY_OVER_TIME)
+                           .Select(sh => new SalaryByOverTimeResponse(sh.Salary, sh.StartDate))
+                           .OrderByDescending(sh => sh.StartDate)
+                           .FirstOrDefault()
+                   ),
                src.IsActive,
-               src.RoleId,
+               src.RoleId,               
                src.Role.RoleName,
                src.Company.Name,
                src.CompanyId

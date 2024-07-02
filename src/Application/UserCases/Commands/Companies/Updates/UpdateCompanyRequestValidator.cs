@@ -30,6 +30,7 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
 
         RuleFor(x => x.CompanyRequest.DirectorPhone)
             .NotEmpty().WithMessage("Số điện thoại là bắt buộc.")
+            .NotNull().WithMessage("Số điện thoại không được bỏ trống.")
             .Matches(@"^0\d{9}$")
             .WithMessage("Số điện thoại phải đúng 10 ký tự.");
 
@@ -42,6 +43,8 @@ public sealed class UpdateCompanyRequestValidator : AbstractValidator<UpdateComp
             .IsInEnum().WithMessage("Loại công ty phải là 0, 1, hoặc 2.");
 
         RuleFor(x => x.Id)
+            .NotNull().WithMessage("Mã công ty không được bỏ trống.")
+            .NotEmpty().WithMessage("Mã công ty là bắt buộc.")
             .MustAsync(async (id, _) => await _companyRepository.IsExistAsync(id))
             .WithMessage("Không tìm thấy mã công ty!");
     }

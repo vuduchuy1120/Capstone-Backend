@@ -1,4 +1,6 @@
-﻿namespace Contract.Services.User.SharedDto;
+﻿using Contract.Services.SalaryHistory.ShareDtos;
+
+namespace Contract.Services.User.SharedDto;
 
 public record UserResponse(
         string Id,
@@ -6,9 +8,11 @@ public record UserResponse(
         string LastName,
         string Phone,
         string Address,
+        string Avatar,
         string Gender,
         DateOnly DOB,
-        bool IsActive,
+        SalaryHistoryResponse SalaryHistoryResponse,
+        bool IsActive,        
         int RoleId,
         string RoleDescription,
         string CompanyName,
