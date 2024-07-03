@@ -1,7 +1,10 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Company.Shared;
 using Contract.Services.ProductPhase.Queries;
 using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
+using Domain.Exceptions.Companies;
+using Domain.Exceptions.Phases;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -139,5 +142,19 @@ public class ProductPhaseRepository : IProductPhaseRepository
     public void UpdateProductPhaseRange(List<ProductPhase> productPhases)
     {
         _context.ProductPhases.UpdateRange(productPhases);
+    }
+
+    public async Task<List<ProductPhase>> GetProductPhaseOfMainFactoryDoneByProductIdsAsync(List<Guid> productIds)
+    {
+        var phase = await _context.Phases.FirstOrDefaultAsync(p => p.Name == "PH_003")
+            ?? throw new PhaseNotFoundException();
+        var mainFactory = await _context.Companies
+            .FirstOrDefaultAsync(c => c.CompanyType == CompanyType.FACTORY && c.Name == "Cơ sở chính")
+            ?? throw new CompanyNotFoundException();
+
+        return await _context.ProductPhases
+            .Where(ph => productIds.Contains(ph.ProductId) 
+                && ph.PhaseId == phase.Id 
+                && ph.CompanyId == mainFactory.Id).ToListAsync();
     }
 }

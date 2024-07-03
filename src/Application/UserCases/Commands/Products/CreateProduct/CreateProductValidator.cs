@@ -20,9 +20,6 @@ namespace Application.UserCases.Commands.Products.CreateProduct
             RuleFor(req => req.Size)
                 .NotEmpty().WithMessage("Product's size cannot be empty");
 
-            RuleFor(req => req.Description)
-                .NotEmpty().WithMessage("Product's description cannot be empty");
-
             RuleFor(req => req.Name)
                 .NotEmpty().WithMessage("Name's description cannot be empty");
 

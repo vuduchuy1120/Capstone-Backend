@@ -39,7 +39,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
                                     .Select(r => r.ItemId)
                                     .ToList();
 
-                if (productIds.Any())
+                if (!productIds.Any())
                 {
                     return true;
                 }
@@ -61,7 +61,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
                                     .Select(r => r.ItemId)
                                     .ToList();
 
-                return productIdsDistinct.Count() != productIds.Count();
+                return productIdsDistinct.Count() == productIds.Count();
             }).WithMessage("Trong các sản phẩm có sản phẩm bị lặp lại");
 
         RuleFor(req => req.ShipOrderDetailRequests)
@@ -72,7 +72,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
                                    .Select(r => r.ItemId)
                                    .ToList();
 
-               if (setIds.Any())
+               if (!setIds.Any())
                {
                    return true;
                }
@@ -94,7 +94,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
                                    .Select(r => r.ItemId)
                                    .ToList();
 
-               return setIdsDistinct.Count() != setIds.Count();
+               return setIdsDistinct.Count() == setIds.Count();
            }).WithMessage("Trong các sản phẩm có sản phẩm bị lặp lại");
 
 

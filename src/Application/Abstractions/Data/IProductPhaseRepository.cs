@@ -20,4 +20,5 @@ public interface IProductPhaseRepository
     //Task<List<ProductPhase>> GetByProductIdPhaseIdCompanyID(Guid companyId);
     Task<bool> IsAllShipDetailProductValid(List<CheckQuantityInstockEnoughRequest> requests);
     Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId);
+    Task<List<ProductPhase>> GetProductPhaseOfMainFactoryDoneByProductIdsAsync(List<Guid> productIds);
 }
