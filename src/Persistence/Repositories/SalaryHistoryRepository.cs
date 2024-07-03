@@ -45,7 +45,7 @@ public class SalaryHistoryRepository : ISalaryHistoryRepository
 
     public async Task<SalaryHistory> GetSalaryHistoryByUserIdDateAndSalaryType(string userId, DateOnly date, SalaryType salaryType)
     {
-        return await _context.SalaryHistories
+        return await _context.SalaryHistories.Include(x=>x.User)
             .Where(x => x.UserId == userId && x.StartDate == date && x.SalaryType == salaryType)
             .FirstOrDefaultAsync();
     }
@@ -53,5 +53,10 @@ public class SalaryHistoryRepository : ISalaryHistoryRepository
     public void UpdateRangeSalaryHistory(List<SalaryHistory> salaryHistories)
     {
         _context.SalaryHistories.UpdateRange(salaryHistories);
+    }
+
+    public void UpdateSalaryHistory(SalaryHistory salaryHistory)
+    {
+        _context.SalaryHistories.Update(salaryHistory);
     }
 }

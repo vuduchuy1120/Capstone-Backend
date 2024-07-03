@@ -2,7 +2,8 @@
 
 public enum ReportType
 {
-    Diemdanh,
-    Chamcong,
-    Luong
+    DiemDanh,
+    ChamCong,
+    Luong,
+    DonKhac
 }

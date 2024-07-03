@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Report\Queries\" />
     <Folder Include="Services\SalaryHistory\Updates\" />
   </ItemGroup>
 

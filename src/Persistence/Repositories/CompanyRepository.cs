@@ -35,7 +35,6 @@ public class CompanyRepository : ICompanyRepository
 
         if (!string.IsNullOrWhiteSpace(request.Name))
         {
-
             query = query.Where(company => company.NameUnAccent.ToLower().Contains(StringUtils.RemoveDiacritics(request.Name.ToLower())));
         }
         if (!string.IsNullOrWhiteSpace(request.Address))

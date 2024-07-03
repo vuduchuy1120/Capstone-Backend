@@ -15,6 +15,7 @@ public class SalaryHistory : EntityBase<Guid>
     {
         return new SalaryHistory
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             Salary = salary,
             StartDate = startDate,

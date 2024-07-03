@@ -31,7 +31,6 @@ internal class UserRepository : IUserRepository
     public async Task<User?> GetUserByIdAsync(string id)
     {
         return await _context.Users
-            .AsNoTracking()
             .Include(user => user.Role)
             .Include(u => u.Company)
             .Include(s => s.SalaryHistories)

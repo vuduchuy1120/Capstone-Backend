@@ -17,7 +17,7 @@ public sealed class CreateMaterialCommandHandler
     public async Task<Result.Success> Handle(CreateMaterialCommand request, CancellationToken cancellationToken)
     {
         var createMaterialRequest = request;
-        var validationResult = validator.Validate(createMaterialRequest.createMaterialRequest);
+        var validationResult =await validator.ValidateAsync(createMaterialRequest.createMaterialRequest);
         if (!validationResult.IsValid)
         {
             throw new MyValidationException(validationResult.ToDictionary());

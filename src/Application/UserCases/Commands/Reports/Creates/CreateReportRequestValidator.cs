@@ -9,7 +9,9 @@ public class CreateReportRequestValidator : AbstractValidator<CreateReportReques
     public CreateReportRequestValidator(IReportRepository _reportRepository, IUserRepository _userRepository)
     {
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required")
-            .MaximumLength(700).WithMessage("Description must not exceed 700 characters");
+            .NotEmpty().WithMessage("Bạn phải nhập nội dung báo cáo.")
+            .MaximumLength(700).WithMessage("Nội dung báo cáo không được vượt quá 700 kí tự");
+        RuleFor(x => x.ReportType)
+            .IsInEnum().WithMessage("Loại báo cáo chỉ có thể là 0,1,2,3.");
     }
 }
