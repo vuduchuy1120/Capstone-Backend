@@ -112,7 +112,6 @@ public class UpdateProductCommandHandlerTest
     [InlineData("CD123", -10, "Size", "Description", "Name")] // Negative price
     [InlineData("123", 123, "Size", "Description", "Name")] // Invalid code format
     [InlineData("CD123", 123, "", "Description", "Name")] // Empty size
-    [InlineData("CD123", 123, "Size", "", "Name")] // Empty description
     [InlineData("CD123", 123, "Size", "Description", "")] // Empty name
     public async Task Handler_Should_ThrowValidationException_ForInvalidRequests(
         string code,

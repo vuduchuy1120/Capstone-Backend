@@ -24,9 +24,6 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
         RuleFor(req => req.UpdateProductRequest.Size)
             .NotEmpty().WithMessage("Product's size cannot be empty");
 
-        RuleFor(req => req.UpdateProductRequest.Description)
-            .NotEmpty().WithMessage("Product's description cannot be empty");
-
         RuleFor(req => req.UpdateProductRequest.Name)
            .NotEmpty().WithMessage("Name's description cannot be empty");
 
