@@ -12,11 +12,16 @@ public sealed class CreateMaterialRequestValidator : AbstractValidator<CreateMat
         RuleFor(m => m.Name)
             .NotEmpty().WithMessage("Name must be not empty!")
             .NotNull().WithMessage("Name must be not null!");
-
+        // name is unique
+        RuleFor(m => m.Name)
+        .MustAsync(async (Name, _) =>
+        {
+            return !await materialRepository.IsMaterialNameExistedAsync(Name);
+        }).WithMessage("Name is existed!");
         RuleFor(m => m.Description)
             .MaximumLength(750)
             .WithMessage("Description should be less than 750 characters!");
-            
+
         RuleFor(m => m.Unit)
             .NotEmpty().WithMessage("Unit must be not empty")
             .NotNull().WithMessage("Unit must be not null")

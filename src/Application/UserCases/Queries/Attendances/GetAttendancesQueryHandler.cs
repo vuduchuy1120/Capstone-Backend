@@ -53,7 +53,7 @@ internal sealed class GetAttendancesQueryHandler
                        ))
                        .ToList()
                )).ToList();
-        var searchResponse = new SearchResponse<List<AttendanceResponse>>(totalPage, request.GetAttendanceRequest.PageIndex, data);
+        var searchResponse = new SearchResponse<List<AttendanceResponse>>(request.GetAttendanceRequest.PageIndex, totalPage, data);
 
         return Result.Success<SearchResponse<List<AttendanceResponse>>>.Get(searchResponse);
     }

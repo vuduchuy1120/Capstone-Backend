@@ -28,11 +28,12 @@ public class Report : EntityAuditBase<Guid>
         };
 
     }
-    public void Update(UpdateReportRequest request, string UpdatedBy)
+    public void Update(UpdateReportRequest request, string updatedBy)
     {
         Status = request.Status;
         ReplyMessage = request.ReplyMessage;
         UpdatedDate = DateTime.UtcNow.AddHours(7);
-        UpdatedBy = UpdatedBy;
+        UpdatedBy = updatedBy;
     }
+
 }

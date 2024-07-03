@@ -45,6 +45,8 @@ public class UpdateMaterialCommandHandlerTests
             .ReturnsAsync(true);
         _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.Material());
+        _materialRepositoryMock.Setup(x=>x.IsMaterialNameExistedAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         // Act
         var result = await _handler.Handle(new UpdateMaterialCommand(request), CancellationToken.None);
@@ -84,6 +86,8 @@ public class UpdateMaterialCommandHandlerTests
             .ReturnsAsync(true);
         _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Domain.Entities.Material());
+        _materialRepositoryMock.Setup(x => x.IsMaterialNameExistedAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         Func<Task> act = async () => await _handler.Handle(new UpdateMaterialCommand(request), CancellationToken.None);
 

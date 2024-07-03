@@ -18,8 +18,12 @@ public sealed class UpdateMaterialRequestValidator : AbstractValidator<UpdateMat
             .NotEmpty().WithMessage("Name must be not empty!")
             .MaximumLength(200).WithMessage("Name must be less than 200 characters!")
             .NotNull().WithMessage("Name must be not null!")
-            ;
-        RuleFor(m => m.Description)            
+            .MustAsync(async (Name, _) =>
+            {
+                return !await _materialRepository.IsMaterialNameExistedAsync(Name);
+            }).WithMessage("Name is existed!");
+
+        RuleFor(m => m.Description)
             .MaximumLength(750)
             .WithMessage("Description should be less than 750 characters!");
         RuleFor(m => m.Unit)

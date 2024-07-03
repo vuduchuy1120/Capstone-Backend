@@ -74,6 +74,12 @@ public class MaterialRepository : IMaterialRepository
 
     }
 
+    public async Task<bool> IsMaterialNameExistedAsync(string name)
+    {
+        var nameUnaccent = StringUtils.RemoveDiacritics(name).ToLower();
+        return await _context.Materials.AnyAsync(m => m.NameUnaccent.ToLower().Trim() == nameUnaccent.Trim());
+    }
+
     public async Task<(List<Material>?, int)> SearchMaterialsAsync(GetMaterialsQuery request)
     {
         var query = _context.Materials.AsNoTracking().AsQueryable();

@@ -19,4 +19,5 @@ public interface IMaterialRepository
     Task<bool> IsMaterialEnoughAsync(List<MaterialCheckQuantityRequest> requests);
     Task<List<Material>> GetMaterialsByIdsAsync(List<Guid> ids);
     void UpdateRange(List<Material> materials);
+    Task<bool> IsMaterialNameExistedAsync(string name);
 }

@@ -2,5 +2,5 @@
 
 namespace Contract.Services.Report.Updates;
 
-public record UpdateReportCommand(UpdateReportRequest updateRequest, string UpdatedBy) : ICommand;
+public record UpdateReportCommand(UpdateReportRequestWithClaims updateRequest, string UpdatedBy) : ICommand;
 

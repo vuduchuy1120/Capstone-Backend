@@ -123,7 +123,7 @@ public class DbInitializer
         var roles = new List<Role>
         {
             Role.Create(new CreateRoleCommand("MAIN_ADMIN", "Quản lý hệ thống")),
-            Role.Create(new CreateRoleCommand("BRAND_ADMIN", "Quản lý cơ sở")),
+            Role.Create(new CreateRoleCommand("BRANCH_ADMIN", "Quản lý cơ sở")),
             Role.Create(new CreateRoleCommand("COUNTER", "Quản lý số lượng")),
             Role.Create(new CreateRoleCommand("DRIVER", "Nhân viên vận chuyển")),
             Role.Create(new CreateRoleCommand("USER", "Nhân viên thường"))
