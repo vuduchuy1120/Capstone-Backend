@@ -83,6 +83,7 @@ namespace Application.UserCases.Queries.OrderDetails
 
                     sets.Add(new SetOrderResponse(
                         orderDetail.Set.Id,
+                        orderDetail.Set.Code,
                         orderDetail.Set.Name,
                         orderDetail.Set.Description,
                         setImageUrl,

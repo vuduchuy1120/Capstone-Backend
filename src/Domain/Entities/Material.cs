@@ -24,10 +24,10 @@ public class Material : EntityBase<Guid>
         return new Material
         {
             Id = Guid.NewGuid(),
-            Name = createMaterialRequest.Name,
-            NameUnaccent = StringUtils.RemoveDiacritics(createMaterialRequest.Name),
-            Description = createMaterialRequest.Description,
-            Unit = createMaterialRequest.Unit,
+            Name = createMaterialRequest.Name.Trim(),
+            NameUnaccent = StringUtils.RemoveDiacritics(createMaterialRequest.Name.Trim()),
+            Description = createMaterialRequest.Description.Trim(),
+            Unit = createMaterialRequest.Unit.Trim(),
             QuantityPerUnit = createMaterialRequest.QuantityPerUnit,
             Image = createMaterialRequest.Image,
             QuantityInStock = createMaterialRequest.QuantityInStock
