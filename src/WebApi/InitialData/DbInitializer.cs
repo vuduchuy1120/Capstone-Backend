@@ -4,8 +4,11 @@ using Contract.Services.Company.Shared;
 using Contract.Services.Phase.Creates;
 using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhase.Creates;
 using Contract.Services.Role.Create;
 using Contract.Services.SalaryHistory.Creates;
+using Contract.Services.Set.CreateSet;
+using Contract.Services.Set.SharedDto;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
@@ -58,6 +61,33 @@ public class DbInitializer
             SeedPhaseData(context);
         }
 
+        if (!context.ProductPhases.Any())
+        {
+            SeedProductPhaseData(context);
+        }
+
+    }
+
+    public static void SeedProductPhaseData(AppDbContext context)
+    {
+        var productPhases = new List<ProductPhase>();
+
+        var products = context.Products.ToList();
+        var phases = context.Phases.ToList();
+        var mainFactory = context.Companies.FirstOrDefault(c => c.CompanyType == CompanyType.FACTORY && c.Name == "Cơ sở chính");
+        
+        foreach (var product in products)
+        {
+            foreach(var phase in phases)
+            {
+                var productPhase = ProductPhase
+                    .Create(new CreateProductPhaseRequest(product.Id, phase.Id, 10, 10, mainFactory.Id));
+                productPhases.Add(productPhase);
+            }
+        }
+
+        context.ProductPhases.AddRange(productPhases);
+        context.SaveChanges();
     }
 
     public static void SeedPhaseData(AppDbContext context)
@@ -84,11 +114,7 @@ public class DbInitializer
                     Size: "M",
                     Description: "First product",
                     Name: "Product 1",
-                    ImageRequests: new List<ImageRequest>
-                    {
-                        new ImageRequest("image_01.png", false, true),
-                        new ImageRequest("image_02.png", true, false),
-                    }
+                    ImageRequests: null
                 ),
                 createdBy: "001201011091"
             ),
@@ -103,6 +129,28 @@ public class DbInitializer
                 ),
                 createdBy: "001201011091"
             ),
+            Product.Create(
+                new CreateProductRequest(
+                    Code: "PD003",
+                    Price: 100.00m,
+                    Size: "L",
+                    Description: "Third product",
+                    Name: "Product 3",
+                    ImageRequests: null
+                ),
+                createdBy: "001201011091"
+            ),
+            Product.Create(
+                new CreateProductRequest(
+                    Code: "PD004",
+                    Price: 100.00m,
+                    Size: "L",
+                    Description: "Four product",
+                    Name: "Product 4",
+                    ImageRequests: null
+                ),
+                createdBy: "001201011091"
+            ),
         };
 
         var images = new List<ProductImage>
@@ -111,6 +159,10 @@ public class DbInitializer
             ProductImage.Create(products[0].Id, new ImageRequest("image_02.png", true, false)),
             ProductImage.Create(products[1].Id, new ImageRequest("image_03.png", false, true)),
             ProductImage.Create(products[1].Id, new ImageRequest("image_04.png", true, false)),
+            ProductImage.Create(products[2].Id, new ImageRequest("image_03.png", false, true)),
+            ProductImage.Create(products[2].Id, new ImageRequest("image_04.png", true, false)),
+            ProductImage.Create(products[3].Id, new ImageRequest("image_03.png", false, true)),
+            ProductImage.Create(products[3].Id, new ImageRequest("image_04.png", true, false)),
         };
 
         context.Products.AddRange(products);
