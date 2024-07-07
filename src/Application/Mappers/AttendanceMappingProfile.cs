@@ -11,7 +11,8 @@ public class AttendanceMappingProfile : Profile
     {
         CreateMap<Attendance, AttendanceResponse>()
         .ForCtorParam("FullName", opt => opt.MapFrom(a => a.User.FirstName + " " + a.User.LastName))
+        .ForCtorParam("Avatar", opt => opt.MapFrom(a => a.User.Avatar))
         .ForCtorParam("EmployeeProductResponses", opt => opt.MapFrom(a => a.User.EmployeeProducts));
-               
+
     }
 }

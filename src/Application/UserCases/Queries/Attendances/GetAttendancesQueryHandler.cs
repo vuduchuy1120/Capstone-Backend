@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
@@ -14,6 +15,7 @@ namespace Application.UserCases.Queries.Attendances;
 
 internal sealed class GetAttendancesQueryHandler
     (IAttendanceRepository _attendanceRepository,
+    ICloudStorage _cloudStorage,
     IMapper _mapper) : IQueryHandler<GetAttendancesQuery, SearchResponse<List<AttendanceResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<AttendanceResponse>>>> Handle(GetAttendancesQuery request, CancellationToken cancellationToken)
@@ -32,27 +34,39 @@ internal sealed class GetAttendancesQueryHandler
         {
             throw new AttendanceNotFoundException();
         }
-        var data = attendances.Select(attendance => new AttendanceResponse(
-                   attendance.UserId,
-                   attendance.Date,
-                   attendance.User.FirstName + " " + attendance.User.LastName,
-                   attendance.HourOverTime,
-                   attendance.IsAttendance,
-                   attendance.IsOverTime,
-                   attendance.IsSalaryByProduct,
-                   attendance.IsManufacture,
-                   attendance.User.EmployeeProducts
-                       .Where(ep => ep.Date == attendance.Date && ep.SlotId == attendance.SlotId)
-                       .Select(ep => new EmployeeProductResponse(
-                           ep.Product.Images.FirstOrDefault()?.ImageUrl ?? string.Empty,
-                           ep.Product.Name,
-                           ep.Product.Id,
-                           ep.Phase.Id,
-                           ep.Phase.Name,
-                           ep.Quantity
-                       ))
-                       .ToList()
-               )).ToList();
+        var data = new List<AttendanceResponse>();
+
+        foreach (var attendance in attendances)
+        {
+            var avatarUrl = await _cloudStorage.GetSignedUrlAsync(attendance.User.Avatar);
+
+            var employeeProducts = attendance.User.EmployeeProducts
+                .Where(ep => ep.Date == attendance.Date && ep.SlotId == attendance.SlotId)
+                .Select(ep => new EmployeeProductResponse(
+                    ep.Product.Images.FirstOrDefault()?.ImageUrl ?? string.Empty,
+                    ep.Product.Name,
+                    ep.Product.Id,
+                    ep.Phase.Id,
+                    ep.Phase.Name,
+                    ep.Quantity))
+                .ToList();
+
+            var attendanceResponse = new AttendanceResponse(
+                attendance.UserId,
+                avatarUrl,
+                attendance.Date,
+                attendance.User.FirstName + " " + attendance.User.LastName,
+                attendance.HourOverTime,
+                attendance.IsAttendance,
+                attendance.IsOverTime,
+                attendance.IsSalaryByProduct,
+                attendance.IsManufacture,
+                employeeProducts
+            );
+
+            data.Add(attendanceResponse);
+        }
+
         var searchResponse = new SearchResponse<List<AttendanceResponse>>(request.GetAttendanceRequest.PageIndex, totalPage, data);
 
         return Result.Success<SearchResponse<List<AttendanceResponse>>>.Get(searchResponse);
