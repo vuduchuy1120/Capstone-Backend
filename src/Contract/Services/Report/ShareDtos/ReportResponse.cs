@@ -5,6 +5,7 @@ public record ReportResponse
     Guid Id,
     string UserId,
     string FullName,
+    string Avatar,
     string Description,
     StatusReport Status,
     string StatusName,

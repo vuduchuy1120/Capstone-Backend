@@ -57,15 +57,22 @@ public class ReportRepository : IReportRepository
 
     public async Task<(List<Report>?, int)> SearchReports(SearchReportsQuery request)
     {
-        var query = _context.Reports.Include(x => x.User).Where(x => x.User.CompanyId == request.CompanyId);
+        var query = _context.Reports
+            .Include(x => x.User)
+            .Include(x => x.User.Company)
+            .AsNoTracking()
+            .Where(x => x.User.CompanyId == request.CompanyId);
 
         if (!string.IsNullOrWhiteSpace(request.UserId))
         {
             query = query.Where(x => x.UserId == request.UserId);
         }
-        if (!string.IsNullOrWhiteSpace(request.Description))
+        if (!string.IsNullOrWhiteSpace(request.UserName))
         {
-            query = query.Where(x => x.Description.Contains(request.Description));
+            query = query.Where(x =>
+            x.User.FirstName.ToLower().Trim().Contains(request.UserName.ToLower().Trim()) ||
+            x.User.LastName.ToLower().Trim().Contains(request.UserName.ToLower().Trim()) ||
+            (x.User.FirstName.ToLower().Trim() + " " + x.User.LastName.ToLower().Trim()).Contains(request.UserName.ToLower().Trim()));
         }
         if (!string.IsNullOrWhiteSpace(request.Status))
         {

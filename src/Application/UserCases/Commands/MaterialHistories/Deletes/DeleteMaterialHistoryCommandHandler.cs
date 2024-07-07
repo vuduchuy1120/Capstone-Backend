@@ -19,8 +19,13 @@ public sealed class DeleteMaterialHistoryCommandHandler
         {
             throw new MaterialHistoryNotFoundException(request.MaterialHistoryId);
         }
-        _materialHistoryRepository.DeleteMaterialHistory(materialHistory);
         var material = await _materialRepository.GetMaterialByIdAsync(materialHistory.MaterialId);
+
+        if (materialHistory.Quantity > material.AvailableQuantity)
+        {
+            throw new MaterialHistoryCannotBeDeleteException();
+        }
+        _materialHistoryRepository.DeleteMaterialHistory(materialHistory);
         material.UpdateQuantityInStock1(-materialHistory.Quantity);
         _materialRepository.UpdateMaterial(material);
         await _unitOfWork.SaveChangesAsync();

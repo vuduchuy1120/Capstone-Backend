@@ -11,4 +11,5 @@ public interface IPhaseRepository
     void UpdatePhase(Phase phase);
     Task<Phase> GetPhaseById(Guid id);
     Task<List<Phase>> GetPhases();
+    Task<Phase> GetPhaseByName(string name);
 }

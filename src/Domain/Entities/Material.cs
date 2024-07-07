@@ -58,6 +58,12 @@ public class Material : EntityBase<Guid>
     public void UpdateQuantityInStock1(double quantity)
     {
         QuantityInStock += quantity;
+        AvailableQuantity += quantity;
+    }
+    public void UpdateQuantityInStockAndAvailableQuantity(double quantity)
+    {
+        QuantityInStock = quantity;
+        AvailableQuantity = quantity;
     }
 }
 

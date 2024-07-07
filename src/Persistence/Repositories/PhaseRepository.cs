@@ -22,6 +22,11 @@ public class PhaseRepository : IPhaseRepository
         return await _context.Phases.SingleOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<Phase> GetPhaseByName(string name)
+    {
+        return await _context.Phases.SingleOrDefaultAsync(x => x.Name == name);
+    }
+
     public async Task<List<Phase>> GetPhases()
     {
         return await _context.Phases.ToListAsync();

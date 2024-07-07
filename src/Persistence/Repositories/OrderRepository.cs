@@ -40,7 +40,7 @@ public class OrderRepository : IOrderRepository
         var query = _context.Orders.Include(o => o.Company).AsQueryable();
         if (!string.IsNullOrWhiteSpace(request.CompanyName))
         {
-            query = query.Where(x => x.Company.NameUnAccent.Equals(StringUtils.RemoveDiacritics(request.CompanyName)));
+            query = query.Where(x => x.Company.NameUnAccent.ToLower().Trim().Contains(StringUtils.RemoveDiacritics(request.CompanyName.ToLower().Trim())));
         }
         if (!string.IsNullOrWhiteSpace(request.Status))
         {

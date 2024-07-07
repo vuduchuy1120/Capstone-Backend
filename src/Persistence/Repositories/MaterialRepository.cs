@@ -23,7 +23,7 @@ public class MaterialRepository : IMaterialRepository
 
     public async Task<Material?> GetMaterialByIdAsync(Guid id)
     {
-        return await _context.Materials.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
+        return await _context.Materials.SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<List<Material>> GetMaterialsByIdsAsync(List<Guid> ids)

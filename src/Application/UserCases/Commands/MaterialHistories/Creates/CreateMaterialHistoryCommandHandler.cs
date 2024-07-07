@@ -27,7 +27,7 @@ public sealed class CreateMaterialHistoryCommandHandler(
         _materialHistoryRepository.AddMaterialHistory(materialHistory);
 
         var material = await _materialRepository.GetMaterialByIdAsync(createMaterialHistoryCommand.MaterialId);
-        material.UpdateQuantityInStock(createMaterialHistoryCommand.Quantity);
+        material.UpdateQuantityInStock1(createMaterialHistoryCommand.Quantity);
         _materialRepository.UpdateMaterial(material);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Create();
