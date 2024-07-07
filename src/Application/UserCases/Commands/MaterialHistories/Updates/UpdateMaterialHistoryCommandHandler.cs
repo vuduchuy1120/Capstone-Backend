@@ -84,8 +84,8 @@ public sealed class UpdateMaterialHistoryCommandHandler : ICommandHandler<Update
 
     private void UpdateMaterialQuantities(Material material, MaterialHistory materialHistory, double newQuantity)
     {
-        material.UpdateQuantityInStock1(material.QuantityInStock - materialHistory.Quantity);
-        material.UpdateQuantityInStock1(material.QuantityInStock + newQuantity);
+        material.UpdateQuantityInStockAndAvailableQuantity(material.QuantityInStock - materialHistory.Quantity);
+        material.UpdateQuantityInStockAndAvailableQuantity(material.QuantityInStock + newQuantity);
         _materialRepository.UpdateMaterial(material);
     }
 }

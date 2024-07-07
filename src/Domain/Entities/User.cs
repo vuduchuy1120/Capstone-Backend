@@ -64,7 +64,7 @@ public class User : EntityAuditBase<string>
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
         CompanyId = request.CompanyId;
-        //Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar;
+        Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar;
     }
 
     public void UpdateStatus(ChangeUserStatusCommand request)

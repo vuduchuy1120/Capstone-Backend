@@ -1,6 +1,4 @@
-﻿using Contract.Services.Order.ShareDtos;
-
-namespace Contract.Services.Report.ShareDtos;
+﻿namespace Contract.Services.Report.ShareDtos;
 
 public static class ReportTypeExtensions
 {

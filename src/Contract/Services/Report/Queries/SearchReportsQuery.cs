@@ -5,7 +5,7 @@ public record SearchReportsQuery
     string? UserId,
     string? Status,
     string? ReportType,
-    string? Description,
+    string? UserName,
     string? StartDate,
     Guid CompanyId,
     string? EndDate,

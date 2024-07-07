@@ -1,5 +1,4 @@
-﻿
-using Application.Abstractions.Data;
+﻿using Application.Abstractions.Data;
 using Contract.Services.Material.Create;
 using FluentValidation;
 
@@ -10,35 +9,32 @@ public sealed class CreateMaterialRequestValidator : AbstractValidator<CreateMat
     public CreateMaterialRequestValidator(IMaterialRepository materialRepository)
     {
         RuleFor(m => m.Name)
-            .NotEmpty().WithMessage("Name must be not empty!")
-            .NotNull().WithMessage("Name must be not null!");
-        // name is unique
+            .NotEmpty().WithMessage("Tên không được để trống!")
+            .NotNull().WithMessage("Tên không được là null!");
+        // tên phải là duy nhất
         RuleFor(m => m.Name)
         .MustAsync(async (Name, _) =>
         {
             return !await materialRepository.IsMaterialNameExistedAsync(Name);
-        }).WithMessage("Name is existed!");
+        }).WithMessage("Tên đã tồn tại!");
         RuleFor(m => m.Description)
             .MaximumLength(750)
-            .WithMessage("Description should be less than 750 characters!");
+            .WithMessage("Mô tả không được dài quá 750 ký tự!");
 
         RuleFor(m => m.Unit)
-            .NotEmpty().WithMessage("Unit must be not empty")
-            .NotNull().WithMessage("Unit must be not null")
+            .NotEmpty().WithMessage("Đơn vị không được để trống")
+            .NotNull().WithMessage("Đơn vị không được là null")
             ;
         RuleFor(m => m.QuantityPerUnit)
-            .NotEmpty().WithMessage("QuantityPerUnit must be not empty!")
-            .NotNull().WithMessage("QuantityPerUnit must be not null!")
             .Must(QuantityPerUnit =>
             {
                 return QuantityPerUnit > 0;
-            }).WithMessage("QuantityPerUnit must be greater than 0");
+            }).WithMessage("Số lượng mỗi đơn vị phải lớn hơn 0");
         RuleFor(m => m.QuantityInStock)
-            .NotEmpty().WithMessage("QuantityInStock must be not empty!")
-            .NotNull().WithMessage("QuantityInStock must be not null!")
+            .NotNull().WithMessage("Số lượng tồn kho không được là null!")
             .Must(QuantityInStock =>
             {
                 return QuantityInStock >= 0;
-            }).WithMessage("QuantityInStock must be greater than 0");
+            }).WithMessage("Số lượng tồn kho phải lớn hơn hoặc bằng 0");
     }
 }
