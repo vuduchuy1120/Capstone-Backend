@@ -6,7 +6,7 @@ namespace Contract.Services.Attendance.ShareDto;
 public record AttendanceResponse
 (
     string UserId,
-    //string avatar,
+    string Avatar,
     DateOnly Date,
     string FullName,
     double HourOverTime,
