@@ -118,7 +118,7 @@ public class UpdateShipOrderValidator : AbstractValidator<UpdateShipOrderRequest
         RuleForEach(req => req.ShipOrderDetailRequests)
             .Must((req, ShipOrderDetailRequest) => Enum.IsDefined(typeof(ItemKind), ShipOrderDetailRequest.ItemKind))
             .WithMessage("Vật phẩm giao phải là sản phầm (0) hoặc bộ (1)")
-            .Must((ShipOrderDetailRequest) => ShipOrderDetailRequest.Quantity <= 0)
+            .Must((ShipOrderDetailRequest) => ShipOrderDetailRequest.Quantity > 0)
             .WithMessage("Số lượng phải lớn hơn 0");
     }
 }
