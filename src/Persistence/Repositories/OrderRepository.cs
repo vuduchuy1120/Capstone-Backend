@@ -77,4 +77,9 @@ public class OrderRepository : IOrderRepository
     {
         _context.Orders.Update(order);
     }
+
+    public async Task<bool> IsOrderIdValidToShipAsync(Guid id)
+    {
+        return await _context.Orders.AnyAsync(o => o.Id == id && o.Status == StatusOrder.INPROGRESS);
+    }
 }

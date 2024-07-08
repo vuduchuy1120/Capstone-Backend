@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.ShipOrder.Create;
@@ -29,17 +30,17 @@ internal class CreateShipOrderCommandHandler(
 
         var shipOrderDetails = createShipOrderRequest.ShipOrderDetailRequests;
 
-        var productDetails = await GetProductDetailInShipOrder(shipOrderDetails);
+        var productDetails = await ShipOrderUtil.GetProductDetailInShipOrder(shipOrderDetails, _setRepository);
 
         if (createShipOrderRequest.KindOfShipOrder == DeliveryMethod.SHIP_ORDER)
         {
-            await CheckDeliveredQuantity(shipOrderDetails, createShipOrderRequest.OrderId);
+            await ShipOrderUtil.CheckDeliveredQuantity(shipOrderDetails, createShipOrderRequest.OrderId, _orderDetailRepository);
             await CheckAndUpdateAvailableQuantityInStock(productDetails);
         }
         else if(createShipOrderRequest.KindOfShipOrder == DeliveryMethod.RETURN_PRODUCT)
         {
-            await CheckReturnQuantity(shipOrderDetails, createShipOrderRequest.OrderId);
-            await UpdateAvailableQuantityInStock(productDetails);
+            await ShipOrderUtil.CheckReturnQuantity(shipOrderDetails, createShipOrderRequest.OrderId, _orderDetailRepository);
+            //await UpdateAvailableQuantityInStock(productDetails);
         }
         else
         {
@@ -48,7 +49,7 @@ internal class CreateShipOrderCommandHandler(
 
         var shipOrder = ShipOrder.Create(request.createdBy, createShipOrderRequest);
 
-        var shipOderDetails = CreateShipOrderDetails(shipOrderDetails, shipOrder.Id);
+        var shipOderDetails = ShipOrderUtil.CreateShipOrderDetails(shipOrderDetails, shipOrder.Id);
 
         _shipOrderRepository.Add(shipOrder);
         _shipOrderDetailRepository.AddRange(shipOderDetails);
@@ -66,109 +67,6 @@ internal class CreateShipOrderCommandHandler(
         {
             throw new MyValidationException(validationResult.ToDictionary());
         }
-    }
-
-    private async Task CheckDeliveredQuantity(List<ShipOrderDetailRequest> shipOrderDetails, Guid orderId)
-    {
-        var orderDetails = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(orderId);
-
-        foreach(var shipOrderDetailRequest in shipOrderDetails)
-        {
-            if(shipOrderDetailRequest.ItemKind == ItemKind.PRODUCT)
-            {
-                var isQuantityValid = orderDetails
-                    .Any(order => order.ProductId == shipOrderDetailRequest.ItemId 
-                        && order.Quantity - order.ShippedQuantity >= shipOrderDetailRequest.Quantity);
-                if (!isQuantityValid) 
-                    throw new QuantityNotValidException("Số lượng giao bị thừa hoặc không tìm thấy sản phẩm trong đơn hàng");
-            }
-            else if(shipOrderDetailRequest.ItemKind == ItemKind.SET)
-            {
-                var isQuantityValid = orderDetails
-                    .Any(order => order.SetId == shipOrderDetailRequest.ItemId
-                        && order.Quantity - order.ShippedQuantity >= shipOrderDetailRequest.Quantity);
-                if (!isQuantityValid)
-                    throw new QuantityNotValidException("Số lượng giao bị thừa hoặc không tìm thấy bộ trong đơn hàng");
-            }
-            else
-            {
-                throw new QuantityNotValidException("Không tìm thấy loại sản phẩm đặt hàng phù hợp");
-            }
-        }
-    }
-
-    private async Task CheckReturnQuantity(List<ShipOrderDetailRequest> shipOrderDetails, Guid orderId)
-    {
-        var orderDetails = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(orderId);
-
-        foreach (var shipOrderDetailRequest in shipOrderDetails)
-        {
-            if (shipOrderDetailRequest.ItemKind == ItemKind.PRODUCT)
-            {
-                var isQuantityValid = orderDetails
-                    .Any(order => order.ProductId == shipOrderDetailRequest.ItemId
-                        && order.ShippedQuantity >= shipOrderDetailRequest.Quantity);
-                if (!isQuantityValid)
-                    throw new QuantityNotValidException("Số lượng sản phẩm trả quá số lượng đã giao hoặc không tìm thấy sản phầm trong đơn hàng");
-            }
-            else if (shipOrderDetailRequest.ItemKind == ItemKind.SET)
-            {
-                var isQuantityValid = orderDetails
-                    .Any(order => order.SetId == shipOrderDetailRequest.ItemId
-                        && order.ShippedQuantity >= shipOrderDetailRequest.Quantity);
-                if (!isQuantityValid)
-                    throw new QuantityNotValidException("Số lượng bộ trả quá số lượng đã giao hoặc không tìm thấy bộ trong đơn hàng");
-            }
-            else
-            {
-                throw new QuantityNotValidException("Không tìm thấy loại sản phẩm đặt hàng phù hợp");
-            }
-        }
-    }
-
-    public async Task<List<ShipProductDetail>> GetProductDetailInShipOrder(List<ShipOrderDetailRequest> shipOrderDetails)
-    {
-        var products = shipOrderDetails
-            .Where(s => s.ItemKind == ItemKind.PRODUCT)
-            .Select(s => new ShipProductDetail
-            {
-                ProductId = s.ItemId,
-                Quantity = s.Quantity,
-            })
-        .ToList();
-
-        var productsInSetTasks = shipOrderDetails
-            .Where(s => s.ItemKind == ItemKind.SET)
-            .Select(async s =>
-            {
-                var set = await _setRepository.GetByIdAsync(s.ItemId) ?? throw new SetNotFoundException();
-
-                if (set.SetProducts == null || set.SetProducts.Count == 0)
-                {
-                    throw new SetProductNotFoundException();
-                }
-
-                return set.SetProducts.Select(sp => new ShipProductDetail
-                {
-                    ProductId = sp.ProductId,
-                    Quantity = s.Quantity * sp.Quantity,
-                });
-            })
-            .ToList();
-
-        var productsInSet = (await Task.WhenAll(productsInSetTasks)).SelectMany(x => x).ToList();
-
-        var mergedProducts = products
-            .Concat(productsInSet)
-            .GroupBy(p => p.ProductId)
-            .Select(g => new ShipProductDetail
-            {
-                ProductId = g.Key,
-                Quantity = g.Sum(p => p.Quantity)
-            })
-            .ToList();
-
-        return mergedProducts;
     }
 
     private async Task CheckAndUpdateAvailableQuantityInStock(List<ShipProductDetail> shipProductDetails)
@@ -204,22 +102,6 @@ internal class CreateShipOrderCommandHandler(
         _productPhaseRepository.UpdateProductPhaseRange(productPhases);
     }
 
-    private List<ShipOrderDetail> CreateShipOrderDetails(List<ShipOrderDetailRequest> shipOrderDetails, Guid shipOrderId)
-    {
-        return shipOrderDetails.Select(shipOrderDetail =>
-        {
-            if(shipOrderDetail.ItemKind == ItemKind.PRODUCT)
-            {
-                return ShipOrderDetail.CreateShipProductOrder(shipOrderDetail.ItemId, shipOrderId, shipOrderDetail.Quantity);
-            }
-            else if(shipOrderDetail.ItemKind == ItemKind.SET)
-            {
-                return ShipOrderDetail.CreateShipSetOrder(shipOrderDetail.ItemId, shipOrderId, shipOrderDetail.Quantity);
-            }
-            throw new QuantityNotValidException("Không tìm thấy loại sản phẩm đặt hàng phù hợp");
-        }).ToList();
-    }
-
     private async Task UpdateAvailableQuantityInStock(List<ShipProductDetail> shipProductDetails)
     {
         var productIds = shipProductDetails.Select(shipProductDetails => shipProductDetails.ProductId).ToList();
@@ -242,7 +124,7 @@ internal class CreateShipOrderCommandHandler(
                 throw new QuantityNotValidException("Không tìm thấy sản phẩm trong kho");
             }
 
-            product.UpdateAvailableQuantity(product.AvailableQuantity + shipDetail.Quantity);
+            product.UpdateAvailableQuantity(product.ErrorAvailableQuantity + shipDetail.Quantity);
         }
 
         _productPhaseRepository.UpdateProductPhaseRange(productPhases);

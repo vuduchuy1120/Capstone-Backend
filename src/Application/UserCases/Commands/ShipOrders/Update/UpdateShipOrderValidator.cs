@@ -1,18 +1,32 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
-using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.Share;
+using Contract.Services.ShipOrder.Update;
 using FluentValidation;
 
-namespace Application.UserCases.Commands.ShipOrders.Create;
+namespace Application.UserCases.Commands.ShipOrders.Update;
 
-public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest>
+public class UpdateShipOrderValidator : AbstractValidator<UpdateShipOrderRequest>
 {
-    public CreateShipOrderValidator(
+    public UpdateShipOrderValidator(
+        IShipOrderRepository shipOrderRepository, 
         IUserRepository userRepository,
         IOrderRepository orderRepository,
         IOrderDetailRepository orderDetailRepository)
     {
+        RuleFor(req => req.Id)
+            .NotNull().WithMessage("Id của đợt giao hàng không được để trống")
+            .MustAsync(async (id, _) =>
+            {
+                return await shipOrderRepository.IsShipOrderExistAndInWaitingStatusAsync(id);
+            }).WithMessage("Không tìm thấy đơn hàng trong trạng thái chờ để cập nhật");
+
+        RuleFor(req => req.OrderId)
+            .MustAsync(async (orderId, _) =>
+            {
+                return await orderRepository.IsOrderIdValidToShipAsync(orderId);
+            }).WithMessage("Không tìm thấy đơn đặt hàng phù hợp");
+
         RuleFor(req => req.ShipperId)
             .NotEmpty().WithMessage("Người giao hàng không được để trống")
             .Matches(@"^\d{9}$|^\d{12}$").WithMessage("ID người giao hàng phải là 9 hoặc 12 chữ số")
@@ -20,12 +34,6 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
             {
                 return await userRepository.IsShipperExistAsync(id);
             }).WithMessage("Người giao hàng không tồn tại");
-
-        RuleFor(req => req.OrderId)
-            .MustAsync(async (orderId, _) =>
-            {
-                return await orderRepository.IsOrderIdValidToShipAsync(orderId);
-            }).WithMessage("Không tìm thấy đơn đặt hàng phù hợp");
 
         RuleFor(req => req.ShipDate)
             .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
@@ -44,7 +52,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
             .MustAsync(async (req, ShipOrderDetailRequests, _) =>
             {
                 var productIds = ShipOrderDetailRequests
-                                    .Where(r => r.ItemKind ==ItemKind.PRODUCT)
+                                    .Where(r => r.ItemKind == ItemKind.PRODUCT)
                                     .Select(r => r.ItemId)
                                     .ToList();
 
