@@ -1,8 +1,10 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.Shipment.GetShipmentDetail;
+using Contract.Services.ShipOrder.ChangeStatus;
 using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.GetShipOrderByOrderId;
+using Contract.Services.ShipOrder.Update;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -33,6 +35,36 @@ public class ShipOrderApiEndpoints : CarterModule
         app.MapGet("{id}", async (ISender sender, [FromRoute] Guid id) =>
         {
             var result = await sender.Send(new GetShipOrderByOrderIdQuery(id));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
+        });
+
+        app.MapPut("{id}", async (ISender sender, ClaimsPrincipal claim, [FromBody] UpdateShipOrderRequest request, [FromRoute] Guid id) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var updateShipOrderCommand = new UpdateShipOderCommand(userId, id, request);
+
+            var result = await sender.Send(updateShipOrderCommand);
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
+        });
+
+        app.MapPatch("{id}", async (
+            ISender sender, 
+            ClaimsPrincipal claim, 
+            [FromRoute] Guid id, 
+            [FromBody] ChangeShipOrderStatusRequest request) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var changeShipOrderStatusCommand = new ChangeShipOrderStatusCommand(userId, id, request);
+
+            var result = await sender.Send(changeShipOrderStatusCommand);
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)

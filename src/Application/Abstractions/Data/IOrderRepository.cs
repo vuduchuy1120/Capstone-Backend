@@ -11,5 +11,6 @@ public interface IOrderRepository
     Task<List<Order>> GetOrdersByCompanyIdAsync(Guid companyId);
     Task<(List<Order>?, int)> SearchOrdersAsync(SearchOrderQuery request);
     Task<bool> IsOrderExist(Guid id);
+    Task<bool> IsOrderIdValidToShipAsync(Guid id);
 
 }

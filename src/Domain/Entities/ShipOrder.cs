@@ -1,6 +1,7 @@
 ﻿using Contract.Services.Shipment.Share;
 using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.Share;
+using Contract.Services.ShipOrder.Update;
 using Domain.Abstractions.Entities;
 
 namespace Domain.Entities;
@@ -33,5 +34,23 @@ public class ShipOrder : EntityAuditBase<Guid>
             Status = Status.WAIT_FOR_SHIP,
             DeliveryMethod = request.KindOfShipOrder
         };
+    }
+
+    public void Update(string updatedBy, List<ShipOrderDetail>? shipOrderDetails, UpdateShipOrderRequest request)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        ShipperId = request.ShipperId;
+        ShipDate = request.ShipDate;
+        DeliveryMethod = request.KindOfShipOrder;
+        OrderId = request.OrderId;
+        ShipOrderDetails = shipOrderDetails;
+    }
+
+    public void UpdateStatus(Status status, string updatedBy)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        Status = status;
     }
 }

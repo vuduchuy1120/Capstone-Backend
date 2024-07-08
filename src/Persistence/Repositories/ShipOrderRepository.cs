@@ -1,5 +1,6 @@
 ﻿
 using Application.Abstractions.Data;
+using Contract.Services.Shipment.Share;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,13 @@ internal class ShipOrderRepository : IShipOrderRepository
         _context.ShipOrders.Add(shipOrder);
     }
 
+    public async Task<ShipOrder> GetByIdAndStatusIsNotDoneAsync(Guid shipOrderId)
+    {
+        return await _context.ShipOrders
+            .Include(s => s.ShipOrderDetails)
+            .SingleOrDefaultAsync(s => s.Id == shipOrderId && (s.Status == Status.WAIT_FOR_SHIP || s.Status == Status.SHIPPING));
+    }
+
     public async Task<List<ShipOrder>> GetByOrderIdAsync(Guid orderId)
     {
         return await _context.ShipOrders
@@ -35,5 +43,23 @@ internal class ShipOrderRepository : IShipOrderRepository
                             .ThenInclude(p => p.Images)
             .Where(shipOrder => shipOrder.OrderId == orderId)
             .ToListAsync();
+    }
+
+    public async Task<ShipOrder> GetByShipOrderIdAsync(Guid shipOrderId)
+    {
+        return await _context.ShipOrders
+            .Include(s => s.ShipOrderDetails)
+            .SingleOrDefaultAsync(s => s.Id == shipOrderId);
+    }
+
+    public async Task<bool> IsShipOrderExistAndInWaitingStatusAsync(Guid shipOrderId)
+    {
+        return await _context.ShipOrders
+            .AnyAsync(s => s.Id == shipOrderId && s.Status == Status.WAIT_FOR_SHIP);
+    }
+
+    public void Update(ShipOrder shipOrder)
+    {
+        _context.ShipOrders.Update(shipOrder);
     }
 }
