@@ -26,6 +26,8 @@ internal sealed class ProductRepository : IProductRepository
             .AsNoTracking()
             .AsSplitQuery()
             .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries)
+            .ThenInclude(p => p.Phase)
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
@@ -68,7 +70,7 @@ internal sealed class ProductRepository : IProductRepository
         var searchTerm = getProductsQuery.SearchTerm;
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) 
+            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower())
             || p.Code.ToLower().Contains(searchTerm.ToLower()));
         }
 
@@ -81,6 +83,8 @@ internal sealed class ProductRepository : IProductRepository
             .Skip((getProductsQuery.PageIndex - 1) * getProductsQuery.PageSize)
             .Take(getProductsQuery.PageSize)
             .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries)
+            .ThenInclude(p => p.Phase)
             .AsNoTracking()
             .AsSingleQuery()
             .ToListAsync();
@@ -97,9 +101,11 @@ internal sealed class ProductRepository : IProductRepository
 
         return await _context.Products
             .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries)
+            .ThenInclude(p => p.Phase)
             .AsNoTracking()
             .AsSingleQuery()
-            .Where(p => p.Name.ToLower().Contains(search.ToLower()) 
+            .Where(p => p.Name.ToLower().Contains(search.ToLower())
                 || p.Code.ToLower().Contains(search.ToLower()))
             .ToListAsync();
     }

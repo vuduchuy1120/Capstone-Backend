@@ -25,7 +25,7 @@ public class UpdateProductTest : IDisposable
     public async Task Update_ProductExists_ShouldUpdateProduct()
     {
         // Arrange
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+        var createProductRequest = new CreateProductRequest("Code", 3434,100,100, "Size", "Description",
                 "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
         _context.Products.Add(product);
@@ -33,7 +33,7 @@ public class UpdateProductTest : IDisposable
 
         // Act
         var updateProductRequest = new UpdateProductRequest(product.Id, "UpdatedCode",
-            999, "UpdatedSize", "UpdatedDescription", "UpdatedName", true, null, null);
+             3434, 100, 100, "UpdatedSize", "UpdatedDescription", "UpdatedName", true, null, null);
         product.Update(updateProductRequest, "001201012123");
 
         _productRepository.Update(product);
@@ -53,7 +53,7 @@ public class UpdateProductTest : IDisposable
     public async Task Update_ProductDoesNotExist_ShouldThrow()
     {
         // Arrange
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+        var createProductRequest = new CreateProductRequest("Code", 3434, 100, 100, "Size", "Description",
                 "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 

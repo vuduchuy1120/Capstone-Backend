@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Contract.Services.Set.GetSet;
 using Contract.Services.Set.GetSets;
 using Contract.Services.Set.SharedDto;
@@ -29,6 +30,11 @@ namespace Application.Mappers
                         sp.Product.Name,
                         sp.Product.Code,
                         sp.Product.Price,
+                        sp.Product.ProductPhaseSalaries != null ? sp.Product.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
+                            salary.PhaseId,
+                            salary.Phase.Name,
+                            salary.SalaryPerProduct
+                        )).ToList() : new List<ProductPhaseSalaryResponse>(),
                         sp.Product.Size,
                         sp.Product.Description,
                         sp.Product.IsInProcessing,

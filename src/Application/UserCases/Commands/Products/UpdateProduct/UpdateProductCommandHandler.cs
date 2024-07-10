@@ -1,10 +1,12 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
+using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.SharedDto;
 using Contract.Services.Product.UpdateProduct;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.ProductPhaseSalaries;
 using Domain.Exceptions.Products;
 using FluentValidation;
 
@@ -13,6 +15,8 @@ namespace Application.UserCases.Commands.Products.UpdateProduct;
 internal sealed class UpdateProductCommandHandler(
     IProductRepository _productRepository,
     IProductImageRepository _productImageRepository,
+    IPhaseRepository _phaseRepository,
+    IProductPhaseSalaryRepository _productPhaseSalaryRepository,
     IUnitOfWork _unitOfWork,
     IValidator<UpdateProductCommand> _validator) : ICommandHandler<UpdateProductCommand>
 {
@@ -29,6 +33,36 @@ internal sealed class UpdateProductCommandHandler(
 
         product.Update(updateProductRequest, request.UpdatedBy);
         _productRepository.Update(product);
+
+
+        // Get all phases
+        var phases = await _phaseRepository.GetPhases();
+
+        //Get phase ids
+        var phase1 = phases.FirstOrDefault(x => x.Name == "PH_001").Id;
+        var phase2 = phases.FirstOrDefault(x => x.Name == "PH_002").Id;
+        var phase3 = phases.FirstOrDefault(x => x.Name == "PH_003").Id;
+
+        var productPhaseSalary1 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase1)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+        var productPhaseSalary2 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase2)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+        var productPhaseSalary3 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase3)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+
+        // Add product phase salaries
+        productPhaseSalary1.Update(productId, phase1, updateProductRequest.PricePhase1);
+        productPhaseSalary2.Update(productId, phase2, updateProductRequest.PricePhase2);
+        productPhaseSalary3.Update(productId, phase3, updateProductRequest.PriceFinished);
+        
+        var productPhaseSalaries = new List<ProductPhaseSalary>
+        {
+            productPhaseSalary1,
+            productPhaseSalary2,
+            productPhaseSalary3
+        };
+
+        _productPhaseSalaryRepository.UpdateRange(productPhaseSalaries);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

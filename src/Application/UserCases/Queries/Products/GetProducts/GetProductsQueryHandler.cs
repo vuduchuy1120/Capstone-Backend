@@ -5,6 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.Product.GetProducts;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProducts;
@@ -26,7 +27,26 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             throw new ProductNotFoundException();
         }
 
-        var data = products.ConvertAll(p => _mapper.Map<ProductResponse>(p));
+        var data = products.ConvertAll(p => new ProductResponse(
+            p.Id,
+            p.Name,
+            p.Code,
+            p.Price,
+            p.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
+                salary.PhaseId,
+                salary.Phase.Name,
+                salary.SalaryPerProduct
+            )).ToList(),
+            p.Size,
+            p.Description,
+            p.IsInProcessing,
+            p.Images.Select(image => new ImageResponse(
+                image.Id,
+                image.ImageUrl,
+                image.IsBluePrint,
+                image.IsMainImage
+            )).ToList()
+        ));
 
         var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
 

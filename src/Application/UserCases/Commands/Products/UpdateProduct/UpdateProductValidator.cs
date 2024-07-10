@@ -18,8 +18,17 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
             .NotEmpty().WithMessage("Product's code cannot be empty")
             .Matches(@"^[a-zA-Z]{2}\d+$").WithMessage("Product's code must start with two characters followed by numbers");
 
-        RuleFor(req => req.UpdateProductRequest.Price)
+        RuleFor(req => req.UpdateProductRequest.PricePhase1)
                 .GreaterThan(0).WithMessage("Product's price must be greater than 0");
+
+        RuleFor(req => req.UpdateProductRequest.PricePhase2)
+            .GreaterThan(0).WithMessage("Product's price must be greater than 0");
+
+        RuleFor(req => req.UpdateProductRequest.PriceFinished)
+                .Must((request, PriceFinished) =>
+                {
+                    return PriceFinished >= request.UpdateProductRequest.PricePhase1 + request.UpdateProductRequest.PricePhase2;
+                }).WithMessage("Giá hàng hoàn thiện phải  >= tổng giá của 2 giai đoạn");
 
         RuleFor(req => req.UpdateProductRequest.Size)
             .NotEmpty().WithMessage("Product's size cannot be empty");
@@ -30,7 +39,7 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
         RuleFor(req => req.UpdateProductRequest.RemoveImageIds)
             .MustAsync(async (req, imageIds, _) =>
             {
-                if(imageIds is null)
+                if (imageIds is null)
                 {
                     return true;
                 }

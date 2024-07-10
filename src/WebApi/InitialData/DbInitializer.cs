@@ -110,7 +110,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD001",
-                    Price: 50.00m,
+                    PriceFinished: 50.00m,
+                    PricePhase1: 20.00m,
+                    PricePhase2: 30.00m,
                     Size: "M",
                     Description: "First product",
                     Name: "Product 1",
@@ -121,7 +123,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD002",
-                    Price: 100.00m,
+                    PriceFinished: 100.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 60.00m,
                     Size: "L",
                     Description: "Second product",
                     Name: "Product 2",
@@ -132,7 +136,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD003",
-                    Price: 100.00m,
+                    PriceFinished: 100.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 60.00m,
                     Size: "L",
                     Description: "Third product",
                     Name: "Product 3",
@@ -143,7 +149,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD004",
-                    Price: 100.00m,
+                    PriceFinished : 100.00m,
+                    PricePhase1 : 40.00m,
+                    PricePhase2 : 60.00m,
                     Size: "L",
                     Description: "Four product",
                     Name: "Product 4",

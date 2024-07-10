@@ -1,10 +1,13 @@
-﻿namespace Contract.Services.Product.SharedDto;
+﻿using Contract.Services.ProductPhaseSalary.ShareDtos;
+
+namespace Contract.Services.Product.SharedDto;
 
 public record ProductResponse(
     Guid Id,
     string Name,
     string Code,
-    decimal Price,
+    decimal PriceFinished,
+    List<ProductPhaseSalaryResponse> ProductPhaseSalaries,
     string Size,
     string Description,
     bool IsInProcessing,

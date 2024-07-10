@@ -5,6 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.OrderDetail.Queries;
 using Contract.Services.OrderDetail.ShareDtos;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Exceptions.OrderDetails;
 
 namespace Application.UserCases.Queries.OrderDetails
@@ -74,6 +75,11 @@ namespace Application.UserCases.Queries.OrderDetails
                             sp.Product.Name,
                             sp.Product.Code,
                             sp.Product.Price,
+                            sp.Product.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
+                                salary.PhaseId,
+                                salary.Phase.Name,
+                                salary.SalaryPerProduct
+                            )).ToList(),
                             sp.Product.Size,
                             sp.Product.Description,
                             sp.Product.IsInProcessing,

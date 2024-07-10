@@ -4,6 +4,7 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Product.Search;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 
 namespace Application.UserCases.Queries.Products.Search;
 
@@ -13,7 +14,7 @@ internal sealed class SearchProductQueryHandler(
     : IQueryHandler<SearchProductQuery, List<ProductWithOneImage>>
 {
     public async Task<Result.Success<List<ProductWithOneImage>>> Handle(
-        SearchProductQuery request, 
+        SearchProductQuery request,
         CancellationToken cancellationToken)
     {
         var products = await _productRepository.SearchProductAsync(request.Search);
@@ -24,24 +25,32 @@ internal sealed class SearchProductQueryHandler(
 
         var data = await Task.WhenAll(products.Select(async p =>
         {
-            if(p.Images is null || p.Images.Count == 0)
+            string imageUrl = "Image_not_found";
+            
+            if (p.Images != null && p.Images.Any())
             {
-                return new ProductWithOneImage(p.Id, p.Name, p.Code, p.Price, p.Size,
-                p.Description, p.IsInProcessing, "Image_not_found");
+                var image = p.Images.FirstOrDefault(i => i.IsMainImage) ?? p.Images.FirstOrDefault();
+                if (image != null)
+                {
+                    imageUrl = await _cloudStorage.GetSignedUrlAsync(image.ImageUrl);
+                }
             }
 
-            var image = p.Images.SingleOrDefault(i => i.IsMainImage);
-
-            if(image is null)
-            {
-                return new ProductWithOneImage(p.Id, p.Name, p.Code, p.Price, p.Size,
-                p.Description, p.IsInProcessing, "Image_not_found");
-            }
-
-            var url = await _cloudStorage.GetSignedUrlAsync(image.ImageUrl);
-
-            return new ProductWithOneImage(p.Id, p.Name, p.Code, p.Price, p.Size,
-                p.Description, p.IsInProcessing, url);
+            return new ProductWithOneImage(
+                p.Id,
+                p.Name,
+                p.Code,
+                p.Price,
+                p.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
+                    salary.PhaseId,
+                    salary.Phase.Name,
+                    salary.SalaryPerProduct
+                )).ToList(),
+                p.Size,
+                p.Description,
+                p.IsInProcessing,
+                imageUrl
+            );
         }));
 
         return Result.Success<List<ProductWithOneImage>>.Get(data.ToList());

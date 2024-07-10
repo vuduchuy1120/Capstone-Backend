@@ -60,7 +60,7 @@ public class GetByIdAsyncTest : IDisposable
     public async Task GetByIdAsync_ExistingSetWithProducts_ShouldReturnSetWithProducts()
     {
         // Arrange
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description", "Name", null);
+        var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description", "Name", null);
         var product1 = Product.Create(createProductRequest, "001201011091");
         var product2 = Product.Create(createProductRequest, "001201011091");
 
@@ -101,7 +101,7 @@ public class GetByIdAsyncTest : IDisposable
             new ImageRequest("Image-1", true, false),
             new ImageRequest("Image-2", true, false)
         };
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description", "Name", imagesRequest);
+        var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description", "Name", imagesRequest);
         var product = Product.Create(createProductRequest, "001201011091");
 
         var setProductsRequest = new List<SetProductRequest>()
