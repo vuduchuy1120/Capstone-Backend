@@ -4,5 +4,6 @@ public record ProductPhaseSalaryResponse
 (
     Guid PhaseId,
     string PhaseName,
+    string PhaseDescription,
     decimal SalaryPerProduct
     );

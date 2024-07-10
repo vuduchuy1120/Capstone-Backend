@@ -8,7 +8,6 @@ using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;
-using System.Linq;
 
 namespace Application.UserCases.Commands.EmployeeProducts.Creates;
 
@@ -52,7 +51,7 @@ public sealed class CreateEmployeeProductCommandHandler
             .Select(g => (g.Key.ProductId, g.Key.PhaseId, g.Sum(x => x.Quantity)))
             .ToList();
 
-        var company = await _companyRepository.GetCompanyByNameAsync("Co so chinh");
+        var company = request.createEmployeeProductRequest.CompanyId;
 
 
         // Deleting existing EmployeeProducts
@@ -67,7 +66,7 @@ public sealed class CreateEmployeeProductCommandHandler
         if (empProDeletes.Any())
         {
             _employeeProductRepository.DeleteRangeEmployeeProduct(empProDeletes);
-            await UpdateProductPhaseQuantities(groupedByProductAndPhaseDelete, company.First().Id, phaseProductsUpdate, decrement: true);
+            await UpdateProductPhaseQuantities(groupedByProductAndPhaseDelete, company, phaseProductsUpdate, decrement: true);
         }
 
         var employeeProducts = new List<EmployeeProduct>();
@@ -79,7 +78,7 @@ public sealed class CreateEmployeeProductCommandHandler
         }
 
         _employeeProductRepository.AddRangeEmployeeProduct(employeeProducts);
-        await UpdateProductPhaseQuantities(groupedByProductAndPhase, company.First().Id, phaseProductsUpdate, phaseProductsNew);
+        await UpdateProductPhaseQuantities(groupedByProductAndPhase, company, phaseProductsUpdate, phaseProductsNew);
 
         if (phaseProductsNew.Any())
             _productPhaseRepository.AddProductPhaseRange(phaseProductsNew);

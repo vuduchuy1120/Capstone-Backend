@@ -32,6 +32,12 @@ public class PhaseRepository : IPhaseRepository
         return await _context.Phases.ToListAsync();
     }
 
+    public async Task<bool> IsAllPhase1(List<Guid> phaseIds)
+    {
+        var phaseExistCount = await _context.Phases.CountAsync(x => phaseIds.Contains(x.Id) && x.Name.Equals("PH_001"));
+        return phaseExistCount == phaseIds.Count;
+    }
+
     public async Task<bool> IsAllPhaseExistByIdAsync(List<Guid> phaseIds)
     {
         var phaseExistCount = await _context.Phases.CountAsync(x => phaseIds.Contains(x.Id));
