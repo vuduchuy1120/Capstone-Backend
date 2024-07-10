@@ -16,5 +16,5 @@ public interface IProductRepository
     Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery);
     Task<bool> IsProductIdExist(Guid id);
     Task<List<Product>> SearchProductAsync(string search);
-
+    Task<bool> IsAllProductInProgress(List<Guid> productIds);
 }

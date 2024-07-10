@@ -61,6 +61,10 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
             {
                 return attendance.HourOverTime <= 5;
             }).WithMessage("HourOverTime must be less than or equal to 5!")
+            .Must((request, attendance) =>
+             {
+                 return attendance.HourOverTime <= 3 && (request.SlotId == 1 || request.SlotId == 2);
+             }).WithMessage("HourOverTime must be less than or equal to 3 for slot is morning and after!")
             .Must(attendance =>
             {
                 return attendance.HourOverTime % 0.5 == 0;

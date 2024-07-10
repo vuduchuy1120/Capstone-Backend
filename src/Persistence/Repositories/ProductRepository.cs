@@ -55,6 +55,13 @@ internal sealed class ProductRepository : IProductRepository
         return existingProductCount == productIds.Count;
     }
 
+    public async Task<bool> IsAllProductInProgress(List<Guid> productIds)
+    {
+        var existingProductCount = await _context.Products
+           .CountAsync(p => productIds.Contains(p.Id) && p.IsInProcessing == true);
+        return existingProductCount == productIds.Count;
+    }
+
     public async Task<bool> IsAllSubProductIdsExist(List<Guid> SubProductIds)
     {
         var existingSubProductCount = await _context.Products

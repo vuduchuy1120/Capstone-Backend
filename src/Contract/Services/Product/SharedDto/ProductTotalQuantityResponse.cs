@@ -4,5 +4,6 @@ public record ProductTotalQuantityResponse
 (
     Guid PhaseId,
     string PhaseName,
+    string PhaseDescription,
     int Quantity
     );

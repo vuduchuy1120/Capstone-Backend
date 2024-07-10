@@ -28,6 +28,7 @@ internal sealed class GetProductQueryHandler(IProductRepository _productReposito
             p.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
                 salary.PhaseId,
                 salary.Phase.Name,
+                salary.Phase.Description,
                 salary.SalaryPerProduct
             )).ToList(),
             p.ProductPhases
@@ -36,6 +37,7 @@ internal sealed class GetProductQueryHandler(IProductRepository _productReposito
             .Select(g => new ProductTotalQuantityResponse(
                 g.Key.PhaseId,
                 g.First().Phase.Name,
+                g.First().Phase.Description,
                 g.Sum(phase => phase.Quantity)
             )).ToList(),
             p.Size,
