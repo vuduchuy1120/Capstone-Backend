@@ -26,8 +26,7 @@ internal sealed class ProductRepository : IProductRepository
             .AsNoTracking()
             .AsSplitQuery()
             .Include(p => p.Images)
-            .Include(p => p.ProductPhaseSalaries)
-            .ThenInclude(p => p.Phase)
+            .Include(p => p.ProductPhaseSalaries).ThenInclude(p => p.Phase)
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
@@ -35,6 +34,17 @@ internal sealed class ProductRepository : IProductRepository
     {
         return await _context.Products
             .AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task<Product?> GetProductByIdWithProductPhase(Guid id)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries).ThenInclude(p => p.Phase)
+            .Include(p => p.ProductPhases).ThenInclude(p => p.Phase)
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
@@ -83,8 +93,6 @@ internal sealed class ProductRepository : IProductRepository
             .Skip((getProductsQuery.PageIndex - 1) * getProductsQuery.PageSize)
             .Take(getProductsQuery.PageSize)
             .Include(p => p.Images)
-            .Include(p => p.ProductPhaseSalaries)
-            .ThenInclude(p => p.Phase)
             .AsNoTracking()
             .AsSingleQuery()
             .ToListAsync();
@@ -101,8 +109,6 @@ internal sealed class ProductRepository : IProductRepository
 
         return await _context.Products
             .Include(p => p.Images)
-            .Include(p => p.ProductPhaseSalaries)
-            .ThenInclude(p => p.Phase)
             .AsNoTracking()
             .AsSingleQuery()
             .Where(p => p.Name.ToLower().Contains(search.ToLower())

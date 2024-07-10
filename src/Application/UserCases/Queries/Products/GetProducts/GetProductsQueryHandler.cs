@@ -5,16 +5,15 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.Product.GetProducts;
 using Contract.Services.Product.SharedDto;
-using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProducts;
 
 internal sealed class GetProductsQueryHandler(IProductRepository _productRepository, IMapper _mapper)
-    : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductWithSalaryResponse>>>
+    : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponse>>>
 {
-    public async Task<Result.Success<SearchResponse<List<ProductWithSalaryResponse>>>> Handle(
-        GetProductsQuery request, 
+    public async Task<Result.Success<SearchResponse<List<ProductResponse>>>> Handle(
+        GetProductsQuery request,
         CancellationToken cancellationToken)
     {
         var result = await _productRepository.SearchProductAsync(request);
@@ -27,16 +26,11 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             throw new ProductNotFoundException();
         }
 
-        var data = products.ConvertAll(p => new ProductWithSalaryResponse(
+        var data = products.ConvertAll(p => new ProductResponse(
             p.Id,
             p.Name,
             p.Code,
             p.Price,
-            p.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
-                salary.PhaseId,
-                salary.Phase.Name,
-                salary.SalaryPerProduct
-            )).ToList(),
             p.Size,
             p.Description,
             p.IsInProcessing,
@@ -48,8 +42,8 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             )).ToList()
         ));
 
-        var searchResponse = new SearchResponse<List<ProductWithSalaryResponse>>(request.PageIndex, totalPage, data);
+        var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
 
-        return Result.Success<SearchResponse<List<ProductWithSalaryResponse>>>.Get(searchResponse);
+        return Result.Success<SearchResponse<List<ProductResponse>>>.Get(searchResponse);
     }
 }

@@ -32,8 +32,8 @@ public class GetSetQueryHandlerTest
 
         _setRepositoryMock.Setup(repo => repo.GetByIdAsync(setId))
             .ReturnsAsync(set);
-        _mapperMock.Setup(mapper => mapper.Map<SetsWithProductSalaryResponse>(set))
-            .Returns(It.IsAny<SetsWithProductSalaryResponse>());
+        _mapperMock.Setup(mapper => mapper.Map<SetResponse>(set))
+            .Returns(It.IsAny<SetResponse>());
 
         // Act
         var result = await _getSetQueryHandler.Handle(query, CancellationToken.None);
@@ -43,7 +43,7 @@ public class GetSetQueryHandlerTest
         Assert.True(result.isSuccess);
 
         _setRepositoryMock.Verify(repo => repo.GetByIdAsync(setId), Times.Once);
-        _mapperMock.Verify(mapper => mapper.Map<SetsWithProductSalaryResponse>(set), Times.Once);
+        _mapperMock.Verify(mapper => mapper.Map<SetResponse>(set), Times.Once);
     }
 
     [Fact]

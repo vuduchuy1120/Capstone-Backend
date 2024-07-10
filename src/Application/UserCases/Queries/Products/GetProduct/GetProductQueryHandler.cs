@@ -4,22 +4,23 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Product.GetProduct;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProduct;
 
 internal sealed class GetProductQueryHandler(IProductRepository _productRepository, IMapper _mapper)
-    : IQueryHandler<GetProductQuery, ProductWithSalaryResponse>
+    : IQueryHandler<GetProductQuery, ProductWithTotalQuantityResponse>
 {
-    public async Task<Result.Success<ProductWithSalaryResponse>> Handle(
-        GetProductQuery request, 
+    public async Task<Result.Success<ProductWithTotalQuantityResponse>> Handle(
+        GetProductQuery request,
         CancellationToken cancellationToken)
     {
-        var p = await _productRepository.GetProductById(request.productId)
+        var p = await _productRepository.GetProductByIdWithProductPhase(request.productId)
             ?? throw new ProductNotFoundException();
 
-        var productResponse = new ProductWithSalaryResponse(
+        var productResponse = new ProductWithTotalQuantityResponse(
             p.Id,
             p.Name,
             p.Code,
@@ -28,6 +29,14 @@ internal sealed class GetProductQueryHandler(IProductRepository _productReposito
                 salary.PhaseId,
                 salary.Phase.Name,
                 salary.SalaryPerProduct
+            )).ToList(),
+            p.ProductPhases
+            .GroupBy(phase => new { phase.PhaseId, phase.ProductId, phase.Phase.Name })
+            .OrderByDescending(g => g.Key.Name)
+            .Select(g => new ProductTotalQuantityResponse(
+                g.Key.PhaseId,
+                g.First().Phase.Name,
+                g.Sum(phase => phase.Quantity)
             )).ToList(),
             p.Size,
             p.Description,
@@ -40,6 +49,6 @@ internal sealed class GetProductQueryHandler(IProductRepository _productReposito
             )).ToList()
         );
 
-        return Result.Success<ProductWithSalaryResponse>.Get(productResponse);
+        return Result.Success<ProductWithTotalQuantityResponse>.Get(productResponse);
     }
 }

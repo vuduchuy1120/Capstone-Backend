@@ -29,8 +29,6 @@ internal class SetRepository : ISetRepository
             .Include(s => s.SetProducts)
                 .ThenInclude(sp => sp.Product)
                 .ThenInclude(p => p.Images)
-                .Include(s => s.SetProducts)
-            .ThenInclude(sp => sp.Product).ThenInclude(x => x.ProductPhaseSalaries).ThenInclude(x => x.Phase).ThenInclude(x => x.ProductPhases)
             .SingleOrDefaultAsync(s => s.Id == id);
     }
 
@@ -101,8 +99,6 @@ internal class SetRepository : ISetRepository
             .Include(s => s.SetProducts)
                 .ThenInclude(sp => sp.Product)
                 .ThenInclude(p => p.Images)
-             .Include(s => s.SetProducts)
-                .ThenInclude(sp => sp.Product).ThenInclude(x => x.ProductPhaseSalaries).ThenInclude(x => x.Phase).ThenInclude(x => x.ProductPhases)
             .Where(s => s.Name.Contains(searchTerm) || s.Code.Contains(searchTerm))
             .ToListAsync();
     }

@@ -1,4 +1,5 @@
-﻿using Contract.Services.ProductPhaseSalary.ShareDtos;
+﻿using Contract.Services.ProductPhase.ShareDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 
 namespace Contract.Services.Product.SharedDto;
 
@@ -16,6 +17,7 @@ public record ProductWithOneImageWithSalary(Guid Id,
     string Code,
     decimal PriceFinished,
     List<ProductPhaseSalaryResponse> ProductPhaseSalaryResponses,
+    List<ProductPhaseWithCompanyResponse> ProductPhaseWithCompanyResponses,
     string Size,
     string Description,
     bool IsInProcessing,

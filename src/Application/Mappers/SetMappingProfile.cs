@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Contract.Services.Set.GetSet;
 using Contract.Services.Set.GetSets;
@@ -29,7 +30,7 @@ namespace Application.Mappers
                         sp.Product.Id,
                         sp.Product.Name,
                         sp.Product.Code,
-                        sp.Product.Price,                      
+                        sp.Product.Price,
                         sp.Product.Size,
                         sp.Product.Description,
                         sp.Product.IsInProcessing,
@@ -55,7 +56,7 @@ namespace Application.Mappers
                     sp.SetId,
                     sp.ProductId,
                     sp.Quantity,
-                    sp.Product != null ? new ProductWithSalaryResponse(
+                    sp.Product != null ? new ProductWithQuantityResponse(
                         sp.Product.Id,
                         sp.Product.Name,
                         sp.Product.Code,
@@ -65,6 +66,17 @@ namespace Application.Mappers
                             salary.Phase.Name,
                             salary.SalaryPerProduct
                         )).ToList() : new List<ProductPhaseSalaryResponse>(),
+                        sp.Product.ProductPhases
+                        .GroupBy(phase => new { phase.CompanyId, CompanyName = phase.Company.Name, phase.ProductId, ProductName = phase.Product.Name })
+                         .Select(group => new ProductPhaseWithCompanyResponse(
+                                group.Key.CompanyId,
+                                group.Key.CompanyName,
+                                group.Select(phase => new QuantityProductPhaseResponse(
+                                phase.PhaseId,
+                                phase.Phase.Name,
+                                phase.Quantity
+                            )).ToList()
+                        )).ToList(),
                         sp.Product.Size,
                         sp.Product.Description,
                         sp.Product.IsInProcessing,

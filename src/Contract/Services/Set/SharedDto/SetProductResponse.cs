@@ -13,4 +13,4 @@ public record SetProductWithProductSalaryResponse(
     Guid SetId,
     Guid ProductId,
     int Quantity,
-    ProductWithSalaryResponse Product);
+    ProductWithQuantityResponse Product);

@@ -4,23 +4,25 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Product.Search;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.ProductPhaseSalary.ShareDtos;
+using System.Linq;
 
 namespace Application.UserCases.Queries.Products.Search;
 
 internal sealed class SearchProductQueryHandler(
     IProductRepository _productRepository,
     ICloudStorage _cloudStorage)
-    : IQueryHandler<SearchProductQuery, List<ProductWithOneImageWithSalary>>
+    : IQueryHandler<SearchProductQuery, List<ProductWithOneImage>>
 {
-    public async Task<Result.Success<List<ProductWithOneImageWithSalary>>> Handle(
+    public async Task<Result.Success<List<ProductWithOneImage>>> Handle(
         SearchProductQuery request,
         CancellationToken cancellationToken)
     {
         var products = await _productRepository.SearchProductAsync(request.Search);
         if (products == null || !products.Any())
         {
-            return Result.Success<List<ProductWithOneImageWithSalary>>.Get(new List<ProductWithOneImageWithSalary>());
+            return Result.Success<List<ProductWithOneImage>>.Get(new List<ProductWithOneImage>());
         }
 
         var data = await Task.WhenAll(products.Select(async p =>
@@ -36,16 +38,11 @@ internal sealed class SearchProductQueryHandler(
                 }
             }
 
-            return new ProductWithOneImageWithSalary(
+            return new ProductWithOneImage(
                 p.Id,
                 p.Name,
                 p.Code,
-                p.Price,
-                p.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
-                    salary.PhaseId,
-                    salary.Phase.Name,
-                    salary.SalaryPerProduct
-                )).ToList(),
+                p.Price,               
                 p.Size,
                 p.Description,
                 p.IsInProcessing,
@@ -53,7 +50,7 @@ internal sealed class SearchProductQueryHandler(
             );
         }));
 
-        return Result.Success<List<ProductWithOneImageWithSalary>>.Get(data.ToList());
+        return Result.Success<List<ProductWithOneImage>>.Get(data.ToList());
     }
 
 }
