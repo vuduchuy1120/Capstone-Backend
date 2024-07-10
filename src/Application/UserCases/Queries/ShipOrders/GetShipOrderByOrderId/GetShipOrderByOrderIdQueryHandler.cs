@@ -39,6 +39,7 @@ internal sealed class GetShipOrderByOrderIdQueryHandler(IShipOrderRepository _sh
             }).ToList();
 
             return new ShipOrderResponse(
+                shipOrder.Id,
                 shipOrder.ShipperId,
                 shipOrder.Shipper.FirstName + " " + shipOrder.Shipper.LastName,
                 shipOrder.ShipDate,
