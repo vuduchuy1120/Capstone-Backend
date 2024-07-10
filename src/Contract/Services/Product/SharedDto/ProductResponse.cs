@@ -12,7 +12,7 @@ public record ProductResponse(
     bool IsInProcessing,
     List<ImageResponse> ImageResponses);
 
-public record ProductResponseWithSalary(
+public record ProductWithSalaryResponse(
     Guid Id,
     string Name,
     string Code,
