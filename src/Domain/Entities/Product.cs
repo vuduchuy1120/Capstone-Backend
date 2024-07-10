@@ -29,7 +29,7 @@ public class Product : EntityAuditBase<Guid>
             Code = request.Code,
             Size = request.Size,
             Description = request.Description,
-            Price = request.Price,
+            Price = request.PriceFinished,
             IsInProcessing = true,
             CreatedBy = createdBy,
             CreatedDate = DateTime.UtcNow
@@ -40,7 +40,7 @@ public class Product : EntityAuditBase<Guid>
     {
         Code = request.Code;
         Name = request.Name;
-        Price = request.Price;
+        Price = request.PriceFinished;
         Size = request.Size;
         Description = request.Description;
         IsInProcessing = request.IsInProcessing;

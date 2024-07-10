@@ -1,4 +1,5 @@
 ﻿using Contract.Abstractions.Messages;
+using Contract.Services.Set.GetSets;
 
 namespace Contract.Services.Set.GetSet;
 

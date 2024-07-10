@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Entities;
 
 namespace Application.Mappers;
@@ -13,7 +14,7 @@ public class ProductMappingProfile : Profile
                 src.Id,
                 src.Name,
                 src.Code,
-                src.Price,
+                src.Price,                
                 src.Size,
                 src.Description,
                 src.IsInProcessing,

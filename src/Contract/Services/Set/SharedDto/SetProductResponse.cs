@@ -7,3 +7,10 @@ public record SetProductResponse(
     Guid ProductId,
     int Quantity,
     ProductResponse Product);
+
+
+public record SetProductWithProductSalaryResponse(
+    Guid SetId,
+    Guid ProductId,
+    int Quantity,
+    ProductWithQuantityResponse Product);
