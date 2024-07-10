@@ -5,7 +5,6 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.OrderDetail.Queries;
 using Contract.Services.OrderDetail.ShareDtos;
 using Contract.Services.Product.SharedDto;
-using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Exceptions.OrderDetails;
 
 namespace Application.UserCases.Queries.OrderDetails
@@ -70,21 +69,20 @@ namespace Application.UserCases.Queries.OrderDetails
                             return new ImageResponse(img.Id, signedUrl, img.IsBluePrint, img.IsMainImage);
                         }));
 
-                        return new ProductResponse(
+
+                        var productResponse = new ProductResponse(
                             sp.Product.Id,
                             sp.Product.Name,
                             sp.Product.Code,
                             sp.Product.Price,
-                            sp.Product.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
-                                salary.PhaseId,
-                                salary.Phase.Name,
-                                salary.SalaryPerProduct
-                            )).ToList(),
+                            null,
                             sp.Product.Size,
                             sp.Product.Description,
                             sp.Product.IsInProcessing,
                             productImageUrls.ToList()
                         );
+                        return productResponse;
+
                     }).ToList());
 
                     sets.Add(new SetOrderResponse(
