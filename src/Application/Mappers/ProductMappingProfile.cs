@@ -14,12 +14,7 @@ public class ProductMappingProfile : Profile
                 src.Id,
                 src.Name,
                 src.Code,
-                src.Price,
-                src.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
-                    salary.PhaseId,
-                    salary.Phase.Name,
-                    salary.SalaryPerProduct
-                    )).ToList(),
+                src.Price,                
                 src.Size,
                 src.Description,
                 src.IsInProcessing,

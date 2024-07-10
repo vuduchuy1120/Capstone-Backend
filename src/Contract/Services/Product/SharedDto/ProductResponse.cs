@@ -6,10 +6,19 @@ public record ProductResponse(
     Guid Id,
     string Name,
     string Code,
+    decimal Price,
+    string Size,
+    string Description,
+    bool IsInProcessing,
+    List<ImageResponse> ImageResponses);
+
+public record ProductResponseWithSalary(
+    Guid Id,
+    string Name,
+    string Code,
     decimal PriceFinished,
     List<ProductPhaseSalaryResponse> ProductPhaseSalaries,
     string Size,
     string Description,
     bool IsInProcessing,
     List<ImageResponse> ImageResponses);
-

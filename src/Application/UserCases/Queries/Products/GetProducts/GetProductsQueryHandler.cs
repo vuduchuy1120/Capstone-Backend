@@ -11,9 +11,9 @@ using Domain.Exceptions.Products;
 namespace Application.UserCases.Queries.Products.GetProducts;
 
 internal sealed class GetProductsQueryHandler(IProductRepository _productRepository, IMapper _mapper)
-    : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponse>>>
+    : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponseWithSalary>>>
 {
-    public async Task<Result.Success<SearchResponse<List<ProductResponse>>>> Handle(
+    public async Task<Result.Success<SearchResponse<List<ProductResponseWithSalary>>>> Handle(
         GetProductsQuery request, 
         CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             throw new ProductNotFoundException();
         }
 
-        var data = products.ConvertAll(p => new ProductResponse(
+        var data = products.ConvertAll(p => new ProductResponseWithSalary(
             p.Id,
             p.Name,
             p.Code,
@@ -48,8 +48,8 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             )).ToList()
         ));
 
-        var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
+        var searchResponse = new SearchResponse<List<ProductResponseWithSalary>>(request.PageIndex, totalPage, data);
 
-        return Result.Success<SearchResponse<List<ProductResponse>>>.Get(searchResponse);
+        return Result.Success<SearchResponse<List<ProductResponseWithSalary>>>.Get(searchResponse);
     }
 }

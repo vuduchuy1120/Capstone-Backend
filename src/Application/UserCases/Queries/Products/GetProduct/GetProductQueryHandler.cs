@@ -10,16 +10,16 @@ using Domain.Exceptions.Products;
 namespace Application.UserCases.Queries.Products.GetProduct;
 
 internal sealed class GetProductQueryHandler(IProductRepository _productRepository, IMapper _mapper)
-    : IQueryHandler<GetProductQuery, ProductResponse>
+    : IQueryHandler<GetProductQuery, ProductResponseWithSalary>
 {
-    public async Task<Result.Success<ProductResponse>> Handle(
+    public async Task<Result.Success<ProductResponseWithSalary>> Handle(
         GetProductQuery request, 
         CancellationToken cancellationToken)
     {
         var p = await _productRepository.GetProductById(request.productId)
             ?? throw new ProductNotFoundException();
 
-        var productResponse = new ProductResponse(
+        var productResponse = new ProductResponseWithSalary(
             p.Id,
             p.Name,
             p.Code,
@@ -40,6 +40,6 @@ internal sealed class GetProductQueryHandler(IProductRepository _productReposito
             )).ToList()
         );
 
-        return Result.Success<ProductResponse>.Get(productResponse);
+        return Result.Success<ProductResponseWithSalary>.Get(productResponse);
     }
 }

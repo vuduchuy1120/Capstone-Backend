@@ -29,12 +29,7 @@ namespace Application.Mappers
                         sp.Product.Id,
                         sp.Product.Name,
                         sp.Product.Code,
-                        sp.Product.Price,
-                        sp.Product.ProductPhaseSalaries != null ? sp.Product.ProductPhaseSalaries.Select(salary => new ProductPhaseSalaryResponse(
-                            salary.PhaseId,
-                            salary.Phase.Name,
-                            salary.SalaryPerProduct
-                        )).ToList() : new List<ProductPhaseSalaryResponse>(),
+                        sp.Product.Price,                        
                         sp.Product.Size,
                         sp.Product.Description,
                         sp.Product.IsInProcessing,

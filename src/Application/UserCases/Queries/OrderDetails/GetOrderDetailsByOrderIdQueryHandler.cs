@@ -75,7 +75,6 @@ namespace Application.UserCases.Queries.OrderDetails
                             sp.Product.Name,
                             sp.Product.Code,
                             sp.Product.Price,
-                            null,
                             sp.Product.Size,
                             sp.Product.Description,
                             sp.Product.IsInProcessing,

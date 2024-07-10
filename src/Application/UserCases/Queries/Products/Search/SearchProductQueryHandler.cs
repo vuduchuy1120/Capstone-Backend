@@ -11,16 +11,16 @@ namespace Application.UserCases.Queries.Products.Search;
 internal sealed class SearchProductQueryHandler(
     IProductRepository _productRepository,
     ICloudStorage _cloudStorage)
-    : IQueryHandler<SearchProductQuery, List<ProductWithOneImage>>
+    : IQueryHandler<SearchProductQuery, List<ProductWithOneImageWithSalary>>
 {
-    public async Task<Result.Success<List<ProductWithOneImage>>> Handle(
+    public async Task<Result.Success<List<ProductWithOneImageWithSalary>>> Handle(
         SearchProductQuery request,
         CancellationToken cancellationToken)
     {
         var products = await _productRepository.SearchProductAsync(request.Search);
         if (products == null || !products.Any())
         {
-            return Result.Success<List<ProductWithOneImage>>.Get(new List<ProductWithOneImage>());
+            return Result.Success<List<ProductWithOneImageWithSalary>>.Get(new List<ProductWithOneImageWithSalary>());
         }
 
         var data = await Task.WhenAll(products.Select(async p =>
@@ -36,7 +36,7 @@ internal sealed class SearchProductQueryHandler(
                 }
             }
 
-            return new ProductWithOneImage(
+            return new ProductWithOneImageWithSalary(
                 p.Id,
                 p.Name,
                 p.Code,
@@ -53,7 +53,7 @@ internal sealed class SearchProductQueryHandler(
             );
         }));
 
-        return Result.Success<List<ProductWithOneImage>>.Get(data.ToList());
+        return Result.Success<List<ProductWithOneImageWithSalary>>.Get(data.ToList());
     }
 
 }

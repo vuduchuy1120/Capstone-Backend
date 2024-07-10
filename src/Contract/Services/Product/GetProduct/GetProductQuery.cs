@@ -3,4 +3,4 @@ using Contract.Services.Product.SharedDto;
 
 namespace Contract.Services.Product.GetProduct;
 
-public record GetProductQuery(Guid productId) : IQuery<ProductResponse>;
+public record GetProductQuery(Guid productId) : IQuery<ProductResponseWithSalary>;

@@ -8,4 +8,4 @@ public record GetProductsQuery(
     string? SearchTerm,
     bool IsInProcessing = true,
     int PageIndex = 1,
-    int PageSize = 10) : IQuery<SearchResponse<List<ProductResponse>>>;
+    int PageSize = 10) : IQuery<SearchResponse<List<ProductResponseWithSalary>>>;
