@@ -7,17 +7,12 @@ using Contract.Services.Company.ShareDtos;
 using Contract.Services.MaterialHistory.ShareDto;
 using Contract.Services.Phase.ShareDto;
 using Contract.Services.Product.SharedDto;
-using Contract.Services.Set.GetSet;
 using Contract.Services.Shipment.GetShipmentDetail;
 using Contract.Services.Shipment.Share;
 using Contract.Services.ShipmentDetail.Share;
 using Contract.Services.User.SharedDto;
 using Domain.Entities;
 using Domain.Exceptions.Companies;
-using Domain.Exceptions.MaterialHistories;
-using Domain.Exceptions.Phases;
-using Domain.Exceptions.Products;
-using Domain.Exceptions.Sets;
 using Domain.Exceptions.Shipments;
 
 namespace Application.UserCases.Queries.Shipments.GetShipmentDetail;

@@ -157,4 +157,10 @@ public class ProductPhaseRepository : IProductPhaseRepository
                 && ph.PhaseId == phase.Id 
                 && ph.CompanyId == mainFactory.Id).ToListAsync();
     }
+
+    public async Task<ProductPhase> GetByProductIdPhaseIdAndCompanyIdAsync(Guid productId, Guid phaseId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .SingleOrDefaultAsync(ph => ph.ProductId == productId && ph.CompanyId == companyId && ph.PhaseId == phaseId);
+    }
 }
