@@ -19,6 +19,23 @@ internal class UserRepository : IUserRepository
         _context.Users.Add(user);
     }
 
+    public Task<List<User>> GetAttendanceAndEmployeeProductAllUser()
+    {
+        var users = _context.Users
+            .Include(u=>u.Attendances)
+            .Include(u=>u.EmployeeProducts)
+            .ThenInclude(e=>e.Product)
+            .ThenInclude(p=>p.ProductPhaseSalaries)
+            .AsNoTracking()
+            .ToListAsync();
+        return users;
+    }
+
+    public Task<List<User>> GetAttendanceAndEmployeeProductByUserId()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<User?> GetUserActiveByIdAsync(string id)
     {
         return await _context.Users

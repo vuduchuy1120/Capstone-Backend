@@ -20,4 +20,6 @@ public interface IMaterialRepository
     Task<List<Material>> GetMaterialsByIdsAsync(List<Guid> ids);
     void UpdateRange(List<Material> materials);
     Task<bool> IsMaterialNameExistedAsync(string name);
+    Task<bool> IsUpdateMaterialNameExistedAsync(string name, Guid id);
+
 }

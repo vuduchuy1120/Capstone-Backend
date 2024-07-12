@@ -19,4 +19,7 @@ public interface IUserRepository
     Task<bool> IsUpdatePhoneNumberExistAsync(string phone, string userId);
     Task<User> GetUserByPhoneNumberOrIdAsync(string search);
     Task<bool> IsShipperExistAsync(string id);
+
+    Task<List<User>> GetAttendanceAndEmployeeProductAllUser();
+    Task<List<User>> GetAttendanceAndEmployeeProductByUserId();
 }
