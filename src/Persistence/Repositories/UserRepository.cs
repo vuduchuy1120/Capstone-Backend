@@ -19,21 +19,19 @@ internal class UserRepository : IUserRepository
         _context.Users.Add(user);
     }
 
-    public Task<List<User>> GetAttendanceAndEmployeeProductAllUser()
+    public Task<List<User>> GetAttendanceAndEmployeeProductAllUser(int month, int year)
     {
         var users = _context.Users
-            .Include(u=>u.Attendances)
-            .Include(u=>u.EmployeeProducts)
-            .ThenInclude(e=>e.Product)
-            .ThenInclude(p=>p.ProductPhaseSalaries)
             .AsNoTracking()
+            .Include(u => u.Attendances)
+            .Include(u => u.SalaryHistories)
+            .Include(u => u.EmployeeProducts)
+                .ThenInclude(e => e.Product)
+                .ThenInclude(p => p.ProductPhaseSalaries)
+            .Where(user => user.Attendances.Any(attendance => attendance.Date.Month == month && attendance.Date.Year == year) ||
+                           user.EmployeeProducts.Any(emp => emp.Date.Month == month && emp.Date.Year == year))
             .ToListAsync();
         return users;
-    }
-
-    public Task<List<User>> GetAttendanceAndEmployeeProductByUserId()
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<User?> GetUserActiveByIdAsync(string id)
@@ -147,5 +145,10 @@ internal class UserRepository : IUserRepository
     public void Update(User user)
     {
         _context.Users.Update(user);
+    }
+
+    public void UpdateRange(List<User> users)
+    {
+        _context.Users.UpdateRange(users);
     }
 }

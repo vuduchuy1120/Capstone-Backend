@@ -1,4 +1,7 @@
 ﻿using Application.Abstractions.Services;
+using Application.UserCases.Commands.MonthlyEmployeeSalaries;
+using Contract.Abstractions.Messages;
+using Contract.Services.MonthEmployeeSalary;
 using Infrastructure.AuthOptions;
 using Infrastructure.Options;
 using Infrastructure.Services;
@@ -6,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 using System.Text;
 using System.Text.Json;
 
@@ -91,6 +95,8 @@ public static class DependencyInjection
         services.AddScoped<IRedisService, RedisService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ICloudStorage, GoogleCloudStorage>();
+        services.AddScoped<ICommandHandler<CreateMonthEmployeeSalaryCommand>, CreateMonthEmployeeSalaryCommandHandler>();
+
 
         var apiKeySid = "SK.0.DjKijVdL1BKmr4ktbhuk84ugDaBWb498";
         var apiKeySecret = "MVZtVzh1TWhpZTZuY2cwV3g2WmZyZjZxbnFFTnJCcFE=";
@@ -98,6 +104,18 @@ public static class DependencyInjection
         services.AddSingleton<ISmsService>(new SmsService(apiKeySid, apiKeySecret));
 
         services.ConfigureOptions<JwtOptionsSetup>();
+
+        services.AddQuartz(options =>
+        {
+            options.UseMicrosoftDependencyInjectionJobFactory();
+            
+        });
+        services.AddQuartzHostedService(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
+
+        services.ConfigureOptions<LoggingBackgroundJobSetup>();
 
         return services;
     }
