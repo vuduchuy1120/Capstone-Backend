@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Services;
 using Application.UserCases.Commands.MonthlyEmployeeSalaries;
 using Contract.Abstractions.Messages;
-using Contract.Services.MonthEmployeeSalary;
+using Contract.Services.MonthEmployeeSalary.Creates;
 using Infrastructure.AuthOptions;
 using Infrastructure.Options;
 using Infrastructure.Services;

@@ -2,6 +2,7 @@
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.MonthEmployeeSalary;
+using Contract.Services.MonthEmployeeSalary.Creates;
 using Contract.Services.SalaryHistory.ShareDtos;
 using Domain.Entities;
 

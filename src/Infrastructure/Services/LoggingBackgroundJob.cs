@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Abstractions.Messages;
-using Contract.Services.MonthEmployeeSalary;
+using Contract.Services.MonthEmployeeSalary.Creates;
 using Contract.Services.Slot.Create;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
