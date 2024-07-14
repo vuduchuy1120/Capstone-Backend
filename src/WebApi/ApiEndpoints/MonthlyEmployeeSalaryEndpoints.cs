@@ -43,11 +43,24 @@ public class MonthlyEmployeeSalaryEndpoints : CarterModule
                 return Results.Ok(result);
             })
             .RequireAuthorization("RequireAnyRole")
-            .WithOpenApi(x=> new OpenApiOperation(x)
+            .WithOpenApi(x => new OpenApiOperation(x)
             {
                 Tags = new List<OpenApiTag> { new() { Name = "Monthly employee product api" } }
             })
             ;
+        app.MapGet(string.Empty, async (
+            ISender _sender,
+            [AsParameters] GetMonthlySalaryQuery request) =>
+            {
+
+                var result = await _sender.Send(request);
+                return Results.Ok(result);
+            })
+            .RequireAuthorization("RequireAnyRole")
+            .WithOpenApi(x => new OpenApiOperation(x)
+            {
+                Tags = new List<OpenApiTag> { new() { Name = "Monthly employee product api" } }
+            });
     }
 }
 
