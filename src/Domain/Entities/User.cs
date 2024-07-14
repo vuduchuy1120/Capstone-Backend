@@ -18,6 +18,7 @@ public class User : EntityAuditBase<string>
     public DateOnly DOB { get; set; }
     public bool IsActive { get; private set; }
     public int RoleId { get; private set; }
+    public decimal? AccountBalance { get; private set; } = 0;
     public Role Role { get; private set; }
     public Guid CompanyId { get; private set; }
     public Company Company { get; private set; }
@@ -28,7 +29,7 @@ public class User : EntityAuditBase<string>
     public List<ShipOrder>? ShipOrders { get; private set; }
     public List<SalaryHistory>? SalaryHistories { get; private set; }
     public List<SalaryPay>? SalaryPays { get; private set; }
-
+    public List<MonthlyEmployeeSalary>? MonthlyEmployeeSalaries { get; private set; }
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {
         return new()
@@ -77,6 +78,10 @@ public class User : EntityAuditBase<string>
     public void UpdatePassword(string password)
     {
         Password = password;
+    }
+    public void UpdateAccountBalance(decimal balance)
+    {
+        AccountBalance = balance;
     }
 
     private static DateOnly CovertStringToDateTimeOnly(string dateString)

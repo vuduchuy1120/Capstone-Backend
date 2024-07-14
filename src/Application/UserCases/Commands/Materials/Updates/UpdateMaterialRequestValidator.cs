@@ -18,9 +18,9 @@ public sealed class UpdateMaterialRequestValidator : AbstractValidator<UpdateMat
             .NotEmpty().WithMessage("Tên không được để trống!")
             .MaximumLength(200).WithMessage("Tên không được dài quá 200 ký tự!")
             .NotNull().WithMessage("Tên không được là null!")
-            .MustAsync(async (Name, _) =>
+            .MustAsync(async (req, Name, _) =>
             {
-                return !await _materialRepository.IsMaterialNameExistedAsync(Name);
+                return !await _materialRepository.IsUpdateMaterialNameExistedAsync(Name, req.Id);
             }).WithMessage("Tên đã tồn tại!");
 
         RuleFor(m => m.Description)

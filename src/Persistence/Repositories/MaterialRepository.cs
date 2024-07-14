@@ -80,6 +80,12 @@ public class MaterialRepository : IMaterialRepository
         return await _context.Materials.AnyAsync(m => m.NameUnaccent.ToLower().Trim() == nameUnaccent.Trim());
     }
 
+    public async Task<bool> IsUpdateMaterialNameExistedAsync(string name, Guid id)
+    {
+        var nameUnaccent = StringUtils.RemoveDiacritics(name).ToLower();
+        return await _context.Materials.AnyAsync(m => m.NameUnaccent.ToLower().Trim() == nameUnaccent.Trim() && m.Id != id);
+    }
+
     public async Task<(List<Material>?, int)> SearchMaterialsAsync(GetMaterialsQuery request)
     {
         var query = _context.Materials.AsNoTracking().AsQueryable();
