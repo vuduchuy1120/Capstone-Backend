@@ -71,4 +71,11 @@ internal class ShipmentRepository : IShipmentRepository
     {
         _context.Shipments.Update(shipment);
     }
+
+    public async Task<Shipment> GetByIdAndShipmentDetailAsync(Guid shipmentId)
+    {
+        return await _context.Shipments
+            .Include(s => s.ShipmentDetails)
+            .SingleOrDefaultAsync(s => s.Id == shipmentId);
+    }
 }

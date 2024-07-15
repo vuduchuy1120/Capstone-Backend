@@ -9,5 +9,4 @@ public record UpdateShipmentRequest(
     Guid ToId,
     string ShipperId,
     DateTime ShipDate,
-    Status Status,
     List<ShipmentDetailRequest> ShipmentDetailRequests);

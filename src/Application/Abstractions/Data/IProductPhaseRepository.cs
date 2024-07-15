@@ -22,4 +22,6 @@ public interface IProductPhaseRepository
     Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId);
     Task<List<ProductPhase>> GetProductPhaseOfMainFactoryDoneByProductIdsAsync(List<Guid> productIds);
     Task<ProductPhase> GetByProductIdPhaseIdAndCompanyIdAsync(Guid productId, Guid phaseId, Guid companyId);
+    Task<List<ProductPhase>> GetByProductIdAndCompanyIdAsync(Guid productId, Guid companyId);
+    Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId);
 }

@@ -163,4 +163,19 @@ public class ProductPhaseRepository : IProductPhaseRepository
         return await _context.ProductPhases
             .SingleOrDefaultAsync(ph => ph.ProductId == productId && ph.CompanyId == companyId && ph.PhaseId == phaseId);
     }
+
+    public async Task<List<ProductPhase>> GetByProductIdAndCompanyIdAsync(Guid productId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .Where(ph => ph.ProductId == productId && ph.CompanyId == companyId)
+            .ToListAsync();
+    }
+
+    public async Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .Where(ph => ph.CompanyId == companyId && productIds.Contains(ph.ProductId))
+            .ToListAsync();
+    }
+
 }

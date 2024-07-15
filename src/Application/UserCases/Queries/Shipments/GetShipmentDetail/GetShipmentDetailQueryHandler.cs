@@ -20,10 +20,6 @@ namespace Application.UserCases.Queries.Shipments.GetShipmentDetail;
 internal sealed class GetShipmentDetailQueryHandler(
     IShipmentRepository _shipmentRepository,
     ICompanyRepository _companyRepository,
-    IProductRepository _productRepository,
-    IPhaseRepository _phaseRepository,
-    ISetRepository _setRepository,
-    IMaterialHistoryRepository _materialHistoryRepository,
     IMapper _mapper) : IQueryHandler<GetShipmentDetailQuery, ShipmentDetailResponse>
 {
     public async Task<Result.Success<ShipmentDetailResponse>> Handle(

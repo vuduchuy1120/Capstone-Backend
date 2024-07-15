@@ -10,8 +10,6 @@ using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
 using FluentValidation;
-using MediatR;
-
 namespace Application.UserCases.Commands.Shipments.Create;
 
 internal sealed class CreateShipmentCommandHandler(
@@ -60,82 +58,106 @@ internal sealed class CreateShipmentCommandHandler(
         Guid shipmentId,
         Guid fromCompany)
     {
-        var shipmentDetailTasks = shipmentDetailRequests
-            .Select(detailRequest => CreateShipmentDetail(detailRequest, shipmentId, fromCompany));
-        var shipmentDetails = await Task.WhenAll(shipmentDetailTasks);
-
-        return shipmentDetails.ToList();
-    }
-
-    private async Task<ShipmentDetail> CreateShipmentDetail(ShipmentDetailRequest request, Guid shipmentId, Guid fromCompany)
-    {
         var isFromCompanyIsThirdPartyCompany = await _companyRepository.IsThirdPartyCompanyAsync(fromCompany);
 
         if (isFromCompanyIsThirdPartyCompany)
         {
-            return await CreateShipmentDetailFromThirdPartyCompany(request, shipmentId, fromCompany);   
+            var uniqueItemIds = shipmentDetailRequests
+                .Select(s => s.ItemId)
+                .Distinct()
+                .ToList();
+
+            var productPhasesTasks = uniqueItemIds
+            .Select(uniqueItem => _productPhaseRepository.GetByProductIdAndCompanyIdAsync(uniqueItem, fromCompany))
+            .ToList();
+
+            var productPhasesResults = await Task.WhenAll(productPhasesTasks);
+
+            var productDictionary = uniqueItemIds
+                .Zip(productPhasesResults, (itemId, productPhases) =>
+                {
+                    if (productPhases is null || productPhases.Count == 0)
+                    {
+                        throw new ProductPhaseNotFoundException();
+                    }
+                    return new { itemId, productPhases };
+                })
+                .ToDictionary(x => x.itemId, x => x.productPhases);
+
+            var shipmentDetails = shipmentDetailRequests.Select(detailRequest =>
+            {
+                var productPhases = productDictionary.GetValueOrDefault(detailRequest.ItemId) ?? throw new ProductPhaseNotFoundException();
+                return CreateShipmentDetailFromThirdPartyCompany(detailRequest, shipmentId, productPhases);
+            });
+
+            return shipmentDetails.ToList();
         }
         else
         {
-            return await CreateShipmentDetailFromFactory(request, shipmentId, fromCompany);
+            var shipmentDetailTasks = shipmentDetailRequests
+            .Select(detailRequest => CreateShipmentDetailFromFactory(detailRequest, shipmentId, fromCompany));
+            var shipmentDetails = await Task.WhenAll(shipmentDetailTasks);
+
+            return shipmentDetails.ToList();
         }
     }
 
-    private async Task<ShipmentDetail> CreateShipmentDetailFromThirdPartyCompany(ShipmentDetailRequest request, Guid shipmentId, Guid fromCompany)
+    private ShipmentDetail CreateShipmentDetailFromThirdPartyCompany(ShipmentDetailRequest request, Guid shipmentId, List<ProductPhase> productPhases)
     {
-        switch(request.KindOfShip)
+        if (request.KindOfShip != KindOfShip.SHIP_FACTORY_PRODUCT)
         {
-            case KindOfShip.SHIP_FACTORY_PRODUCT:
-                var phaseId = request.PhaseId ?? throw new ProductPhaseNotFoundException();
-                var productPhase = await _productPhaseRepository
-                .GetByProductIdPhaseIdAndCompanyIdAsync(request.ItemId, phaseId, fromCompany)
-                    ?? throw new ProductPhaseNotFoundException();
-
-                if(request.ProductPhaseType == ProductPhaseType.NO_PROBLEM)
-                {
-                    if (productPhase.AvailableQuantity < request.Quantity)
-                    {
-                        throw new ItemAvailableNotEnoughException();
-                    }
-
-                    productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity - (int)request.Quantity);
-                }
-                else if(request.ProductPhaseType == ProductPhaseType.FACTORY_ERROR)
-                {
-                    if (productPhase.FailureAvailabeQuantity < request.Quantity)
-                    {
-                        throw new ItemAvailableNotEnoughException();
-                    }
-
-                    productPhase.UpdateFailureAvailableQuantity(productPhase.FailureAvailabeQuantity - (int)request.Quantity);
-                }
-                else if (request.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR)
-                {
-                    if (productPhase.BrokenAvailableQuantity < request.Quantity)
-                    {
-                        throw new ItemAvailableNotEnoughException();
-                    }
-
-                    productPhase.UpdateBrokenAvailableQuantity(productPhase.BrokenAvailableQuantity - (int)request.Quantity);
-                }
-                else
-                {
-                    throw new ShipmentBadRequestException
-                        ("Khi tạo đơn hàng gửi cho bên cơ sở thì chỉ tạo từ sản phẩm bình thường " +
-                        "hoặc sản phẩm hỏng do bên cơ sở hoặc sản phẩm hỏng hẳn");
-                }
-
-                _productPhaseRepository.UpdateProductPhase(productPhase);
-
-                return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
-
-            case KindOfShip.SHIP_FACTORY_MATERIAL:
+            if (request.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
+            {
                 throw new ShipmentBadRequestException("Công ty hợp tác bên thứ 3 không gửi được nguyên liệu");
-
-            default:
+            }
+            else
+            {
                 throw new KindOfShipNotFoundException();
             }
-        } 
+        }
+
+        var totalQuantity = productPhases.Sum(ph => ph.AvailableQuantity + ph.ErrorAvailableQuantity);
+
+        if (request.Quantity > totalQuantity)
+        {
+            throw new ItemAvailableNotEnoughException();
+        }
+
+        int remainingQuantity = (int)request.Quantity;
+
+        foreach (var ph in productPhases)
+        {
+            remainingQuantity = UpdateQuantity(ph, remainingQuantity);
+            if (remainingQuantity == 0)
+            {
+                break;
+            }
+        }
+
+        _productPhaseRepository.UpdateProductPhaseRange(productPhases);
+
+        return ShipmentDetail.CreateShipmentProductDetail(shipmentId, request);
+    }
+
+    private int UpdateQuantity(ProductPhase ph, int remainingQuantity)
+    {
+        if (ph.AvailableQuantity > 0)
+        {
+            int quantityToDeduct = Math.Min(remainingQuantity, ph.AvailableQuantity);
+            ph.UpdateAvailableQuantity(ph.AvailableQuantity - quantityToDeduct);
+            remainingQuantity -= quantityToDeduct;
+        }
+
+        if (remainingQuantity > 0 && ph.ErrorAvailableQuantity > 0)
+        {
+            int quantityToDeduct = Math.Min(remainingQuantity, ph.ErrorAvailableQuantity);
+            ph.UpdateErrorAvailableQuantity(ph.ErrorAvailableQuantity - quantityToDeduct);
+            remainingQuantity -= quantityToDeduct;
+        }
+
+        return remainingQuantity;
+    }
+
 
     private async Task<ShipmentDetail> CreateShipmentDetailFromFactory(ShipmentDetailRequest request, Guid shipmentId, Guid fromCompany)
     {
