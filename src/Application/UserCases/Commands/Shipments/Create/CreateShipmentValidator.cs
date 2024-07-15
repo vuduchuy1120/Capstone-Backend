@@ -97,7 +97,7 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
                 }
 
                 return await productPhaseRepository.IsAllShipDetailProductValid(shipProduct);
-            }).WithMessage("Có một vài mã sản phẩm không hợp lệ");
+            }).WithMessage("Có một vài mã sản phẩm không hợp lệ hoặc không đủ số lượng trong kho");
 
         RuleFor(req => req.ShipmentDetailRequests)
             .MustAsync(async (requests, _) =>

@@ -29,19 +29,13 @@ internal sealed class GetShipmentDetailQueryHandler(
         var shipment = await _shipmentRepository.GetByIdAsync(request.ShipmentId)
             ?? throw new ShipmentNotFoundException();
 
-        var from = await _companyRepository.GetByIdAsync(shipment.FromId)
-            ?? throw new CompanyNotFoundException();
-
-        var to = await _companyRepository.GetByIdAsync(shipment.ToId)
-            ?? throw new CompanyNotFoundException();
-
-        var fromResponse = _mapper.Map<CompanyResponse>(from);
-        var toResponse = _mapper.Map<CompanyResponse>(to);
+        var fromResponse = _mapper.Map<CompanyResponse>(shipment?.FromCompany);
+        var toResponse = _mapper.Map<CompanyResponse>(shipment?.ToCompany);
 
         var detailsTasks = shipment?.ShipmentDetails?.Select(sd => MapShipmentDetailToResponse(sd)).ToList();
         var details = await Task.WhenAll(detailsTasks);
 
-        var shipper = _mapper.Map<UserResponse>(shipment?.Shipper);
+        var shipper = _mapper.Map<UserResponseWithoutSalary>(shipment?.Shipper);
 
         var shipmentDetailResponse = new ShipmentDetailResponse(
             fromResponse,

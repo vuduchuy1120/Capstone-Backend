@@ -24,6 +24,8 @@ internal class ShipmentRepository : IShipmentRepository
         return await _context.Shipments
         .AsSplitQuery()
         .AsNoTracking()
+        .Include(s => s.FromCompany)
+        .Include(s => s.ToCompany)
         .Include(s => s.Shipper)
             .ThenInclude(u => u.Company)
         .Include(s => s.Shipper)

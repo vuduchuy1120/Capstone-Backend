@@ -21,6 +21,8 @@ internal sealed class CreateShipmentCommandHandler(
     IUnitOfWork _unitOfWork,
     IValidator<CreateShipmentRequest> _validator) : ICommandHandler<CreateShipmentCommand>
 {
+    private List<ProductPhase> _products;
+
     public async Task<Result.Success> Handle(
         CreateShipmentCommand request,
         CancellationToken cancellationToken)
@@ -29,6 +31,8 @@ internal sealed class CreateShipmentCommandHandler(
         await ValidateRequest(createShipmentRequest);
 
         var shipment = Shipment.Create(createShipmentRequest, request.CreatedBy);
+
+        _products = new();
 
         var shipmentDetails = await CreateShipmentDetails(
             createShipmentRequest.ShipmentDetailRequests,
@@ -166,9 +170,18 @@ internal sealed class CreateShipmentCommandHandler(
             case KindOfShip.SHIP_FACTORY_PRODUCT:
                 // chi gui duoc hang NO_PROBLEM va hang THIRD_PARTY_ERROR
                 var phaseId = request.PhaseId ?? throw new ProductPhaseNotFoundException();
-                var productPhase = await _productPhaseRepository
-                .GetByProductIdPhaseIdAndCompanyIdAsync(request.ItemId, phaseId, fromCompany)
-                    ?? throw new ProductPhaseNotFoundException();
+
+                var productPhase = _products
+                    .Where(p => p.PhaseId == phaseId && p.CompanyId == fromCompany && p.ProductId == request.ItemId)
+                    .FirstOrDefault();
+
+                if (productPhase == null)
+                {
+                    productPhase = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(request.ItemId, phaseId, fromCompany)
+                        ?? throw new ProductPhaseNotFoundException();
+
+                    _products.Add(productPhase);
+                }
 
                 if(request.ProductPhaseType == ProductPhaseType.NO_PROBLEM)
                 {
