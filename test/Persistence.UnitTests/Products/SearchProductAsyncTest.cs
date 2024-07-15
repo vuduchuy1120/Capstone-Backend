@@ -23,7 +23,9 @@ public class SearchProductAsyncTest : IDisposable
             Product.Create(
                 new CreateProductRequest(
                     Code: "P001",
-                    Price: 50.00m,
+                    PriceFinished: 70.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 30.00m,
                     Size: "M",
                     Description: "First product",
                     Name: "Product 1",
@@ -34,7 +36,9 @@ public class SearchProductAsyncTest : IDisposable
             Product.Create(
                 new CreateProductRequest(
                     Code: "P002",
-                    Price: 100.00m,
+                    PriceFinished: 100.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 60.00m,
                     Size: "L",
                     Description: "Second product",
                     Name: "Product 2",
@@ -45,7 +49,9 @@ public class SearchProductAsyncTest : IDisposable
             Product.Create(
                 new CreateProductRequest(
                     Code: "P003",
-                    Price: 150.00m,
+                    PriceFinished: 150.00m,
+                    PricePhase1: 60.00m,
+                    PricePhase2: 90.00m,
                     Size: "S",
                     Description: "Third product",
                     Name: "Product 3",

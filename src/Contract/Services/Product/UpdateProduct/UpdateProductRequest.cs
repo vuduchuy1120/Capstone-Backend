@@ -5,7 +5,9 @@ namespace Contract.Services.Product.UpdateProduct;
 public record UpdateProductRequest(
     Guid Id, 
     string Code,
-    decimal Price,
+    decimal PriceFinished,
+    decimal PricePhase1,
+    decimal PricePhase2,
     string Size,
     string Description,
     string Name,

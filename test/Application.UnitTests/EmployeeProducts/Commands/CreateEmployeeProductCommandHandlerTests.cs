@@ -75,8 +75,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 .ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
                 .ReturnsAsync(true);
-            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
-            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductInProgress(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhase1(It.IsAny<List<Guid>>())).ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveByCompanyId(It.IsAny<List<string>>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(createEmployeeProductRequest.SlotId, DateUtil.ConvertStringToDateTimeOnly(createEmployeeProductRequest.Date), Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286")))
                 .ReturnsAsync(new List<EmployeeProduct>());

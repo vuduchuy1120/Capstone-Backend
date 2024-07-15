@@ -14,7 +14,15 @@ namespace Application.UserCases.Commands.Products.CreateProduct
                 .MustAsync(async (code, _) => !await _productRepository.IsProductCodeExist(code))
                 .WithMessage("Product's code already exists");
 
-            RuleFor(req => req.Price)
+            RuleFor(req => req.PriceFinished)
+                .Must((request, PriceFinished) =>
+                {
+                    return PriceFinished >= request.PricePhase1 + request.PricePhase2;
+                }).WithMessage("Giá hàng hoàn thiện phải  >= tổng giá của 2 giai đoạn");
+
+            RuleFor(req => req.PricePhase1)
+                .GreaterThan(0).WithMessage("Product's price must be greater than 0");
+            RuleFor(req => req.PricePhase2)
                 .GreaterThan(0).WithMessage("Product's price must be greater than 0");
 
             RuleFor(req => req.Size)

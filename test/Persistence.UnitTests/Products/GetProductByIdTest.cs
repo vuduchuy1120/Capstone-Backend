@@ -24,7 +24,7 @@ public class GetProductByIdTest : IDisposable
     public async Task GetProductById_ProductExists_ShouldReturnProduct()
     {
         // Arrange
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+        var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description",
             "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
         _context.Products.Add(product);
@@ -37,7 +37,7 @@ public class GetProductByIdTest : IDisposable
         Assert.NotNull(result);
         Assert.Equal(product.Id, result.Id);
         Assert.Equal("Code", result.Code);
-        Assert.Equal(3434, result.Price);
+        Assert.Equal(123, result.Price);
         Assert.Equal("Size", result.Size);
         Assert.Equal("Description", result.Description);
         Assert.Equal("Name", result.Name);

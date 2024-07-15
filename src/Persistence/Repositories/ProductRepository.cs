@@ -26,6 +26,7 @@ internal sealed class ProductRepository : IProductRepository
             .AsNoTracking()
             .AsSplitQuery()
             .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries).ThenInclude(p => p.Phase)
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
@@ -36,10 +37,28 @@ internal sealed class ProductRepository : IProductRepository
             .SingleOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task<Product?> GetProductByIdWithProductPhase(Guid id)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(p => p.Images)
+            .Include(p => p.ProductPhaseSalaries).ThenInclude(p => p.Phase)
+            .Include(p => p.ProductPhases).ThenInclude(p => p.Phase)
+            .SingleOrDefaultAsync(p => p.Id == id);
+    }
+
     public async Task<bool> IsAllProductIdsExistAsync(List<Guid> productIds)
     {
         var existingProductCount = await _context.Products
             .CountAsync(p => productIds.Contains(p.Id));
+        return existingProductCount == productIds.Count;
+    }
+
+    public async Task<bool> IsAllProductInProgress(List<Guid> productIds)
+    {
+        var existingProductCount = await _context.Products
+           .CountAsync(p => productIds.Contains(p.Id) && p.IsInProcessing == true);
         return existingProductCount == productIds.Count;
     }
 
@@ -68,7 +87,7 @@ internal sealed class ProductRepository : IProductRepository
         var searchTerm = getProductsQuery.SearchTerm;
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) 
+            query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower())
             || p.Code.ToLower().Contains(searchTerm.ToLower()));
         }
 
@@ -99,7 +118,7 @@ internal sealed class ProductRepository : IProductRepository
             .Include(p => p.Images)
             .AsNoTracking()
             .AsSingleQuery()
-            .Where(p => p.Name.ToLower().Contains(search.ToLower()) 
+            .Where(p => p.Name.ToLower().Contains(search.ToLower())
                 || p.Code.ToLower().Contains(search.ToLower()))
             .ToListAsync();
     }

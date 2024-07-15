@@ -33,7 +33,7 @@ public class IsAllSubProductIdsExistTest : IDisposable
 
         var products = subProductIds.Select(id =>
         {
-            var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+            var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description",
                 "Name", null);
             var product = Product.Create(createProductRequest, "001201011091");
             product.Id = id;
@@ -69,7 +69,7 @@ public class IsAllSubProductIdsExistTest : IDisposable
 
         var products = existingSubProductIds.Select(id =>
         {
-            var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+            var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description",
                 "Name", null);
             var product = Product.Create(createProductRequest, "001201011091");
             product.Id = id;

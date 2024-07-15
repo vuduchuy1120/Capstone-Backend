@@ -62,6 +62,28 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         return results;
     }
 
+    public async Task<List<EmployeeProduct>> GetEmployeeProductsByMonthAndYearAndUserId(int month, int year, string userId)
+    {
+        var query = await _context.EmployeeProducts
+            .Include(ep => ep.Product)
+                .ThenInclude(p => p.ProductPhaseSalaries)
+            .Include(ep=>ep.Product)
+                .ThenInclude(p=>p.Images)
+            .Include(ep => ep.Phase)
+            .Include(ep => ep.User)
+                .ThenInclude(u=>u.Attendances)
+            .Where(ep => ep.Date.Month == month && 
+                        ep.Date.Year == year && 
+                        ep.UserId == userId && 
+                        ep.User.IsActive == true &&
+                        ep.User.Attendances.Any(at => at.Date.Month == month && 
+                                                    at.Date.Year == year && 
+                                                    at.IsAttendance && 
+                                                    at.IsSalaryByProduct))
+            .ToListAsync();
+        return query;
+    }
+
     public async Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys)
     {
         var keySets = keys.Select(k => new

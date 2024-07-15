@@ -7,4 +7,22 @@ public class ProductPhaseSalary
     public decimal SalaryPerProduct { get; private set; }
     public Product Product { get; private set; }
     public Phase Phase { get; private set; }
+
+    public static ProductPhaseSalary Create(Guid productId, Guid phaseId, decimal salaryPerProduct)
+    {
+        return new()
+        {
+            ProductId = productId,
+            PhaseId = phaseId,
+            SalaryPerProduct = salaryPerProduct
+        };
+    }
+
+    public void Update(Guid productId, Guid phaseId, decimal salaryPerProduct)
+    {
+        ProductId = productId;
+        PhaseId = phaseId;
+        SalaryPerProduct = salaryPerProduct;        
+    }
+
 }

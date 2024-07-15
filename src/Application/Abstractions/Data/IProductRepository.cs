@@ -8,6 +8,7 @@ public interface IProductRepository
     void Add(Product product);
     void Update(Product product);
     Task<Product?> GetProductById(Guid id);
+    Task<Product?> GetProductByIdWithProductPhase(Guid id);
     Task<bool> IsProductCodeExist(string code);
     Task<bool> IsAllSubProductIdsExist(List<Guid> SubProductIds);
     Task<bool> IsAllProductIdsExistAsync(List<Guid> productIds);
@@ -15,5 +16,5 @@ public interface IProductRepository
     Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery);
     Task<bool> IsProductIdExist(Guid id);
     Task<List<Product>> SearchProductAsync(string search);
-
+    Task<bool> IsAllProductInProgress(List<Guid> productIds);
 }

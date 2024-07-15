@@ -7,13 +7,10 @@ using Contract.Services.Product.SharedDto;
 using Contract.Services.ProductPhase.Creates;
 using Contract.Services.Role.Create;
 using Contract.Services.SalaryHistory.Creates;
-using Contract.Services.Set.CreateSet;
-using Contract.Services.Set.SharedDto;
 using Contract.Services.Slot.Create;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
 using Persistence;
-using System.Collections.Generic;
 
 namespace WebApi.InitialData;
 
@@ -75,10 +72,10 @@ public class DbInitializer
         var products = context.Products.ToList();
         var phases = context.Phases.ToList();
         var mainFactory = context.Companies.FirstOrDefault(c => c.CompanyType == CompanyType.FACTORY && c.Name == "Cơ sở chính");
-        
+
         foreach (var product in products)
         {
-            foreach(var phase in phases)
+            foreach (var phase in phases)
             {
                 var productPhase = ProductPhase
                     .Create(new CreateProductPhaseRequest(product.Id, phase.Id, 10, 10, mainFactory.Id));
@@ -110,7 +107,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD001",
-                    Price: 50.00m,
+                    PriceFinished: 50.00m,
+                    PricePhase1: 20.00m,
+                    PricePhase2: 30.00m,
                     Size: "M",
                     Description: "First product",
                     Name: "Product 1",
@@ -121,7 +120,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD002",
-                    Price: 100.00m,
+                    PriceFinished: 100.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 60.00m,
                     Size: "L",
                     Description: "Second product",
                     Name: "Product 2",
@@ -132,7 +133,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD003",
-                    Price: 100.00m,
+                    PriceFinished: 100.00m,
+                    PricePhase1: 40.00m,
+                    PricePhase2: 60.00m,
                     Size: "L",
                     Description: "Third product",
                     Name: "Product 3",
@@ -143,7 +146,9 @@ public class DbInitializer
             Product.Create(
                 new CreateProductRequest(
                     Code: "PD004",
-                    Price: 100.00m,
+                    PriceFinished : 100.00m,
+                    PricePhase1 : 40.00m,
+                    PricePhase2 : 60.00m,
                     Size: "L",
                     Description: "Four product",
                     Name: "Product 4",

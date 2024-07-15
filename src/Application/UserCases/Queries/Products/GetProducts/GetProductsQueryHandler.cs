@@ -13,7 +13,7 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
     : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<ProductResponse>>>> Handle(
-        GetProductsQuery request, 
+        GetProductsQuery request,
         CancellationToken cancellationToken)
     {
         var result = await _productRepository.SearchProductAsync(request);
@@ -26,7 +26,21 @@ internal sealed class GetProductsQueryHandler(IProductRepository _productReposit
             throw new ProductNotFoundException();
         }
 
-        var data = products.ConvertAll(p => _mapper.Map<ProductResponse>(p));
+        var data = products.ConvertAll(p => new ProductResponse(
+            p.Id,
+            p.Name,
+            p.Code,
+            p.Price,
+            p.Size,
+            p.Description,
+            p.IsInProcessing,
+            p.Images.Select(image => new ImageResponse(
+                image.Id,
+                image.ImageUrl,
+                image.IsBluePrint,
+                image.IsMainImage
+            )).ToList()
+        ));
 
         var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
 

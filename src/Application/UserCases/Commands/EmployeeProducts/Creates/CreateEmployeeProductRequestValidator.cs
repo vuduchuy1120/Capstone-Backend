@@ -47,15 +47,15 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates
                 .MustAsync(async (createQuantityProducts, cancellationToken) =>
                 {
                     var productIds = createQuantityProducts.Select(c => c.ProductId).Distinct().ToList();
-                    return await productRepository.IsAllProductIdsExistAsync(productIds);
-                }).WithMessage("ProductIds không hợp lệ");
+                    return await productRepository.IsAllProductInProgress(productIds);
+                }).WithMessage("ProductIds không hợp lệ hoặc product đang có trạng thái không sản xuất");
 
             RuleFor(req => req.CreateQuantityProducts)
                 .MustAsync(async (createQuantityProducts, cancellationToken) =>
                 {
                     var phaseIds = createQuantityProducts.Select(c => c.PhaseId).Distinct().ToList();
-                    return await phaseRepository.IsAllPhaseExistByIdAsync(phaseIds);
-                }).WithMessage("PhaseIds không hợp lệ");
+                    return await phaseRepository.IsAllPhase1(phaseIds);
+                }).WithMessage("PhaseIds không hợp lệ hoặc nhân viên này chỉ sản xuất được giai đoạn 1 của sản phẩm");
 
             RuleFor(req => req.CreateQuantityProducts)
                 .MustAsync(async (request, createQuantityProducts, cancellationToken) =>
