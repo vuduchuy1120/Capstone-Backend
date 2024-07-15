@@ -24,6 +24,8 @@ internal class ShipmentRepository : IShipmentRepository
         return await _context.Shipments
         .AsSplitQuery()
         .AsNoTracking()
+        .Include(s => s.FromCompany)
+        .Include(s => s.ToCompany)
         .Include(s => s.Shipper)
             .ThenInclude(u => u.Company)
         .Include(s => s.Shipper)
@@ -70,5 +72,12 @@ internal class ShipmentRepository : IShipmentRepository
     public void Update(Shipment shipment)
     {
         _context.Shipments.Update(shipment);
+    }
+
+    public async Task<Shipment> GetByIdAndShipmentDetailAsync(Guid shipmentId)
+    {
+        return await _context.Shipments
+            .Include(s => s.ShipmentDetails)
+            .SingleOrDefaultAsync(s => s.Id == shipmentId);
     }
 }

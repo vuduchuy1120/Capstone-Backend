@@ -10,4 +10,5 @@ public interface IShipmentRepository
     void Update(Shipment shipment);
     Task<bool> IsShipmentIdExistAsync(Guid shipmentId);
     Task<(List<Shipment>, int)> SearchShipmentAsync(GetShipmentsQuery request);
+    Task<Shipment> GetByIdAndShipmentDetailAsync(Guid shipmentId);
 }

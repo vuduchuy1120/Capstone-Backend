@@ -99,4 +99,19 @@ public class CompanyRepository : ICompanyRepository
         return await _context.Companies
             .AnyAsync(c => c.Id == CompanyId && c.CompanyType != CompanyType.CUSTOMER_COMPANY);
     }
+
+    public async Task<bool> IsThirdPartyCompanyAsync(Guid CompanyId)
+    {
+        return await _context.Companies
+            .AnyAsync(c => c.Id == CompanyId && c.CompanyType == CompanyType.THIRD_PARTY_COMPANY);
+    }
+
+    public async Task<List<CompanyType>> GetCompanyTypeByCompanyIdsAsync(List<Guid> companyIds)
+    {
+        return await _context.Companies
+            .AsNoTracking()
+            .Where(c => companyIds.Contains(c.Id))
+            .Select(c => c.CompanyType)
+            .ToListAsync();
+    }
 }

@@ -5,9 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.Shipment.GetShipments;
 using Contract.Services.Shipment.Share;
-using Contract.Services.User.SharedDto;
 using Domain.Exceptions.Shipments;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Queries.Shipments.GetShipments;
 

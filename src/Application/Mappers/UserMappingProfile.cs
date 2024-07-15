@@ -40,5 +40,24 @@ public class UserMappingProfile : Profile
                ))
            .ForMember(dest => dest.RoleDescription, opt => opt.MapFrom(src => src.Role.RoleName))
            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.Name));
+
+        CreateMap<User, UserResponseWithoutSalary>()
+           .ConstructUsing(src => new UserResponseWithoutSalary(
+               src.Id,
+               src.FirstName,
+               src.LastName,
+               src.Phone,
+               src.Address,
+               src.Avatar,
+               src.Gender,
+               src.DOB,
+               src.IsActive,
+               src.RoleId,
+               src.Role.RoleName,
+               src.Company.Name,
+               src.CompanyId
+               ))
+           .ForMember(dest => dest.RoleDescription, opt => opt.MapFrom(src => src.Role.RoleName))
+           .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.Name));
     }
 }
