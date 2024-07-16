@@ -12,7 +12,6 @@ using Contract.Services.Shipment.Share;
 using Contract.Services.ShipmentDetail.Share;
 using Contract.Services.User.SharedDto;
 using Domain.Entities;
-using Domain.Exceptions.Companies;
 using Domain.Exceptions.Shipments;
 
 namespace Application.UserCases.Queries.Shipments.GetShipmentDetail;
