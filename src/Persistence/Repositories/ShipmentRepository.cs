@@ -40,9 +40,9 @@ internal class ShipmentRepository : IShipmentRepository
         .SingleOrDefaultAsync(s => s.Id == shipmentId);
     }
 
-    public async Task<bool> IsShipmentIdExistAsync(Guid shipmentId)
+    public async Task<bool> IsShipmentIdExistAndNotAcceptedAsync(Guid shipmentId)
     {
-        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId);  
+        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId && s.IsAccepted == false);  
     }
 
     public async Task<(List<Shipment>, int)> SearchShipmentAsync(GetShipmentsQuery request)

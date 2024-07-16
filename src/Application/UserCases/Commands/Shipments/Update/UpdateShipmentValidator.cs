@@ -19,8 +19,8 @@ public class UpdateShipmentValidator : AbstractValidator<UpdateShipmentRequest>
         RuleFor(req => req.ShipmentId)
             .MustAsync(async (shipmentId, _) =>
             {
-                return await shipmentRepository.IsShipmentIdExistAsync(shipmentId);
-            }).WithMessage("Không tìm thấy đơn hàng tương ứng");
+                return await shipmentRepository.IsShipmentIdExistAndNotAcceptedAsync(shipmentId);
+            }).WithMessage("Không tìm thấy đơn hàng tương ứng hoặc đơn hàng đã được chốt");
 
         RuleFor(req => req.FromId)
             .MustAsync(async (fromId, _) =>

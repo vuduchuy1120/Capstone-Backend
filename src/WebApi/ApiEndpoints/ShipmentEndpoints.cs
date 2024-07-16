@@ -3,6 +3,7 @@ using Carter;
 using Contract.Services.Shipment.Create;
 using Contract.Services.Shipment.GetShipmentDetail;
 using Contract.Services.Shipment.GetShipments;
+using Contract.Services.Shipment.Update;
 using Contract.Services.Shipment.UpdateStatus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -38,10 +39,10 @@ public class ShipmentEndpoints : CarterModule
             ISender sender, 
             ClaimsPrincipal claim, 
             [FromRoute] Guid id,
-            [FromBody] UpdateStatusRequest request) =>
+            [FromBody] UpdateShipmentRequest request) =>
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-            var updateStatusCommand = new UpdateShipmentStatusCommand(id, request, userId); 
+            var updateStatusCommand = new UpdateShipmentCommand(id, request, userId); 
 
             var result = await sender.Send(updateStatusCommand);
 

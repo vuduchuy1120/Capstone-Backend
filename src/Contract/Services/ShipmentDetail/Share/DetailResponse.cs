@@ -1,7 +1,6 @@
 ﻿using Contract.Services.MaterialHistory.ShareDto;
 using Contract.Services.Phase.ShareDto;
 using Contract.Services.Product.SharedDto;
-using Contract.Services.Set.GetSet;
 
 namespace Contract.Services.ShipmentDetail.Share;
 
@@ -9,4 +8,6 @@ public record DetailResponse(
     ProductResponse Product, 
     PhaseResponse Phase,
     MaterialHistoryResponse Material,
-    double Quantity);
+    double Quantity,
+    ProductPhaseType ProductPhaseType,
+    string ProductPhaseTypeDescription);

@@ -57,13 +57,25 @@ internal sealed class GetShipmentDetailQueryHandler(
             var phaseResponse = _mapper.Map<PhaseResponse>(shipmentDetail.Phase);
             var productResponse = _mapper.Map<ProductResponse>(shipmentDetail.Product);
 
-            return new DetailResponse(productResponse, phaseResponse, null, shipmentDetail.Quantity);
+            return new DetailResponse(
+                productResponse, 
+                phaseResponse, 
+                null, 
+                shipmentDetail.Quantity,
+                shipmentDetail.ProductPhaseType,
+                shipmentDetail.ProductPhaseType.GetDescription());
         }
         else if (shipmentDetail.Material is not null)
         {
             var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(shipmentDetail.Material);
 
-            return new DetailResponse(null, null, materialHistoryResponse, shipmentDetail.Quantity);
+            return new DetailResponse(
+                null,
+                null,
+                materialHistoryResponse,
+                shipmentDetail.Quantity,
+                shipmentDetail.ProductPhaseType,
+                shipmentDetail.ProductPhaseType.GetDescription());
         }
 
         throw new ShipDetailItemNullException();
