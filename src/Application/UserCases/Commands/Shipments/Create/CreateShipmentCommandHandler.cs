@@ -103,6 +103,7 @@ internal sealed class CreateShipmentCommandHandler(
             foreach(var request in shipmentDetailRequests)
             {
                 var shipmentDetail = await CreateShipmentDetailFromFactory(request, shipmentId, fromCompany);
+                shipmentDetails.Add(shipmentDetail);
             }
 
             //var shipmentDetailTasks = shipmentDetailRequests
