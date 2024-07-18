@@ -7,6 +7,7 @@ using Domain.Exceptions.Companies;
 using Domain.Exceptions.Phases;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace Persistence.Repositories;
 
@@ -106,27 +107,31 @@ public class ProductPhaseRepository : IProductPhaseRepository
                 ph.CompanyId == request.FromCompanyId);
         }
 
-        var productPhases = await query.ToListAsync();
+        var count = await query.CountAsync();
 
-        if (productPhases.Count != requests.Count)
-        {
-            return false;
-        }
+        return count == distinctRequests.Count;
 
-        foreach (var request in requests)
-        {
-            var productPhase = productPhases.SingleOrDefault(ph
-                => ph.ProductId == request.ProductId
-                && ph.PhaseId == request.PhaseId
-                && ph.CompanyId == request.FromCompanyId);
+        //var productPhases = await query.ToListAsync();
 
-            if (productPhase == null || productPhase.AvailableQuantity < request.Quantity)
-            {
-                return false;
-            }
-        }
+        //if (productPhases.Count != requests.Count)
+        //{
+        //    return false;
+        //}
 
-        return true;
+        //foreach (var request in requests)
+        //{
+        //    var productPhase = productPhases.SingleOrDefault(ph
+        //        => ph.ProductId == request.ProductId
+        //        && ph.PhaseId == request.PhaseId
+        //        && ph.CompanyId == request.FromCompanyId);
+
+        //    if (productPhase == null || productPhase.AvailableQuantity < request.Quantity)
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        //return true;
     }
 
     public async Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId)
@@ -157,4 +162,25 @@ public class ProductPhaseRepository : IProductPhaseRepository
                 && ph.PhaseId == phase.Id 
                 && ph.CompanyId == mainFactory.Id).ToListAsync();
     }
+
+    public async Task<ProductPhase> GetByProductIdPhaseIdAndCompanyIdAsync(Guid productId, Guid phaseId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .SingleOrDefaultAsync(ph => ph.ProductId == productId && ph.CompanyId == companyId && ph.PhaseId == phaseId);
+    }
+
+    public async Task<List<ProductPhase>> GetByProductIdAndCompanyIdAsync(Guid productId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .Where(ph => ph.ProductId == productId && ph.CompanyId == companyId)
+            .ToListAsync();
+    }
+
+    public async Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .Where(ph => ph.CompanyId == companyId && productIds.Contains(ph.ProductId))
+            .ToListAsync();
+    }
+
 }

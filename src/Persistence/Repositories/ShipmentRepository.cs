@@ -24,6 +24,8 @@ internal class ShipmentRepository : IShipmentRepository
         return await _context.Shipments
         .AsSplitQuery()
         .AsNoTracking()
+        .Include(s => s.FromCompany)
+        .Include(s => s.ToCompany)
         .Include(s => s.Shipper)
             .ThenInclude(u => u.Company)
         .Include(s => s.Shipper)
@@ -38,9 +40,9 @@ internal class ShipmentRepository : IShipmentRepository
         .SingleOrDefaultAsync(s => s.Id == shipmentId);
     }
 
-    public async Task<bool> IsShipmentIdExistAsync(Guid shipmentId)
+    public async Task<bool> IsShipmentIdExistAndNotAcceptedAsync(Guid shipmentId)
     {
-        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId);  
+        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId && s.IsAccepted == false);  
     }
 
     public async Task<(List<Shipment>, int)> SearchShipmentAsync(GetShipmentsQuery request)
@@ -70,5 +72,12 @@ internal class ShipmentRepository : IShipmentRepository
     public void Update(Shipment shipment)
     {
         _context.Shipments.Update(shipment);
+    }
+
+    public async Task<Shipment> GetByIdAndShipmentDetailAsync(Guid shipmentId)
+    {
+        return await _context.Shipments
+            .Include(s => s.ShipmentDetails)
+            .SingleOrDefaultAsync(s => s.Id == shipmentId);
     }
 }

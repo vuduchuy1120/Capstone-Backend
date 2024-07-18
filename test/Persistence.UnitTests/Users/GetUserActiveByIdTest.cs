@@ -1,4 +1,6 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Company.Create;
+using Contract.Services.Company.Shared;
 using Contract.Services.Role.Create;
 using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.BanUser;
@@ -58,6 +60,8 @@ public class GetUserActiveByIdTest : IDisposable
     private async Task InitDb()
     {
         var role = Role.Create(new CreateRoleCommand("ADMIN", "Admin"));
+        var company = Company.Create(new CreateCompanyRequest(new Contract.Services.Company.ShareDto.CompanyRequest("Cơ sở chính", "Hà Nội", "Vũ Đức Huy",
+            "0976099789", "admin@admin.com", CompanyType.FACTORY)));
         var createUserRequest = new CreateUserRequest(
             Id: "001201011091",
             FirstName: "John",
@@ -70,7 +74,7 @@ public class GetUserActiveByIdTest : IDisposable
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
             SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
-            Guid.NewGuid(),
+            company.Id,
             RoleId: 1
         );
         var user = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
@@ -87,7 +91,7 @@ public class GetUserActiveByIdTest : IDisposable
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
             SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
-            Guid.NewGuid(),
+            company.Id,
             RoleId: 1
         );
         var user_2 = User.Create(createUserRequest_2, createUserRequest_2.Password, createUserRequest.Id);
@@ -96,6 +100,7 @@ public class GetUserActiveByIdTest : IDisposable
         _context.Roles.Add(role);
         _context.Users.Add(user);
         _context.Users.Add(user_2);
+        _context.Companies.Add(company);
         await _context.SaveChangesAsync();
     }
 

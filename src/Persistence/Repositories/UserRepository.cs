@@ -39,6 +39,7 @@ internal class UserRepository : IUserRepository
         return await _context.Users
             .AsNoTracking()
             .Include(user => user.Role)
+            .Include(u => u.Company)
             .Include(s => s.SalaryHistories)
             .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
     }

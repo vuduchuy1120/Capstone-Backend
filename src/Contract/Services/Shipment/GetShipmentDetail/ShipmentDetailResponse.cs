@@ -8,7 +8,7 @@ namespace Contract.Services.Shipment.GetShipmentDetail;
 public record ShipmentDetailResponse(
     CompanyResponse From,
     CompanyResponse To,
-    UserResponse Shipper,
+    UserResponseWithoutSalary Shipper,
     DateTime ShipDate,
     string StatusDescription,
     Status Status,
