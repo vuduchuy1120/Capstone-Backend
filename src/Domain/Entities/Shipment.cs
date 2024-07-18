@@ -37,11 +37,10 @@ public class Shipment : EntityAuditBase<Guid>
         };
     }
 
-    public void UpdateStatus(string updateBy, Status status)
+    public void UpdateStatus(string updateBy, Status statuss)
     {
         UpdatedBy = updateBy;
         UpdatedDate = DateTime.UtcNow;
-        Status = status;
     }
 
     public void Update(UpdateShipmentRequest request, string updatedBy, List<ShipmentDetail> newShipmentDetails)
@@ -53,5 +52,12 @@ public class Shipment : EntityAuditBase<Guid>
         ShipperId = request.ShipperId;
         ShipDate = request.ShipDate;
         ShipmentDetails = newShipmentDetails;
+    }
+
+    public void UpdateAccepted(string updatedBy)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        IsAccepted = true;
     }
 }

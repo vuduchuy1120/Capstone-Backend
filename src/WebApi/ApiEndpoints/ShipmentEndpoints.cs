@@ -4,6 +4,7 @@ using Contract.Services.Shipment.Create;
 using Contract.Services.Shipment.GetShipmentDetail;
 using Contract.Services.Shipment.GetShipments;
 using Contract.Services.Shipment.Update;
+using Contract.Services.Shipment.UpdateAccepted;
 using Contract.Services.Shipment.UpdateStatus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -80,6 +81,20 @@ public class ShipmentEndpoints : CarterModule
         {
             var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
             var result = await sender.Send(new UpdateShipmentStatusCommand(id, request, userId));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
+        });
+
+        app.MapPatch("{id}/accept/{isAccepted}", async (
+            ISender sender,
+            ClaimsPrincipal claim,
+            [FromRoute] Guid id) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new UpdateAcceptedCommand(userId, id));
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)

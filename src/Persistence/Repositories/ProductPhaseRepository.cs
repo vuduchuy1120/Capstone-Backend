@@ -99,6 +99,7 @@ public class ProductPhaseRepository : IProductPhaseRepository
         .ToList();
 
         var query = _context.ProductPhases.AsQueryable();
+
         foreach (var request in distinctRequests)
         {
             query = query.Where(ph =>
@@ -107,9 +108,13 @@ public class ProductPhaseRepository : IProductPhaseRepository
                 ph.CompanyId == request.FromCompanyId);
         }
 
-        var count = await query.CountAsync();
+        var filteredProductPhases = await query.ToListAsync();
 
-        return count == distinctRequests.Count;
+        return distinctRequests.All(request =>
+            filteredProductPhases.Any(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == request.FromCompanyId));
 
         //var productPhases = await query.ToListAsync();
 
