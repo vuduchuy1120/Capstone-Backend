@@ -4,6 +4,7 @@ using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.MonthEmployeeSalary.Queries;
 using Contract.Services.MonthEmployeeSalary.ShareDtos;
+using Domain.Exceptions.MonthlyEmployeeSalaries;
 using Domain.Exceptions.Users;
 using System.Linq;
 
@@ -25,6 +26,15 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
 
         var monthlyEmployeeSalary = await _monthlyEmployeeSalaryRepository
             .GetMonthlyEmployeeSalaryByUserIdAsync(request.UserId, request.Month, request.Year);
+        if (monthlyEmployeeSalary == null)
+        {
+            throw new MonthlyEmployeeSalaryNotFoundException(request.Month, request.Year);
+        }
+        var monthPre = request.Month == 1 ? 12 : request.Month - 1;
+        var yearPre = request.Month == 1 ? request.Year - 1 : request.Year;
+        var monthlyEmployeeSalaryPre = await _monthlyEmployeeSalaryRepository
+            .GetMonthlyEmployeeSalaryByUserIdAsync(request.UserId, monthPre, yearPre);
+        var SalaryPre = (double)(monthlyEmployeeSalaryPre?.Salary ?? 0);
 
         var employeeProductDetails = await _employeeProductRepository
             .GetEmployeeProductsByMonthAndYearAndUserId(request.Month, request.Year, request.UserId);
@@ -49,7 +59,7 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
                 ProductImage: await _cloudStorage
                                 .GetSignedUrlAsync(ep.Product.Images
                                                     .FirstOrDefault()
-                                                    ?.IsMainImage ?? false 
+                                                    ?.IsMainImage ?? false
                                                     ? ep.Product.Images.FirstOrDefault()
                                                     ?.ImageUrl : "ImageNotFound"),
                 PhaseId: ep.PhaseId,
@@ -63,17 +73,23 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
         var attendanceDetails = await _attendanceRepository
             .GetAttendanceByMonthAndUserIdAsync(request.Month, request.Year, request.UserId);
 
-        var totalWorkingDays = (double)attendanceDetails.Count(a => a.IsAttendance && !a.IsSalaryByProduct && (a.SlotId == 1 || a.SlotId ==2))/2;
-        var totalHourOverTime = attendanceDetails.Where(a => a.IsAttendance && !a.IsSalaryByProduct && a.HourOverTime > 0).Sum(a=>a.HourOverTime);
+        var totalWorkingDays = (double)attendanceDetails.Count(a => a.IsAttendance && !a.IsSalaryByProduct && (a.SlotId == 1 || a.SlotId == 2)) / 2;
+        var totalHourOverTime = attendanceDetails.Where(a => a.IsAttendance && !a.IsSalaryByProduct && a.HourOverTime > 0).Sum(a => a.HourOverTime);
         var totalSalaryProduct = productWorkingResponses.Sum(p => p.Result.Quantity * p.Result.SalaryPerProduct);
-        
+        double currentSalary = (double)(monthlyEmployeeSalary?.Salary ?? 0);
+
+        double rate = SalaryPre != 0 ? (currentSalary - SalaryPre) * 100 / SalaryPre : -999999999;
+        rate = Math.Round(rate * 100.0) / 100.0;
+
         var response = new MonthlyEmployeeSalaryResponse(
             Month: request.Month,
             Year: request.Year,
+            Salary: monthlyEmployeeSalary.Salary,
             AccountBalance: monthlyEmployeeSalary.User.AccountBalance ?? 0,
             TotalWorkingDays: totalWorkingDays,
             TotalWorkingHours: totalHourOverTime,
             TotalSalaryProduct: totalSalaryProduct,
+            Rate: rate,
             ProductWorkingResponses: productWorkingResponses.Select(p => p.Result).ToList()
             );
 

@@ -63,7 +63,7 @@ public sealed class CreateMonthEmployeeSalaryCommandHandler(
                   a => new { a.UserId, a.SlotId, a.Date },
                   (ep, a) => new { ep, a })
             .Where(joined => joined.a.IsSalaryByProduct == true)
-            .SelectMany(joined => joined.ep.Product.ProductPhaseSalaries,
+            .SelectMany(joined => joined.ep.Product.ProductPhaseSalaries.Where(pps => pps.PhaseId == joined.ep.PhaseId && pps.ProductId == joined.ep.ProductId),
                         (joined, pps) => pps.SalaryPerProduct * joined.ep.Quantity)
             .Sum();
 
@@ -141,7 +141,7 @@ public sealed class CreateMonthEmployeeSalaryCommandHandler(
             if (salaryType == SalaryType.SALARY_BY_DAY)
             {
                 var workingDays = applicableAttendances.Count(a => a.SlotId == 1 || a.SlotId == 2);
-                totalSalary += workingDays * salaryHistory.Salary;
+                totalSalary += workingDays * salaryHistory.Salary/2;
             }
             else if (salaryType == SalaryType.SALARY_OVER_TIME)
             {

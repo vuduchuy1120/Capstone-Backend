@@ -32,7 +32,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .IsInEnum().WithMessage("Trạng thái không hợp lệ. Trạng thái phải là 0, 1, 2 hoặc 3.");
 
         RuleFor(x => x.VAT)
-            .GreaterThanOrEqualTo(0).WithMessage("VAT phải lớn hơn hoặc bằng 0.");
+            .Must(VAT =>
+            {
+                return VAT == 0 || VAT == 5 || VAT == 8 || VAT == 10;
+            }).WithMessage("Thuế của đơn hàng chỉ nhận giá trị 0,5,8,10!");
 
         RuleFor(x => x.OrderDetailRequests)
             .NotEmpty().WithMessage("Chi tiết đơn hàng là bắt buộc.")

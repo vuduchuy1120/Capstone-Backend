@@ -6,8 +6,7 @@ namespace Contract.Services.MonthEmployeeSalary.Queries;
 
 public record GetMonthlySalaryQuery
 (
-    string? userId,
-    string? fullName,
+    string? searchUser,
     int? month,
     int? year,
     int PageIndex = 1,

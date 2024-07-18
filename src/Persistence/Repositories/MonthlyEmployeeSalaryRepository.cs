@@ -28,10 +28,17 @@ public class MonthlyEmployeeSalaryRepository : IMonthlyEmployeeSalaryRepository
                 .ThenInclude(ep => ep.Product)
                 .ThenInclude(p => p.ProductPhaseSalaries)
                 .ThenInclude(pp => pp.Phase)
-            .Where(u => u.User.Id == userId && u.User.IsActive == true && u.User.Attendances.Any(a => a.Date.Month == month && a.Date.Year == year) ||
-                                   u.User.EmployeeProducts.Any(ep => ep.Date.Month == month && ep.Date.Year == year)).ToListAsync();
-        return query.FirstOrDefault();
+            .Where(mes => mes.User.Id == userId &&
+                          mes.User.IsActive == true &&
+                          mes.Month == month &&
+                          mes.Year == year &&
+                          (mes.User.Attendances.Any(a => a.Date.Month == month && a.Date.Year == year) ||
+                           mes.User.EmployeeProducts.Any(ep => ep.Date.Month == month && ep.Date.Year == year)))
+            .FirstOrDefaultAsync(); // Lấy bản ghi đầu tiên hoặc null nếu không có bản ghi nào
+
+        return query; // Trả về đối tượng MonthlyEmployeeSalary
     }
+
 
     public async Task<(List<MonthlyEmployeeSalary>?, int)> SearchMonthlySalary(GetMonthlySalaryQuery request)
     {
@@ -39,17 +46,14 @@ public class MonthlyEmployeeSalaryRepository : IMonthlyEmployeeSalaryRepository
             .Include(mes => mes.User)
             .Where(mes => mes.User.IsActive);
 
-        if (!string.IsNullOrEmpty(request.userId))
+        if (!string.IsNullOrEmpty(request.searchUser))
         {
-            query = query.Where(mes => mes.User.Id == request.userId);
-        }
-        if (!string.IsNullOrEmpty(request.fullName))
-        {
-            query = query.Where(mes => mes.User.FirstName.ToLower().Trim().Contains(request.fullName.ToLower().Trim()) ||
-                            mes.User.LastName.ToLower().Trim().Contains(request.fullName.ToLower().Trim()) ||
+            query = query.Where(mes => mes.User.FirstName.ToLower().Trim().Contains(request.searchUser.ToLower().Trim()) ||
+                            mes.User.LastName.ToLower().Trim().Contains(request.searchUser.ToLower().Trim()) ||
+                            mes.User.Id == request.searchUser || 
                             (mes.User.FirstName.ToLower().Trim() +
                             " " +
-                            mes.User.LastName.ToLower().Trim()).Contains(request.fullName.ToLower().Trim()));
+                            mes.User.LastName.ToLower().Trim()).Contains(request.searchUser.ToLower().Trim()));
         }
         if (request.month.HasValue)
         {

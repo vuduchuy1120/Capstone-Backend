@@ -33,7 +33,7 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SalaryPay",
+                name: "PaidSalary",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -65,7 +65,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_SalaryPay_UserId",
-                table: "SalaryPay",
+                table: "PaidSalary",
                 column: "UserId");
         }
 
@@ -76,7 +76,7 @@ namespace Persistence.Migrations
                 name: "SalaryHistory");
 
             migrationBuilder.DropTable(
-                name: "SalaryPay");
+                name: "PaidSalary");
         }
     }
 }

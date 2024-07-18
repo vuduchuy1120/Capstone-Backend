@@ -542,7 +542,7 @@ namespace Persistence.Migrations
                     b.ToTable("SalaryHistories");
                 });
 
-            modelBuilder.Entity("Domain.Entities.SalaryPay", b =>
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -581,7 +581,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SalaryPays");
+                    b.ToTable("PaidSalaries");
                 });
 
             modelBuilder.Entity("Domain.Entities.Set", b =>
@@ -1068,10 +1068,10 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.SalaryPay", b =>
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("SalaryPays")
+                        .WithMany("PaidSalaries")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1305,7 +1305,7 @@ namespace Persistence.Migrations
 
                     b.Navigation("SalaryHistories");
 
-                    b.Navigation("SalaryPays");
+                    b.Navigation("PaidSalaries");
 
                     b.Navigation("ShipOrders");
 
