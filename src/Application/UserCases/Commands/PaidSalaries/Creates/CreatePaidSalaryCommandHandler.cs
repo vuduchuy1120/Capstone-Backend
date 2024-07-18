@@ -27,7 +27,8 @@ public sealed class CreatePaidSalaryCommandHandler
         _paidSalaryRepository.AddPaidSalary(paidSalary);
 
         var user = await _userRepository.GetUserByIdAsync(request.createReq.UserId);
-        var AccountBalanceUpdate = user?.AccountBalance ?? 0 - request.createReq.Salary;
+        var accountBalanceCurrent = user?.AccountBalance ?? 0;
+        var AccountBalanceUpdate = accountBalanceCurrent - request.createReq.Salary;
 
         user.UpdateAccountBalance(AccountBalanceUpdate);
         _userRepository.Update(user);

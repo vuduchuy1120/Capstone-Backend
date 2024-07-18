@@ -19,7 +19,7 @@ internal sealed class UpdatePaidSalaryCommandHandler
         var validationResult = await _validator.ValidateAsync(request.updateReq);
         if (!validationResult.IsValid)
         {
-               throw new MyValidationException(validationResult.ToDictionary());
+            throw new MyValidationException(validationResult.ToDictionary());
         }
 
         var paidSalary = await _paidSalaryRepository.GetPaidSalaryById(request.updateReq.Id);
@@ -27,7 +27,9 @@ internal sealed class UpdatePaidSalaryCommandHandler
         var userId = paidSalary.UserId;
         var user = await _userRepository.GetUserByIdAsync(userId);
 
-        var AccountBalanceUpdate = user?.AccountBalance ?? 0 + paidSalary.Salary - request.updateReq.Salary;
+        var accountBalanceCurrent = user?.AccountBalance ?? 0;
+
+        var AccountBalanceUpdate = accountBalanceCurrent + paidSalary.Salary - request.updateReq.Salary;
 
         paidSalary.Update(request.updateReq, request.UpdatedBy);
         _paidSalaryRepository.UpdatePaidSalary(paidSalary);

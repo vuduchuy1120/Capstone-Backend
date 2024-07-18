@@ -6,6 +6,5 @@ public record PaidSalaryResponse
     string UserId,
     decimal Salary,
     string? Note,
-    DateOnly CreatedAt,
-    string CreatedBy
+    DateOnly CreatedAt
     );

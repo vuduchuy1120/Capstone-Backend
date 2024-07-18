@@ -8,7 +8,6 @@ public class PaidSalary : EntityAuditBase<Guid>
 {
     public string UserId { get; private set; }
     public decimal Salary { get; private set; }
-    public int? Status { get; private set; } = 0;
     public string? Note { get; private set; }
     public User User { get; private set; }
 

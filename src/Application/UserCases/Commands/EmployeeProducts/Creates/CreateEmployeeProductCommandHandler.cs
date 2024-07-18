@@ -89,11 +89,11 @@ public sealed class CreateEmployeeProductCommandHandler
         return Result.Success.Create();
     }
     private async Task UpdateProductPhaseQuantities(
-        List<(Guid ProductId, Guid PhaseId, int Quantity)> groupedByProductAndPhase,
-        Guid companyId,
-        Dictionary<(Guid ProductId, Guid PhaseId), ProductPhase> phaseProductsUpdate,
-        List<ProductPhase> phaseProductsNew = null,
-        bool decrement = false)
+     List<(Guid ProductId, Guid PhaseId, int Quantity)> groupedByProductAndPhase,
+     Guid companyId,
+     Dictionary<(Guid ProductId, Guid PhaseId), ProductPhase> phaseProductsUpdate,
+     List<ProductPhase> phaseProductsNew = null,
+     bool decrement = false)
     {
         foreach (var item in groupedByProductAndPhase)
         {
@@ -119,7 +119,8 @@ public sealed class CreateEmployeeProductCommandHandler
                 }
             }
 
-            if (productPhase != null)
+            // Chỉ cập nhật nếu productPhase đã tồn tại trước đó
+            if (phaseProductsUpdate.ContainsKey(key))
             {
                 productPhase.Quantity += decrement ? -item.Quantity : item.Quantity;
                 productPhase.AvailableQuantity += decrement ? -item.Quantity : item.Quantity;

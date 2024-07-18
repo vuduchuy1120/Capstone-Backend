@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
@@ -25,7 +26,17 @@ internal sealed class GetPaidSalaryByUserIdQueryHandler
         var paidSalaries = query.Item1;
         var totalPage = query.Item2;
 
-        var result = _mapper.Map<List<PaidSalaryResponse>>(paidSalaries);
+        var result = paidSalaries.Select(
+                paidSalary => new PaidSalaryResponse
+                (
+                    Id: paidSalary.Id,
+                    UserId: paidSalary.UserId,
+                    Salary: paidSalary.Salary,
+                    Note: paidSalary.Note,
+                    CreatedAt: DateUtil.ConvertStringToDateTimeOnly(paidSalary.CreatedDate.Date.ToString("dd/MM/yyyy"))
+                )).ToList();
+
+
         var searchResponse = new SearchResponse<List<PaidSalaryResponse>>(request.PageIndex, totalPage, result);
 
         return Result.Success<SearchResponse<List<PaidSalaryResponse>>>.Get(searchResponse);
