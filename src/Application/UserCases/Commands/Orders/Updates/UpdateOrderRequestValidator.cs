@@ -37,6 +37,9 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
             .GreaterThan(x => x.StartOrder).WithMessage("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
 
         RuleFor(x => x.VAT)
-            .GreaterThanOrEqualTo(0).WithMessage("VAT phải lớn hơn hoặc bằng 0.");
+            .Must(VAT =>
+            {
+                return VAT == 0 || VAT == 5 || VAT == 8 || VAT == 10;
+            }).WithMessage("Thuế của đơn hàng chỉ nhận giá trị 0,5,8,10!");
     }
 }

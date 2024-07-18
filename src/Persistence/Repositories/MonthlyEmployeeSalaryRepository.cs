@@ -28,10 +28,17 @@ public class MonthlyEmployeeSalaryRepository : IMonthlyEmployeeSalaryRepository
                 .ThenInclude(ep => ep.Product)
                 .ThenInclude(p => p.ProductPhaseSalaries)
                 .ThenInclude(pp => pp.Phase)
-            .Where(u => u.User.Id == userId && u.User.IsActive == true && u.User.Attendances.Any(a => a.Date.Month == month && a.Date.Year == year) ||
-                                   u.User.EmployeeProducts.Any(ep => ep.Date.Month == month && ep.Date.Year == year)).ToListAsync();
-        return query.FirstOrDefault();
+            .Where(mes => mes.User.Id == userId &&
+                          mes.User.IsActive == true &&
+                          mes.Month == month &&
+                          mes.Year == year &&
+                          (mes.User.Attendances.Any(a => a.Date.Month == month && a.Date.Year == year) ||
+                           mes.User.EmployeeProducts.Any(ep => ep.Date.Month == month && ep.Date.Year == year)))
+            .FirstOrDefaultAsync(); // Lấy bản ghi đầu tiên hoặc null nếu không có bản ghi nào
+
+        return query; // Trả về đối tượng MonthlyEmployeeSalary
     }
+
 
     public async Task<(List<MonthlyEmployeeSalary>?, int)> SearchMonthlySalary(GetMonthlySalaryQuery request)
     {

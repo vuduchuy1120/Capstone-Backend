@@ -28,7 +28,7 @@ public class User : EntityAuditBase<string>
     public List<Shipment>? Shipments { get; private set; }
     public List<ShipOrder>? ShipOrders { get; private set; }
     public List<SalaryHistory>? SalaryHistories { get; private set; }
-    public List<SalaryPay>? SalaryPays { get; private set; }
+    public List<PaidSalary>? PaidSalaries { get; private set; }
     public List<MonthlyEmployeeSalary>? MonthlyEmployeeSalaries { get; private set; }
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {

@@ -17,19 +17,19 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_SalaryPay_Users_UserId",
-                table: "SalaryPay");
+                table: "PaidSalary");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_SalaryPay",
-                table: "SalaryPay");
+                table: "PaidSalary");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_SalaryHistory",
                 table: "SalaryHistory");
 
             migrationBuilder.RenameTable(
-                name: "SalaryPay",
-                newName: "SalaryPays");
+                name: "PaidSalary",
+                newName: "PaidSalaries");
 
             migrationBuilder.RenameTable(
                 name: "SalaryHistory",
@@ -37,7 +37,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.RenameIndex(
                 name: "IX_SalaryPay_UserId",
-                table: "SalaryPays",
+                table: "PaidSalaries",
                 newName: "IX_SalaryPays_UserId");
 
             migrationBuilder.RenameIndex(
@@ -55,7 +55,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_SalaryPays",
-                table: "SalaryPays",
+                table: "PaidSalaries",
                 column: "Id");
 
             migrationBuilder.AddPrimaryKey(
@@ -73,7 +73,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SalaryPays_Users_UserId",
-                table: "SalaryPays",
+                table: "PaidSalaries",
                 column: "UserId",
                 principalTable: "Users",
                 principalColumn: "Id",
@@ -89,19 +89,19 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_SalaryPays_Users_UserId",
-                table: "SalaryPays");
+                table: "PaidSalaries");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_SalaryPays",
-                table: "SalaryPays");
+                table: "PaidSalaries");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_SalaryHistories",
                 table: "SalaryHistories");
 
             migrationBuilder.RenameTable(
-                name: "SalaryPays",
-                newName: "SalaryPay");
+                name: "PaidSalaries",
+                newName: "PaidSalary");
 
             migrationBuilder.RenameTable(
                 name: "SalaryHistories",
@@ -109,7 +109,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.RenameIndex(
                 name: "IX_SalaryPays_UserId",
-                table: "SalaryPay",
+                table: "PaidSalary",
                 newName: "IX_SalaryPay_UserId");
 
             migrationBuilder.RenameIndex(
@@ -127,7 +127,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_SalaryPay",
-                table: "SalaryPay",
+                table: "PaidSalary",
                 column: "Id");
 
             migrationBuilder.AddPrimaryKey(
@@ -145,7 +145,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SalaryPay_Users_UserId",
-                table: "SalaryPay",
+                table: "PaidSalary",
                 column: "UserId",
                 principalTable: "Users",
                 principalColumn: "Id",

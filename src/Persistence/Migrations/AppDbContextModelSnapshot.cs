@@ -329,6 +329,45 @@ namespace Persistence.Migrations
                     b.ToTable("OrderDetails");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaidSalaries");
+                });
+
             modelBuilder.Entity("Domain.Entities.Phase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -565,48 +604,6 @@ namespace Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SalaryHistories");
-                });
-
-            modelBuilder.Entity("Domain.Entities.SalaryPay", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SalaryPays");
                 });
 
             modelBuilder.Entity("Domain.Entities.Set", b =>
@@ -1025,6 +1022,17 @@ namespace Persistence.Migrations
                     b.Navigation("Set");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("PaidSalaries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.ProductImage", b =>
                 {
                     b.HasOne("Domain.Entities.Product", "Product")
@@ -1097,17 +1105,6 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("SalaryHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domain.Entities.SalaryPay", b =>
-                {
-                    b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("SalaryPays")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1339,11 +1336,11 @@ namespace Persistence.Migrations
 
                     b.Navigation("MonthlyEmployeeSalaries");
 
+                    b.Navigation("PaidSalaries");
+
                     b.Navigation("Reports");
 
                     b.Navigation("SalaryHistories");
-
-                    b.Navigation("SalaryPays");
 
                     b.Navigation("ShipOrders");
 
