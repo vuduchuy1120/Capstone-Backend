@@ -1,6 +1,7 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.PaidSalary.Creates;
+using Contract.Services.PaidSalary.Deletes;
 using Contract.Services.PaidSalary.Queries;
 using Contract.Services.PaidSalary.Updates;
 using MediatR;
@@ -62,6 +63,19 @@ namespace WebApi.ApiEndpoints
                 return Results.Ok(result);
             }).RequireAuthorization("RequireAnyRole")
             .WithOpenApi(x => new OpenApiOperation(x)
+            {
+                Tags = new List<OpenApiTag> { new() { Name = "Paid Salary api" } }
+            });
+
+            app.MapDelete("/{id}", async (
+                ISender sender,
+                [FromRoute] Guid id
+                ) =>
+            {
+                var command = new DeletePaidSalaryCommand(id);
+                var result = await sender.Send(command);
+                return Results.Ok(result);
+            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
             {
                 Tags = new List<OpenApiTag> { new() { Name = "Paid Salary api" } }
             });

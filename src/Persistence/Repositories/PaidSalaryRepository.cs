@@ -17,6 +17,11 @@ public class PaidSalaryRepository : IPaidSalaryRepository
         _context.PaidSalaries.Add(paidSalary);
     }
 
+    public void DeletePaidSalary(PaidSalary paidSalary)
+    {
+        _context.PaidSalaries.Remove(paidSalary);
+    }
+
     public async Task<(List<PaidSalary>, int)> GetPaidSalariesByUserIdAsync(GetPaidSalaryByUserIdQuery request)
     {
         var query = _context.PaidSalaries

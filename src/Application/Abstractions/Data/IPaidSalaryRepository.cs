@@ -10,4 +10,5 @@ public interface IPaidSalaryRepository
     Task<PaidSalary> GetPaidSalaryById(Guid id);
     Task<bool> IsPaidSalaryExistsAsync(Guid Id);
     Task<(List<PaidSalary>, int)> GetPaidSalariesByUserIdAsync(GetPaidSalaryByUserIdQuery request);
+    void DeletePaidSalary(PaidSalary paidSalary);
 }
