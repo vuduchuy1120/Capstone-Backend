@@ -14,6 +14,6 @@ public class LoggingBackgroundJobSetup : IConfigureOptions<QuartzOptions>
             .AddTrigger(trigger => trigger
                                     .ForJob(jobKey)
                                     .WithIdentity("LoggingBackgroundJob-trigger")
-                                    .WithCronSchedule("0 2 5 * * ?"));
+                                    .WithCronSchedule("0 0 2 5 * ?"));
     }
 }
