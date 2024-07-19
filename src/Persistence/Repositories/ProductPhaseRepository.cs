@@ -183,9 +183,10 @@ public class ProductPhaseRepository : IProductPhaseRepository
 
     public async Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId)
     {
-        return await _context.ProductPhases
-            .Where(ph => ph.CompanyId == companyId && productIds.Contains(ph.ProductId))
+        var list = await _context.ProductPhases
+            .Where(ph => productIds.Contains(ph.ProductId) && ph.CompanyId == companyId)
             .ToListAsync();
+        return list;
     }
 
 }

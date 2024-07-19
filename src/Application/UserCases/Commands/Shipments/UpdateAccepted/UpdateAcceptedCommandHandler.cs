@@ -9,7 +9,6 @@ using Domain.Exceptions.Materials;
 using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
-using MediatR;
 
 namespace Application.UserCases.Commands.Shipments.UpdateAccepted;
 
