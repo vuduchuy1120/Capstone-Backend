@@ -98,9 +98,17 @@ internal sealed class CreateShipmentCommandHandler(
         }
         else
         {
-            var shipmentDetailTasks = shipmentDetailRequests
-            .Select(detailRequest => CreateShipmentDetailFromFactory(detailRequest, shipmentId, fromCompany));
-            var shipmentDetails = await Task.WhenAll(shipmentDetailTasks);
+            var shipmentDetails = new List<ShipmentDetail>();
+
+            foreach(var request in shipmentDetailRequests)
+            {
+                var shipmentDetail = await CreateShipmentDetailFromFactory(request, shipmentId, fromCompany);
+                shipmentDetails.Add(shipmentDetail);
+            }
+
+            //var shipmentDetailTasks = shipmentDetailRequests
+            //.Select(detailRequest => CreateShipmentDetailFromFactory(detailRequest, shipmentId, fromCompany));
+            //var shipmentDetails = await Task.WhenAll(shipmentDetailTasks);
 
             return shipmentDetails.ToList();
         }

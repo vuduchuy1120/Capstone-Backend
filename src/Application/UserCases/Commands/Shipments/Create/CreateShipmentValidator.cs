@@ -91,12 +91,22 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
                         (int)request.Quantity))
                     .ToList();
 
-                if (shipProduct is null || shipProduct.Count == 0)
+                var duplicateGroups = shipProduct
+                    .GroupBy(p => new { p.ProductId, p.PhaseId, p.FromCompanyId })
+                    .Where(g => g.Count() > 1)
+                    .ToList();
+
+                if (duplicateGroups.Any())
                 {
-                    return true;
+                    return false;
                 }
 
-                return await productPhaseRepository.IsAllShipDetailProductValid(shipProduct);
+                //if (shipProduct is null || shipProduct.Count == 0)
+                //{
+                //    return true;
+                //}
+
+                return true;
             }).WithMessage("Có một vài mã sản phẩm không hợp lệ hoặc không đủ số lượng trong kho");
 
         RuleFor(req => req.ShipmentDetailRequests)
@@ -106,6 +116,16 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
                 .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
                 .Select(s => new MaterialCheckQuantityRequest(s.ItemId, s.Quantity))
                 .ToList();
+
+                var duplicateGroups = shipMaterial
+                    .GroupBy(p => new { p.id })
+                    .Where(g => g.Count() > 1)
+                    .ToList();
+
+                if (duplicateGroups.Any())
+                {
+                    return false;
+                }
 
                 if (shipMaterial is null || shipMaterial.Count == 0)
                 {

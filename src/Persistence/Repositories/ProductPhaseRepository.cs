@@ -98,6 +98,7 @@ public class ProductPhaseRepository : IProductPhaseRepository
         .ToList();
 
         var query = _context.ProductPhases.AsQueryable();
+
         foreach (var request in distinctRequests)
         {
             query = query.Where(ph =>
@@ -106,9 +107,13 @@ public class ProductPhaseRepository : IProductPhaseRepository
                 ph.CompanyId == request.FromCompanyId);
         }
 
-        var count = await query.CountAsync();
+        var filteredProductPhases = await query.ToListAsync();
 
-        return count == distinctRequests.Count;
+        return distinctRequests.All(request =>
+            filteredProductPhases.Any(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == request.FromCompanyId));
 
         //var productPhases = await query.ToListAsync();
 
@@ -177,9 +182,10 @@ public class ProductPhaseRepository : IProductPhaseRepository
 
     public async Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId)
     {
-        return await _context.ProductPhases
-            .Where(ph => ph.CompanyId == companyId && productIds.Contains(ph.ProductId))
+        var list = await _context.ProductPhases
+            .Where(ph => productIds.Contains(ph.ProductId) && ph.CompanyId == companyId)
             .ToListAsync();
+        return list;
     }
 
     public async Task<(List<ProductPhase>, int)> SearchProductPhase(SearchProductPhaseQuery request)

@@ -38,7 +38,7 @@ internal sealed class UpdateShipmentStatusCommandHandler(
             throw new ShipmentStatusNotFoundException();
         }
 
-        var shipment = await _shipmentRepository.GetByIdAsync(shipmentId);
+        var shipment = await _shipmentRepository.GetByIdAndShipmentDetailAsync(shipmentId);
         if (shipment == null)
         {
             throw new ShipmentNotFoundException();

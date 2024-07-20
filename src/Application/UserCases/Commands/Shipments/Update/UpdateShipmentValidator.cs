@@ -2,7 +2,6 @@
 using Application.Utils;
 using Contract.Services.Material.Share;
 using Contract.Services.ProductPhase.ShareDto;
-using Contract.Services.Shipment.Share;
 using Contract.Services.Shipment.Update;
 using Contract.Services.ShipmentDetail.Share;
 using FluentValidation;
@@ -84,5 +83,51 @@ public class UpdateShipmentValidator : AbstractValidator<UpdateShipmentRequest>
             {
                 return shipmentDetailRequest?.ItemId != null;
             }).WithMessage("Mã vật phẩm không được để trống");
+
+        RuleFor(req => req.ShipmentDetailRequests)
+            .Must((req, requests) =>
+            {
+                var shipProduct = requests
+                    .Where(request => request.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT && request.PhaseId != null)
+                    .Select(request => new CheckQuantityInstockEnoughRequest(
+                        request.ItemId,
+                        (Guid)request.PhaseId,
+                        req.FromId,
+                        (int)request.Quantity))
+                    .ToList();
+
+                var duplicateGroups = shipProduct
+                    .GroupBy(p => new { p.ProductId, p.PhaseId, p.FromCompanyId })
+                    .Where(g => g.Count() > 1)
+                    .ToList();
+
+                if (duplicateGroups.Any())
+                {
+                    return false;
+                }
+
+                return true;
+            }).WithMessage("Không được thêm sản phẩm 2 lần");
+
+        RuleFor(req => req.ShipmentDetailRequests)
+            .Must((requests) =>
+            {
+                var shipMaterial = requests
+                .Where(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
+                .Select(s => new MaterialCheckQuantityRequest(s.ItemId, s.Quantity))
+                .ToList();
+
+                var duplicateGroups = shipMaterial
+                    .GroupBy(p => new { p.id })
+                    .Where(g => g.Count() > 1)
+                    .ToList();
+
+                if (duplicateGroups.Any())
+                {
+                    return false;
+                }
+
+                return true;
+            }).WithMessage("Không được thêm nguyên liệu 2 lần");
     }
 }

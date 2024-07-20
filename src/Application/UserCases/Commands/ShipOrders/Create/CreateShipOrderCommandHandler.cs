@@ -6,8 +6,6 @@ using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.Share;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
-using Domain.Exceptions.SetProducts;
-using Domain.Exceptions.Sets;
 using Domain.Exceptions.ShipOrder;
 using FluentValidation;
 
