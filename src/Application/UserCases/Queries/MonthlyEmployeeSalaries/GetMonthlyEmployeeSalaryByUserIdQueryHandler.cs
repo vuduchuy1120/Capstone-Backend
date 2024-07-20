@@ -6,7 +6,6 @@ using Contract.Services.MonthEmployeeSalary.Queries;
 using Contract.Services.MonthEmployeeSalary.ShareDtos;
 using Domain.Exceptions.MonthlyEmployeeSalaries;
 using Domain.Exceptions.Users;
-using System.Linq;
 
 namespace Application.UserCases.Queries.MonthlyEmployeeSalaries;
 
@@ -73,13 +72,26 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
         var attendanceDetails = await _attendanceRepository
             .GetAttendanceByMonthAndUserIdAsync(request.Month, request.Year, request.UserId);
 
+        var attendanceDetailsPreMonth = await _attendanceRepository
+            .GetAttendanceByMonthAndUserIdAsync(monthPre, yearPre, request.UserId);
+
         var totalWorkingDays = (double)attendanceDetails.Count(a => a.IsAttendance && !a.IsSalaryByProduct && (a.SlotId == 1 || a.SlotId == 2)) / 2;
+        var totalWorkingDaysPre = (double)attendanceDetailsPreMonth.Count(a => a.IsAttendance && !a.IsSalaryByProduct && (a.SlotId == 1 || a.SlotId == 2)) / 2;
+
         var totalHourOverTime = attendanceDetails.Where(a => a.IsAttendance && !a.IsSalaryByProduct && a.HourOverTime > 0).Sum(a => a.HourOverTime);
+        var totalHourOverTimePre = attendanceDetailsPreMonth.Where(a => a.IsAttendance && !a.IsSalaryByProduct && a.HourOverTime > 0).Sum(a => a.HourOverTime);
+
         var totalSalaryProduct = productWorkingResponses.Sum(p => p.Result.Quantity * p.Result.SalaryPerProduct);
         double currentSalary = (double)(monthlyEmployeeSalary?.Salary ?? 0);
 
         double rate = SalaryPre != 0 ? (currentSalary - SalaryPre) * 100 / SalaryPre : -999999999;
+
+        double rateWorkingDays = totalWorkingDaysPre != 0 ? (totalWorkingDays - totalWorkingDaysPre) * 100 / totalWorkingDaysPre : -999999999;
+        double rateHourOverTime = totalHourOverTimePre != 0 ? (totalHourOverTime - totalHourOverTimePre) * 100 / totalHourOverTimePre : -999999999;
+
         rate = Math.Round(rate * 100.0) / 100.0;
+        rateWorkingDays = Math.Round(rateWorkingDays * 100.0) / 100.0;
+        rateHourOverTime = Math.Round(rateHourOverTime * 100.0) / 100.0;
 
         var response = new MonthlyEmployeeSalaryResponse(
             Month: request.Month,
@@ -90,6 +102,8 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
             TotalWorkingHours: totalHourOverTime,
             TotalSalaryProduct: totalSalaryProduct,
             Rate: rate,
+            RateOverTime: rateHourOverTime,
+            RateWorkingDay: rateWorkingDays,
             ProductWorkingResponses: productWorkingResponses.Select(p => p.Result).ToList()
             );
 

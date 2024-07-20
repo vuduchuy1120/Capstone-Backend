@@ -30,7 +30,8 @@ public sealed class GetMonthlySalaryQueryHandler
                 Avatar: await _cloudStorage.GetSignedUrlAsync(monthlyEmployeeSalary.User.Avatar),
                 Month: monthlyEmployeeSalary.Month,
                 Year: monthlyEmployeeSalary.Year,
-                Salary: monthlyEmployeeSalary.Salary
+                Salary: monthlyEmployeeSalary.Salary,
+                AccountBalance: monthlyEmployeeSalary.User.AccountBalance ?? 0
             );
             monthlySalaryResponses.Add(monthlySalaryResponse);
         }

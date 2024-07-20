@@ -49,6 +49,11 @@ public class PhaseRepository : IPhaseRepository
         return await _context.Phases.AnyAsync(x => x.Id == id);
     }
 
+    public async Task<bool> IsPhase2(Guid phaseId)
+    {
+        return await _context.Phases.AnyAsync(x => x.Id == phaseId && x.Name == "PH_002");
+    }
+
     public void UpdatePhase(Phase phase)
     {
         _context.Phases.Update(phase);

@@ -114,4 +114,9 @@ public class CompanyRepository : ICompanyRepository
             .Select(c => c.CompanyType)
             .ToListAsync();
     }
+
+    public async Task<bool> IsCompanyMainFactory(Guid companyId)
+    {
+        return await _context.Companies.AnyAsync(c => c.Id == companyId && c.Name == "Cơ sở chính" && c.CompanyType == CompanyType.FACTORY);
+    }
 }

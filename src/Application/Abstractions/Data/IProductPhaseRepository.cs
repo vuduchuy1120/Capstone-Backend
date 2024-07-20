@@ -16,7 +16,7 @@ public interface IProductPhaseRepository
     Task<(List<ProductPhase>?, int)> GetProductPhases(GetProductPhasesQuery getProductPhasesQuery);
     void AddProductPhaseRange(List<ProductPhase> productPhases);
     void UpdateProductPhaseRange(List<ProductPhase> productPhases);
-    Task<ProductPhase> GetByProductIdPhaseIdCompanyID(Guid productId, Guid phaseId,Guid mainCompanyID);
+    Task<ProductPhase> GetByProductIdPhaseIdCompanyID(Guid productId, Guid phaseId, Guid mainCompanyID);
     //Task<List<ProductPhase>> GetByProductIdPhaseIdCompanyID(Guid companyId);
     Task<bool> IsAllShipDetailProductValid(List<CheckQuantityInstockEnoughRequest> requests);
     Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId);
@@ -24,4 +24,7 @@ public interface IProductPhaseRepository
     Task<ProductPhase> GetByProductIdPhaseIdAndCompanyIdAsync(Guid productId, Guid phaseId, Guid companyId);
     Task<List<ProductPhase>> GetByProductIdAndCompanyIdAsync(Guid productId, Guid companyId);
     Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId);
+    Task<(List<ProductPhase>, int)> SearchProductPhase(SearchProductPhaseQuery request);
+    Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId, Guid companyId);
+    Task<ProductPhase> GetProductPhaseByProductIdPhaseIdAndCompanyId(Guid productId, Guid phaseId, Guid companyId);
 }

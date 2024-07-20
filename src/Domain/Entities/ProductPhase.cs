@@ -72,4 +72,15 @@ public class ProductPhase
     {
         BrokenAvailableQuantity = quantity;
     }
+    public void UpdateBrokenQuantity(int quantity)
+    {
+        BrokenQuantity = quantity;
+    }
+
+    public void UpdateQuantityPhase(int quantity, int availableQuantity)
+    {
+        Quantity = quantity;
+        AvailableQuantity = availableQuantity;
+    }
+
 }

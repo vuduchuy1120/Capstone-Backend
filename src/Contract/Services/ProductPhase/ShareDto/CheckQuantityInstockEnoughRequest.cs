@@ -1,7 +1,7 @@
 ﻿namespace Contract.Services.ProductPhase.ShareDto;
 
 public record CheckQuantityInstockEnoughRequest(
-    Guid ProductId, 
+    Guid ProductId,
     Guid PhaseId,
     Guid FromCompanyId,
     int Quantity);
