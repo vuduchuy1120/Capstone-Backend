@@ -18,4 +18,5 @@ public interface ICompanyRepository
     Task<bool> IsCompanyNotCustomerCompanyAsync(Guid CompanyId); 
     Task<bool> IsThirdPartyCompanyAsync(Guid CompanyId);
     Task<List<CompanyType>> GetCompanyTypeByCompanyIdsAsync(List<Guid> companyIds);
+    Task<bool> IsCompanyMainFactory(Guid companyId);
 }

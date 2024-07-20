@@ -8,5 +8,6 @@ public record MonthlySalaryResponse
     string Avatar,
     int Month,
     int Year,
-    decimal Salary
+    decimal Salary,
+    decimal AccountBalance
     );
