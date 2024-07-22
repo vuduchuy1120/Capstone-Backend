@@ -3,7 +3,8 @@
 public record UpdateQuantityPhaseRequest
 (
     Guid ProductId,
-    Guid PhaseId,
+    Guid PhaseIdFrom,
+    Guid PhaseIdTo,
     Guid CompanyId,
     int quantity
     );

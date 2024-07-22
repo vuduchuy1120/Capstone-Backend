@@ -198,7 +198,9 @@ public class ProductPhaseRepository : IProductPhaseRepository
         if (!string.IsNullOrEmpty(request.SearchCompany))
         {
             var searchCompanyRemoveAccent = StringUtils.RemoveDiacritics(request.SearchCompany);
-            query = query.Where(pp => pp.Company.NameUnAccent.ToLower().Trim().Contains(searchCompanyRemoveAccent.ToLower().Trim()));
+            query = query.Where(pp => pp.Company.NameUnAccent.ToLower().Trim().Contains(searchCompanyRemoveAccent.ToLower().Trim()) ||
+                                      pp.Company.Id.ToString().ToLower().Trim().Equals(request.SearchCompany.ToLower().Trim())
+            );
         }
         if (!string.IsNullOrEmpty(request.SearchProduct))
         {

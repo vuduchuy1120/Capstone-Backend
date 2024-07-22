@@ -24,30 +24,29 @@ public class UpdateQuantityPhaseCommnadHandler
         {
             throw new MyValidationException(validator.ToDictionary());
         }
-        var phase = await _phaseRepository.GetPhaseByName("PH_003");
-        var phaseId = phase.Id;
-
-        var productPhase2 = await _productPhaseRepository.GetByProductIdPhaseIdCompanyID(request.updateReq.ProductId, request.updateReq.PhaseId, request.updateReq.CompanyId);
-        var productPhase3 = await _productPhaseRepository.GetByProductIdPhaseIdCompanyID(request.updateReq.ProductId, phaseId, request.updateReq.CompanyId);
 
 
-        var quantityAvailable = productPhase2.AvailableQuantity;
+        var productPhaseFrom = await _productPhaseRepository.GetByProductIdPhaseIdCompanyID(request.updateReq.ProductId, request.updateReq.PhaseIdFrom, request.updateReq.CompanyId);
+        var productPhaseTo = await _productPhaseRepository.GetByProductIdPhaseIdCompanyID(request.updateReq.ProductId, request.updateReq.PhaseIdTo, request.updateReq.CompanyId);
+
+
+        var quantityAvailable = productPhaseFrom.AvailableQuantity;
         if (quantityAvailable < request.updateReq.quantity)
         {
             throw new MyValidationException("Số lượng hàng hoàn thành lớn hơn số lượng hàng trong kho.");
         }
 
-        var updateQuantityPhase2 = productPhase2.Quantity - request.updateReq.quantity;
-        var updateAvailableQuantityPhase2 = productPhase2.AvailableQuantity - request.updateReq.quantity;
-        productPhase2.UpdateQuantityPhase(updateQuantityPhase2, updateAvailableQuantityPhase2);
-        _productPhaseRepository.UpdateProductPhase(productPhase2);
+        var updateQuantityPhase2 = productPhaseFrom.Quantity - request.updateReq.quantity;
+        var updateAvailableQuantityPhase2 = productPhaseFrom.AvailableQuantity - request.updateReq.quantity;
+        productPhaseFrom.UpdateQuantityPhase(updateQuantityPhase2, updateAvailableQuantityPhase2);
+        _productPhaseRepository.UpdateProductPhase(productPhaseFrom);
 
-        if (productPhase3 == null)
+        if (productPhaseTo == null)
         {
             var productPhase = ProductPhase.Create(new CreateProductPhaseRequest
             (
                 ProductId: request.updateReq.ProductId,
-                PhaseId: phaseId,
+                PhaseId: request.updateReq.PhaseIdTo,
                 Quantity: request.updateReq.quantity,
                 AvailableQuantity: request.updateReq.quantity,
                 CompanyId: request.updateReq.CompanyId
@@ -56,10 +55,10 @@ public class UpdateQuantityPhaseCommnadHandler
         }
         else
         {
-            var updateQuantityPhase3 = productPhase3.Quantity + request.updateReq.quantity;
-            var updateAvailableQuantityPhase3 = productPhase3.AvailableQuantity + request.updateReq.quantity;
-            productPhase3.UpdateQuantityPhase(updateQuantityPhase3, updateAvailableQuantityPhase3);
-            _productPhaseRepository.UpdateProductPhase(productPhase3);
+            var updateQuantityPhaseTo = productPhaseTo.Quantity + request.updateReq.quantity;
+            var updateAvailableQuantityPhaseTo = productPhaseTo.AvailableQuantity + request.updateReq.quantity;
+            productPhaseTo.UpdateQuantityPhase(updateQuantityPhaseTo, updateAvailableQuantityPhaseTo);
+            _productPhaseRepository.UpdateProductPhase(productPhaseTo);
         }
 
         await _unitOfWork.SaveChangesAsync();
