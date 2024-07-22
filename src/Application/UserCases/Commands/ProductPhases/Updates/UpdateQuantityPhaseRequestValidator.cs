@@ -21,17 +21,27 @@ public sealed class UpdateQuantityPhaseRequestValidator : AbstractValidator<Upda
         RuleFor(x => x.CompanyId)
             .NotEmpty()
             .WithMessage("CompanyId là bắt buộc")
-            .MustAsync(async (companyId, _) =>
+            .MustAsync(async (CompanyId, _) =>
             {
-                return await _companyRepository.IsCompanyMainFactory(companyId);
-            }).WithMessage("CompanyId không tìm thấy hoặc không phải trụ sở chính");
-        RuleFor(x => x.PhaseId)
+                return await _companyRepository.IsCompanyFactoryExistAsync(CompanyId);
+            }).WithMessage("CompanyId không tìm thấy hoặc không phải trụ sở chính hoặc trụ sở phụ");
+
+        RuleFor(x => x.PhaseIdFrom)
             .NotEmpty()
-            .WithMessage("PhaseId là bắt buộc")
-            .MustAsync(async (phaseId, _) =>
+            .WithMessage("PhaseIdFrom là bắt buộc")
+            .MustAsync(async (PhaseIdFrom, _) =>
             {
-                return await _phaseRepository.IsPhase2(phaseId);
-            }).WithMessage("PhaseId không tìm thấy");
+                return await _phaseRepository.IsExistById(PhaseIdFrom);
+
+            }).WithMessage("PhaseIdTo không tìm thấy");
+        RuleFor(x => x.PhaseIdTo)
+            .NotEmpty()
+            .WithMessage("PhaseIdTo là bắt buộc")
+            .MustAsync(async (PhaseIdTo, _) =>
+            {
+                return await _phaseRepository.IsExistById(PhaseIdTo);
+            }).WithMessage("PhaseIdTo không tìm thấy");
+
         RuleFor(x => x.ProductId)
             .NotEmpty()
             .WithMessage("ProductId là bắt buộc")
@@ -39,10 +49,16 @@ public sealed class UpdateQuantityPhaseRequestValidator : AbstractValidator<Upda
             {
                 return await _productRepository.IsProductIdExist(productId);
             }).WithMessage("ProductId không tìm thấy");
-        RuleFor(pp => new { pp.ProductId, pp.PhaseId, pp.CompanyId })
+
+        RuleFor(x => new { x.PhaseIdFrom, x.PhaseIdTo })
+            .Must((x, _) =>
+            {
+                return x.PhaseIdFrom != x.PhaseIdTo;
+            }).WithMessage("PhaseIdFrom và PhaseIdTo không được trùng nhau");
+        RuleFor(pp => new { pp.ProductId, pp.PhaseIdFrom, pp.CompanyId })
             .MustAsync(async (pp, _) =>
             {
-                return await _productPhaseRepository.IsProductPhaseExist(pp.ProductId, pp.PhaseId, pp.CompanyId);
+                return await _productPhaseRepository.IsProductPhaseExist(pp.ProductId, pp.PhaseIdFrom, pp.CompanyId);
             }).WithMessage("ProductPhase không tìm thấy");
     }
 }
