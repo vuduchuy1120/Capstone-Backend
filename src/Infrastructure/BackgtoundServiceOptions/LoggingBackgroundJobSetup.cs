@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Infrastructure.Services;
+using Microsoft.Extensions.Options;
 using Quartz;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.BackgtoundServiceOptions;
 
 public class LoggingBackgroundJobSetup : IConfigureOptions<QuartzOptions>
 {

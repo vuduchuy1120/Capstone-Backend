@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.ShipmentDetail.Share;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,15 @@ internal class ShipmentDetailRepository : IShipmentDetailRepository
         return await _context.ShipmentDetails
             .Where(s => s.ShipmentId == shipmentId && shipDetailIds.Contains(s.Id))
             .ToListAsync();
+    }
+
+    public async Task<List<ShipmentDetail>> GetShipmentDetailByShipmentIdAndProductPhaseType(Guid shipmentId, ProductPhaseType productPhaseType)
+    {
+        var query = await _context.ShipmentDetails
+            .Include(s => s.Shipment)
+            .Where(s => s.ShipmentId == shipmentId && s.ProductPhaseType == productPhaseType).ToListAsync();
+
+        return query;
     }
 
     public async Task<bool> IsAllShipDetailIdAndShipmentIdValidAsync(Guid shipmentId, List<Guid> shipDetailIds)

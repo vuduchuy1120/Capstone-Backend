@@ -11,4 +11,6 @@ public interface IShipmentRepository
     Task<bool> IsShipmentIdExistAndNotAcceptedAsync(Guid shipmentId);
     Task<(List<Shipment>, int)> SearchShipmentAsync(GetShipmentsQuery request);
     Task<Shipment> GetByIdAndShipmentDetailAsync(Guid shipmentId);
+
+    Task<List<Shipment>> GetShipmentByCompanyIdAndMonthAndYearAsync(Guid CompanyId, int month, int year, bool received);
 }
