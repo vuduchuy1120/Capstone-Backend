@@ -3,6 +3,9 @@ using Carter;
 using Contract.Services.Shipment.Create;
 using Contract.Services.Shipment.GetShipmentDetail;
 using Contract.Services.Shipment.GetShipments;
+using Contract.Services.Shipment.ShipperGetShipmentDetail;
+using Contract.Services.Shipment.ShipperGetShipments;
+using Contract.Services.Shipment.ShipperUpdateStatus;
 using Contract.Services.Shipment.Update;
 using Contract.Services.Shipment.UpdateAccepted;
 using Contract.Services.Shipment.UpdateStatus;
@@ -101,5 +104,43 @@ public class ShipmentEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
         });
+
+        app.MapPatch("{id}/shipper/change-status", async (
+            ISender sender,
+            ClaimsPrincipal claim,
+            [FromRoute] Guid id,
+            [FromBody] UpdateStatusRequest request) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new ShipperUpdateStatusCommand(userId, id, request));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Driver").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
+        });
+
+        app.MapGet("{id}/get-by-shipper", async (ISender sender, [FromRoute] Guid id, ClaimsPrincipal claim) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new ShipperGetShipmentDetailQuery(userId, id));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Driver").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
+        });
+
+        app.MapGet("get-by-shipper", async (ISender sender, [AsParameters] GetShipmentsQuery request, ClaimsPrincipal claim) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new ShipperGetShipmentsQuery(userId, request));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Driver").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Shipment api" } }
+        });
+
     }
 }

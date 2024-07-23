@@ -37,8 +37,9 @@ public class Shipment : EntityAuditBase<Guid>
         };
     }
 
-    public void UpdateStatus(string updateBy, Status statuss)
+    public void UpdateStatus(string updateBy, Status status)
     {
+        Status = status;
         UpdatedBy = updateBy;
         UpdatedDate = DateTime.UtcNow;
     }
