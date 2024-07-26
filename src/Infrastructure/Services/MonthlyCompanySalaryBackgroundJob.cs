@@ -5,6 +5,7 @@ using Quartz;
 
 namespace Infrastructure.Services;
 
+[DisallowConcurrentExecution]
 public class MonthlyCompanySalaryBackgroundJob : IJob
 {
     private readonly ILogger<MonthlyCompanySalaryBackgroundJob> _logger;

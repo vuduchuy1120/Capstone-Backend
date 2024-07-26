@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Contract.Services.MonthlyCompanySalary.Queries;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,4 +11,8 @@ namespace Application.Abstractions.Data;
 public interface IMonthlyCompanySalaryRepository
 {
     void AddRange(List<MonthlyCompanySalary> monthlyCompanySalaries);
+    Task<MonthlyCompanySalary> GetByIdAsync(Guid id);
+    Task<bool> IsExistAsync(Guid id);
+    void Update(MonthlyCompanySalary monthlyCompanySalary);
+    Task<(List<MonthlyCompanySalary>, int)> SearchMonthlyCompanySalary(GetMonthlyCompanySalaryQuery request);
 }
