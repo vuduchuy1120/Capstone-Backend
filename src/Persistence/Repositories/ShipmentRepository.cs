@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.Shipment.GetShipments;
+using Contract.Services.Shipment.Share;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +43,7 @@ internal class ShipmentRepository : IShipmentRepository
 
     public async Task<bool> IsShipmentIdExistAndNotAcceptedAsync(Guid shipmentId)
     {
-        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId && s.IsAccepted == false);  
+        return await _context.Shipments.AnyAsync(s => s.Id == shipmentId && s.IsAccepted == false);
     }
 
     public async Task<(List<Shipment>, int)> SearchShipmentAsync(GetShipmentsQuery request)
@@ -133,4 +134,37 @@ internal class ShipmentRepository : IShipmentRepository
             .SingleOrDefaultAsync(s => s.Id == shipmentId && s.ShipperId == shipperId);
     }
 
+    public async Task<List<Shipment>> GetShipmentByCompanyIdAndMonthAndYearAsync(Guid CompanyId, int month, int year, bool received)
+    {
+        if (received)
+        {
+            return await _context.Shipments
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.ProductPhaseSalaries)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.Images)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Material)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Phase)
+                .Where(s => s.FromId == CompanyId && s.ShipDate.Month == month && s.ShipDate.Year == year && s.Status == Status.SHIPPED && s.IsAccepted)
+                .ToListAsync();
+        }
+
+        return await _context.Shipments
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.ProductPhaseSalaries)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.Images)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Material)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Phase)
+                .Where(s => s.ToId == CompanyId && s.ShipDate.Month == month && s.ShipDate.Year == year && s.Status == Status.SHIPPED && s.IsAccepted)
+                .ToListAsync();
+    }
 }

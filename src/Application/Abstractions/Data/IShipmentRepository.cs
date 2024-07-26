@@ -15,4 +15,6 @@ public interface IShipmentRepository
     Task<(List<Shipment>, int)> SearchShipmentOfShipperAsync(GetShipmentsQuery request, string shipperId);
     Task<Shipment> GetByIdAndShipperIdAsync(Guid shipmentId, string shipperId);
     Task<Shipment> GetShipmentDetailByIdAndShipperAsync(Guid shipmentId, string shipperId);
+
+    Task<List<Shipment>> GetShipmentByCompanyIdAndMonthAndYearAsync(Guid CompanyId, int month, int year, bool received);
 }

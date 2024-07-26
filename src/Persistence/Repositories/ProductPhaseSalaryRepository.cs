@@ -21,6 +21,11 @@ public class ProductPhaseSalaryRepository : IProductPhaseSalaryRepository
         _context.ProductPhaseSalaries.AddRange(productPhaseSalaries);
     }
 
+    public async Task<List<ProductPhaseSalary>> GetAllProductPhaseSalaryAsync()
+    {
+        return await _context.ProductPhaseSalaries.ToListAsync();
+    }
+
     public async Task<ProductPhaseSalary> GetByProductIdAndPhaseId(Guid productId, Guid phaseId)
     {
         return await _context.ProductPhaseSalaries.SingleOrDefaultAsync(x => x.ProductId == productId && x.PhaseId == phaseId);

@@ -20,6 +20,7 @@ public class Company : EntityBase<Guid>
     public CompanyType CompanyType { get; set; }
     public List<User>? Users { get; set; }
     public List<ProductPhase>? ProductPhases { get; set; }
+    public List<MonthlyCompanySalary>? MonthlyCompanySalaries { get; set; }
 
     public static Company Create(CreateCompanyRequest request)
     {

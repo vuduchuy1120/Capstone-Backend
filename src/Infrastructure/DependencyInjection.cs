@@ -3,6 +3,7 @@ using Application.UserCases.Commands.MonthlyEmployeeSalaries;
 using Contract.Abstractions.Messages;
 using Contract.Services.MonthEmployeeSalary.Creates;
 using Infrastructure.AuthOptions;
+using Infrastructure.BackgtoundServiceOptions;
 using Infrastructure.Options;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -108,7 +109,7 @@ public static class DependencyInjection
         services.AddQuartz(options =>
         {
             options.UseMicrosoftDependencyInjectionJobFactory();
-            
+
         });
         services.AddQuartzHostedService(options =>
         {
@@ -116,6 +117,7 @@ public static class DependencyInjection
         });
 
         services.ConfigureOptions<LoggingBackgroundJobSetup>();
+        services.ConfigureOptions<MonthlyCompanySalaryBackgroundJobSetup>();
 
         return services;
     }

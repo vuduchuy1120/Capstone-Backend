@@ -8,5 +8,6 @@ public interface IProductPhaseSalaryRepository
     void AddRange(List<ProductPhaseSalary> productPhaseSalaries);
     Task<ProductPhaseSalary> GetByProductIdAndPhaseId(Guid productId, Guid phaseId);
     void UpdateRange(List<ProductPhaseSalary> productPhaseSalaries);
+    Task<List<ProductPhaseSalary>> GetAllProductPhaseSalaryAsync();
 
 }

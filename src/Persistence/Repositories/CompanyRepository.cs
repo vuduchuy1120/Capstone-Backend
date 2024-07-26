@@ -119,4 +119,9 @@ public class CompanyRepository : ICompanyRepository
     {
         return await _context.Companies.AnyAsync(c => c.Id == companyId && c.Name == "Cơ sở chính" && c.CompanyType == CompanyType.FACTORY);
     }
+
+    public async Task<List<Company>> GetThirdPartyCompany()
+    {
+        return await _context.Companies.Where(c => c.CompanyType == CompanyType.THIRD_PARTY_COMPANY).ToListAsync();
+    }
 }
