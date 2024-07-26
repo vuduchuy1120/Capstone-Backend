@@ -142,6 +142,13 @@ internal class ShipmentRepository : IShipmentRepository
                 .Include(s => s.ShipmentDetails)
                     .ThenInclude(s => s.Product)
                         .ThenInclude(p => p.ProductPhaseSalaries)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.Images)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Material)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Phase)
                 .Where(s => s.FromId == CompanyId && s.ShipDate.Month == month && s.ShipDate.Year == year && s.Status == Status.SHIPPED && s.IsAccepted)
                 .ToListAsync();
         }
@@ -150,6 +157,13 @@ internal class ShipmentRepository : IShipmentRepository
                 .Include(s => s.ShipmentDetails)
                     .ThenInclude(s => s.Product)
                         .ThenInclude(p => p.ProductPhaseSalaries)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Product)
+                        .ThenInclude(p => p.Images)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Material)
+                .Include(s => s.ShipmentDetails)
+                    .ThenInclude(s => s.Phase)
                 .Where(s => s.ToId == CompanyId && s.ShipDate.Month == month && s.ShipDate.Year == year && s.Status == Status.SHIPPED && s.IsAccepted)
                 .ToListAsync();
     }

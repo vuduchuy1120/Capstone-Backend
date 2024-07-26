@@ -51,5 +51,16 @@ public class MonthlyCompanySalaryEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Monthly company salary api" } }
         });
+
+        app.MapGet("detail", async (
+            ISender sender,
+            [AsParameters] GetMonthlyCompanySalaryByIdQuery request) =>
+        {
+            var result = await sender.Send(request);
+            return Results.Ok(result);
+        }).WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Monthly company salary api" } }
+        });
     }
 }

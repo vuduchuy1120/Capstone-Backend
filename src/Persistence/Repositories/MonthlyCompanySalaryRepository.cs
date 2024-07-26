@@ -23,6 +23,12 @@ public class MonthlyCompanySalaryRepository : IMonthlyCompanySalaryRepository
         return await _context.MonthlyCompanySalaries.SingleOrDefaultAsync(mcs => mcs.Id == id);
     }
 
+    public async Task<MonthlyCompanySalary> GetMonthlyCompanySalaryByIdAsync(Guid id)
+    {
+        return await _context.MonthlyCompanySalaries
+            .SingleOrDefaultAsync(mcs => mcs.Id == id);
+    }
+
     public async Task<bool> IsExistAsync(Guid id)
     {
         return await _context.MonthlyCompanySalaries.AnyAsync(mcs => mcs.Id == id);

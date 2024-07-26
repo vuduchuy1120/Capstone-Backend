@@ -15,4 +15,5 @@ public interface IMonthlyCompanySalaryRepository
     Task<bool> IsExistAsync(Guid id);
     void Update(MonthlyCompanySalary monthlyCompanySalary);
     Task<(List<MonthlyCompanySalary>, int)> SearchMonthlyCompanySalary(GetMonthlyCompanySalaryQuery request);
+    Task<MonthlyCompanySalary> GetMonthlyCompanySalaryByIdAsync(Guid id);
 }
