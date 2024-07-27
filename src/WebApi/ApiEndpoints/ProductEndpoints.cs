@@ -74,7 +74,7 @@ public class ProductEndpoints : CarterModule
             var result = await sender.Send(searchProductQuery);
 
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
         });
