@@ -75,7 +75,7 @@ namespace Application.UserCases.Queries.OrderDetails
                             sp.Product.Id,
                             sp.Product.Name,
                             sp.Product.Code,
-                            sp.Product.Price,
+                            sp.Product.ProductPhaseSalaries.FirstOrDefault().SalaryPerProduct,
                             sp.Product.Size,
                             sp.Product.Description,
                             sp.Product.IsInProcessing,

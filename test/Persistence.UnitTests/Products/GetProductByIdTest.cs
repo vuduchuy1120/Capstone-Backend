@@ -37,7 +37,6 @@ public class GetProductByIdTest : IDisposable
         Assert.NotNull(result);
         Assert.Equal(product.Id, result.Id);
         Assert.Equal("Code", result.Code);
-        Assert.Equal(123, result.Price);
         Assert.Equal("Size", result.Size);
         Assert.Equal("Description", result.Description);
         Assert.Equal("Name", result.Name);

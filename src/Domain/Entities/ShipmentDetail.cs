@@ -41,6 +41,7 @@ public class ShipmentDetail : EntityBase<Guid>
             ShipmentId = shipId,
             MaterialId = request.ItemId,
             Quantity = request.Quantity,
+            MaterialPrice = request.MaterialPrice,
         };
     }
 

@@ -42,7 +42,7 @@ internal sealed class SearchProductQueryHandler(
                 p.Id,
                 p.Name,
                 p.Code,
-                p.Price,               
+                p.Price,
                 p.Size,
                 p.Description,
                 p.IsInProcessing,

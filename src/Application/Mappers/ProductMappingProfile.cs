@@ -14,7 +14,7 @@ public class ProductMappingProfile : Profile
                 src.Id,
                 src.Name,
                 src.Code,
-                src.Price,                
+                src.Price,
                 src.Size,
                 src.Description,
                 src.IsInProcessing,
