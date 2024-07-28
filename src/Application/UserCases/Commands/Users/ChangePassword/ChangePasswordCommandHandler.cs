@@ -7,6 +7,7 @@ using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;
+using System.Net;
 
 namespace Application.UserCases.Commands.Users.ChangePassword;
 
@@ -55,7 +56,7 @@ internal sealed class ChangePasswordCommandHandler(
 
         if (!isPasswordValid)
         {
-            throw new WrongIdOrPasswordException();
+            throw new WrongIdOrPasswordException((int) HttpStatusCode.Conflict, "Mật khẩu không chính xác");
         }
 
         return user;
