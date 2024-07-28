@@ -49,6 +49,7 @@ namespace Application.UserCases.Queries.OrderDetails
                         orderDetail.Product.Description,
                         imageUrl,
                         orderDetail.Quantity,
+                        orderDetail.ShippedQuantity,
                         orderDetail.UnitPrice,
                         orderDetail.Note
                     ));
@@ -92,6 +93,7 @@ namespace Application.UserCases.Queries.OrderDetails
                         setImageUrl,
                         productResponses.ToList(),
                         orderDetail.Quantity,
+                        orderDetail.ShippedQuantity,
                         orderDetail.UnitPrice,
                         orderDetail.Note
                     ));
