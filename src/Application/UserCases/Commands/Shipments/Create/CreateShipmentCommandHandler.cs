@@ -66,6 +66,12 @@ internal sealed class CreateShipmentCommandHandler(
 
         if (isFromCompanyIsThirdPartyCompany)
         {
+            var isHasShipMaterial = shipmentDetailRequests.Any(s => s.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL);
+            if (isHasShipMaterial)
+            {
+                throw new ShipmentBadRequestException("Công ty bên thứ 3 không được gửi nguyên liệu");
+            }
+
             var uniqueItemIds = shipmentDetailRequests
                 .Select(s => s.ItemId)
                 .Distinct()
