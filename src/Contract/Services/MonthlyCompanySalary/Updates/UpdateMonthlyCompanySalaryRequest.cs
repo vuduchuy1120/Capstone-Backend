@@ -4,7 +4,9 @@ namespace Contract.Services.MonthlyCompanySalary.Updates;
 
 public record UpdateMonthlyCompanySalaryRequest
 (
-    Guid Id,
+    Guid CompanyId,
+    int Month,
+    int Year,
     StatusSalary Status,
     string? Note
     );
