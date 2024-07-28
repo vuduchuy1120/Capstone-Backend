@@ -11,7 +11,7 @@ public class ProductPhaseNotFoundException : MyException
     }
 
     public ProductPhaseNotFoundException()
-        : base(400, $"Search phase not found")
+        : base(400, $"Không tìm thấy sản phẩm trong kho")
     {
     }
 }

@@ -72,6 +72,12 @@ internal sealed class CreateShipmentCommandHandler(
                 throw new ShipmentBadRequestException("Công ty bên thứ 3 không được gửi nguyên liệu");
             }
 
+            var isHasShipThirdPartyBrokenProduct = shipmentDetailRequests.Any(s => s.ProductPhaseType == ProductPhaseType.THIRD_PARTY_ERROR);
+            if (isHasShipThirdPartyBrokenProduct)
+            {
+                throw new ShipmentBadRequestException("Công ty bên thứ 3 không được sản phẩm hỏng do bên thứ 3");
+            }
+
             var uniqueItemIds = shipmentDetailRequests
                 .Select(s => s.ItemId)
                 .Distinct()
@@ -122,17 +128,17 @@ internal sealed class CreateShipmentCommandHandler(
 
     private ShipmentDetail CreateShipmentDetailFromThirdPartyCompany(ShipmentDetailRequest request, Guid shipmentId, List<ProductPhase> productPhases)
     {
-        if (request.KindOfShip != KindOfShip.SHIP_FACTORY_PRODUCT)
-        {
-            if (request.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
-            {
-                throw new ShipmentBadRequestException("Công ty hợp tác bên thứ 3 không gửi được nguyên liệu");
-            }
-            else
-            {
-                throw new KindOfShipNotFoundException();
-            }
-        }
+        //if (request.KindOfShip != KindOfShip.SHIP_FACTORY_PRODUCT)
+        //{
+        //    if (request.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
+        //    {
+        //        throw new ShipmentBadRequestException("Công ty hợp tác bên thứ 3 không gửi được nguyên liệu");
+        //    }
+        //    else
+        //    {
+        //        throw new KindOfShipNotFoundException();
+        //    }
+        //}
 
         var totalQuantity = productPhases.Sum(ph => ph.AvailableQuantity + ph.ErrorAvailableQuantity);
 
