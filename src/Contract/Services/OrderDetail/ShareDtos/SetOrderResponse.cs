@@ -11,6 +11,7 @@ public record SetOrderResponse
     string ImageSetUrl,
     List<ProductResponse> ProductResponses,
     int Quantity,
+    int ShippedQuantiy,
     decimal UnitPrice,
     string? Note
     );

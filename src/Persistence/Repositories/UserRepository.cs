@@ -22,7 +22,6 @@ internal class UserRepository : IUserRepository
     public Task<List<User>> GetAttendanceAndEmployeeProductAllUser(int month, int year)
     {
         var users = _context.Users
-            .AsNoTracking()
             .Include(u => u.Attendances)
             .Include(u => u.SalaryHistories)
             .Include(u => u.EmployeeProducts)
