@@ -22,7 +22,11 @@ public class UpdateStatusMonthlyCompanySalaryCommandHandler
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        var monthlyCompanySalary = await _monthlyCompanySalaryRepository.GetByIdAsync(request.updateReq.Id);
+        var monthlyCompanySalary = await _monthlyCompanySalaryRepository
+            .GetMonthlyCompanySalaryByCompanyIdMonthAndYear(
+                request.updateReq.CompanyId,
+                request.updateReq.Month,
+                request.updateReq.Year);
         monthlyCompanySalary.UpdateSatus(request.updateReq);
 
         _monthlyCompanySalaryRepository.Update(monthlyCompanySalary);

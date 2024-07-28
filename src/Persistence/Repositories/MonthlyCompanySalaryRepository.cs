@@ -23,6 +23,12 @@ public class MonthlyCompanySalaryRepository : IMonthlyCompanySalaryRepository
         return await _context.MonthlyCompanySalaries.SingleOrDefaultAsync(mcs => mcs.Id == id);
     }
 
+    public Task<MonthlyCompanySalary> GetMonthlyCompanySalaryByCompanyIdMonthAndYear(Guid CompanyId, int Month, int Year)
+    {
+        return _context.MonthlyCompanySalaries
+            .SingleOrDefaultAsync(mcs => mcs.CompanyId == CompanyId && mcs.Month == Month && mcs.Year == Year);
+    }
+
     public async Task<MonthlyCompanySalary> GetMonthlyCompanySalaryByIdAsync(Guid id)
     {
         return await _context.MonthlyCompanySalaries
@@ -32,6 +38,11 @@ public class MonthlyCompanySalaryRepository : IMonthlyCompanySalaryRepository
     public async Task<bool> IsExistAsync(Guid id)
     {
         return await _context.MonthlyCompanySalaries.AnyAsync(mcs => mcs.Id == id);
+    }
+
+    public async Task<bool> IsExistMonthlyCompanySalary(Guid CompanyId, int Month, int Year)
+    {
+        return await _context.MonthlyCompanySalaries.AnyAsync(mcs => mcs.CompanyId == CompanyId && mcs.Month == Month && mcs.Year == Year);
     }
 
     public async Task<(List<MonthlyCompanySalary>, int)> SearchMonthlyCompanySalary(GetMonthlyCompanySalaryQuery request)

@@ -6,6 +6,8 @@ using Contract.Services.MonthlyCompanySalary.Queries;
 using Contract.Services.MonthlyCompanySalary.ShareDtos;
 using Contract.Services.ShipmentDetail.Share;
 using Domain.Entities;
+using Domain.Exceptions.MonthlyCompanySalaries;
+using Domain.Exceptions.Shipments;
 using System.Linq;
 
 namespace Application.UserCases.Queries.MonthlyCompanySalaries;
@@ -20,30 +22,99 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
 {
     public async Task<Result.Success<MonthlyCompanySalaryDetailResponse>> Handle(GetMonthlyCompanySalaryByIdQuery request, CancellationToken cancellationToken)
     {
-        var monthlyCompanySalary = await _monthlyCompanySalaryRepository.GetMonthlyCompanySalaryByIdAsync(request.MonthlyCompanySalaryId);
+        var monthlyCompanySalary = await _monthlyCompanySalaryRepository.GetMonthlyCompanySalaryByCompanyIdMonthAndYear(request.CompanyId, request.Month, request.Year);
         var receivedShipments = await _shipmentRepository.GetShipmentByCompanyIdAndMonthAndYearAsync(request.CompanyId, request.Month, request.Year, true);
         var sendShipments = await _shipmentRepository.GetShipmentByCompanyIdAndMonthAndYearAsync(request.CompanyId, request.Month, request.Year, false);
         var productPhaseSalaries = await _productPhaseSalaryRepository.GetAllProductPhaseSalaryAsync();
 
-        var materialResponses = sendShipments
-               .SelectMany(sh => sh.ShipmentDetails)
-               .Where(sd => sd.MaterialId.HasValue)
-               .Select(sd => new MaterialExportReponse(
-                   MaterialId: sd.MaterialId.Value,
-                   MaterialName: sd.Material.Name,
-                   MaterialUnit: sd.Material.Unit,
-                   Quantity: sd.Quantity,
-                   Price: sd.MaterialPrice
-               ))
-               .ToList();
+        if (monthlyCompanySalary == null)
+        {
+            throw new MonthlyCompanySalaryNotFoundException(request.Month, request.Year);
+        }
 
-        var productExportResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.NO_PROBLEM);
-        var productBrokenResponses = await GetProductExportResponses(sendShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR);
 
-        var totalSalaryProduct = productExportResponses.Sum(pe => Decimal.Multiply((decimal)pe.Quantity, pe.Price));
+        if (receivedShipments == null && sendShipments == null)
+        {
+            throw new ShipmentNotFoundException();
+        }
+
+        int monthPrevious = request.Month == 1 ? 12 : request.Month - 1;
+        int yearPrevious = request.Month == 1 ? request.Year - 1 : request.Year;
+
+
+        var receivedShipmentsPre = await _shipmentRepository.GetShipmentByCompanyIdAndMonthAndYearAsync(request.CompanyId, monthPrevious, yearPrevious, true);
+        var sendShipmentsPre = await _shipmentRepository.GetShipmentByCompanyIdAndMonthAndYearAsync(request.CompanyId, monthPrevious, yearPrevious, false);
+
+
+        double totalProduct = 0;
+        decimal totalSalaryProduct = 0;
+        var productExportResponses = new List<ProductExportResponse>();
+        if (receivedShipments != null)
+        {
+            productExportResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.NO_PROBLEM);
+            totalProduct = productExportResponses.Sum(pe => pe.Quantity);
+            totalSalaryProduct = productExportResponses.Sum(pe => Decimal.Multiply((decimal)pe.Quantity, pe.Price));
+        }
+        var materialResponses = new List<MaterialExportReponse>();
+        double totalMaterial = 0;
+
+        var productBrokenResponses = new List<ProductExportResponse>();
+        double totalBroken = 0;
+
+        if (sendShipments != null)
+        {
+            var materialResponseTasks = sendShipments
+                .SelectMany(sh => sh.ShipmentDetails)
+                .Where(sd => sd.MaterialId.HasValue)
+                .Select(async sd => new MaterialExportReponse(
+                    MaterialId: sd.MaterialId.Value,
+                    MaterialName: sd.Material.Name,
+                    MaterialUnit: sd.Material.Unit,
+                    MaterialImage: await _cloudStorage.GetSignedUrlAsync(sd.Material.Image),
+                    Quantity: sd.Quantity,
+                    Price: sd.MaterialPrice
+                ));
+
+            materialResponses = (await Task.WhenAll(materialResponseTasks)).ToList();
+            totalMaterial = materialResponses.Sum(me => me.Quantity);
+
+            productBrokenResponses = await GetProductExportResponses(sendShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR);
+            totalBroken = productBrokenResponses.Sum(pb => pb.Quantity);
+        }
+
         var totalSalaryMaterial = materialResponses.Sum(me => Decimal.Multiply((decimal)me.Quantity, me.Price));
         var totalSalaryBroken = productBrokenResponses.Sum(pb => Decimal.Multiply((decimal)pb.Quantity, pb.Price));
         var totalSalaryTotal = totalSalaryProduct - totalSalaryMaterial - totalSalaryBroken;
+
+        double totalProductPre = 0;
+        double totalBrokenPre = 0;
+
+
+        var productExportResponsesPre = await GetProductExportResponses(receivedShipmentsPre, productPhaseSalaries, ProductPhaseType.NO_PROBLEM);
+        if (productExportResponsesPre.Count > 0)
+        {
+            totalProductPre = productExportResponsesPre.Sum(pe => pe.Quantity);
+        }
+
+        var productBrokenResponsesPre = await GetProductExportResponses(sendShipmentsPre, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR);
+        if (productBrokenResponsesPre.Count > 0)
+        {
+            totalBrokenPre = productBrokenResponsesPre.Sum(pb => pb.Quantity);
+        }
+
+        double rateProduct = -999999;
+        double rateBroken = -999999;
+
+        if (totalProductPre > 0)
+        {
+            rateProduct = (totalProduct - totalProductPre) / totalProductPre;
+        }
+
+        if (totalBrokenPre > 0)
+        {
+            rateBroken = (totalBroken - totalBrokenPre) / totalBrokenPre;
+        }
+
         var response = new MonthlyCompanySalaryDetailResponse(
                 CompanyId: request.CompanyId,
                 Month: request.Month,
@@ -55,6 +126,11 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
                 TotalSalaryMaterial: totalSalaryMaterial,
                 TotalSalaryBroken: totalSalaryBroken,
                 TotalSalaryTotal: totalSalaryTotal,
+                TotalProduct: totalProduct,
+                TotalMaterial: totalMaterial,
+                TotalBroken: totalBroken,
+                RateProduct: rateProduct,
+                RateBroken: rateBroken,
                 MaterialResponses: materialResponses,
                 ProductExportResponses: productExportResponses,
                 ProductBrokenResponses: productBrokenResponses

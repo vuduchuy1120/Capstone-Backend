@@ -12,6 +12,11 @@ public record MonthlyCompanySalaryDetailResponse
     decimal TotalSalaryMaterial,
     decimal TotalSalaryBroken,
     decimal TotalSalaryTotal,
+    double TotalProduct,
+    double TotalMaterial,
+    double TotalBroken,
+    double RateProduct,
+    double RateBroken,
     List<MaterialExportReponse> MaterialResponses,
     List<ProductExportResponse> ProductExportResponses,
     List<ProductExportResponse> ProductBrokenResponses

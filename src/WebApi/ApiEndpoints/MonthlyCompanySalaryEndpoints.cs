@@ -47,7 +47,9 @@ public class MonthlyCompanySalaryEndpoints : CarterModule
         {
             var result = await sender.Send(request);
             return Results.Ok(result);
-        }).WithOpenApi(x => new OpenApiOperation(x)
+        })
+        .RequireAuthorization("Require-Admin")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Monthly company salary api" } }
         });
@@ -58,7 +60,9 @@ public class MonthlyCompanySalaryEndpoints : CarterModule
         {
             var result = await sender.Send(request);
             return Results.Ok(result);
-        }).WithOpenApi(x => new OpenApiOperation(x)
+        })
+        .RequireAuthorization("Require-Admin")
+        .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Monthly company salary api" } }
         });
