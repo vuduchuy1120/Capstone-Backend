@@ -3,6 +3,7 @@ using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Company.ShareDtos;
+using Contract.Services.Material.ShareDto;
 using Contract.Services.MaterialHistory.ShareDto;
 using Contract.Services.Phase.ShareDto;
 using Contract.Services.Product.SharedDto;
@@ -64,12 +65,12 @@ internal sealed class ShipperGetShipmentDetailQueryHandler(
         }
         else if (shipmentDetail.Material is not null)
         {
-            var materialHistoryResponse = _mapper.Map<MaterialHistoryResponse>(shipmentDetail.Material);
+            var materialResponse = _mapper.Map<MaterialResponse>(shipmentDetail.Material);
 
             return new DetailResponse(
                 null,
                 null,
-                materialHistoryResponse,
+                materialResponse,
                 shipmentDetail.Quantity,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());

@@ -100,6 +100,13 @@ internal sealed class UpdateAcceptedCommandHandler(
 
                 if (productPhaseToCompany == null)
                 {
+                    productPhaseToCompany = _newProductPhases
+                        .Where(p => p.PhaseId == detail.PhaseId && p.CompanyId == toId && p.ProductId == detail.ProductId)
+                        .FirstOrDefault();
+                }
+
+                if (productPhaseToCompany == null)
+                {
                     productPhaseToCompany = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
                         (Guid)detail.ProductId,
                         (Guid)detail.PhaseId,
@@ -138,7 +145,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                         throw new ItemAvailableNotEnoughException($"Số lượng sản phẩm không đủ - id sản phẩm: {detail.ProductId} - ERROR");
                     productPhaseFromCompany.UpdateErrorAvailableQuantity(quantityOfFromCompany);
 
-                    productPhaseToCompany.UpdateQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
                 }
                 else
                 {
