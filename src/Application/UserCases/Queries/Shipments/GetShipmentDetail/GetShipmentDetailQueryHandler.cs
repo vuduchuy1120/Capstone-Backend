@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
@@ -19,7 +20,7 @@ namespace Application.UserCases.Queries.Shipments.GetShipmentDetail;
 
 internal sealed class GetShipmentDetailQueryHandler(
     IShipmentRepository _shipmentRepository,
-    ICompanyRepository _companyRepository,
+    ICloudStorage _cloudStorage,
     IMapper _mapper) : IQueryHandler<GetShipmentDetailQuery, ShipmentDetailResponse>
 {
     public async Task<Result.Success<ShipmentDetailResponse>> Handle(
@@ -54,6 +55,11 @@ internal sealed class GetShipmentDetailQueryHandler(
     {
         if (shipmentDetail.Product is not null && shipmentDetail.Phase is not null)
         {
+            foreach(var image in shipmentDetail.Product.Images)
+            {
+                image.ImageUrl = await _cloudStorage.GetSignedUrlAsync(image.ImageUrl);
+            }
+
             var phaseResponse = _mapper.Map<PhaseResponse>(shipmentDetail.Phase);
             var productResponse = _mapper.Map<ProductResponse>(shipmentDetail.Product);
 
@@ -67,6 +73,8 @@ internal sealed class GetShipmentDetailQueryHandler(
         }
         else if (shipmentDetail.Material is not null)
         {
+            var material = shipmentDetail.Material;
+            material.Image = await _cloudStorage.GetSignedUrlAsync(material.Image);
             var materialResponse = _mapper.Map<MaterialResponse>(shipmentDetail.Material);
 
             return new DetailResponse(
