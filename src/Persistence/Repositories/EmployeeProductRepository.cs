@@ -64,24 +64,30 @@ public class EmployeeProductRepository : IEmployeeProductRepository
 
     public async Task<List<EmployeeProduct>> GetEmployeeProductsByMonthAndYearAndUserId(int month, int year, string userId)
     {
-        var query = await _context.EmployeeProducts
+        var userAttendances = await _context.Attendances
+        .Where(at => at.Date.Month == month &&
+                    at.Date.Year == year &&
+                    at.UserId == userId &&
+                    at.IsAttendance == true &&
+                    at.IsSalaryByProduct == true)
+        .Select(at => at.Date)
+        .ToListAsync();
+
+        var employeeProducts = await _context.EmployeeProducts
             .Include(ep => ep.Product)
                 .ThenInclude(p => p.ProductPhaseSalaries)
-            .Include(ep=>ep.Product)
-                .ThenInclude(p=>p.Images)
+            .Include(ep => ep.Product)
+                .ThenInclude(p => p.Images)
             .Include(ep => ep.Phase)
             .Include(ep => ep.User)
-                .ThenInclude(u=>u.Attendances)
-            .Where(ep => ep.Date.Month == month && 
-                        ep.Date.Year == year && 
-                        ep.UserId == userId && 
+            .Where(ep => ep.Date.Month == month &&
+                        ep.Date.Year == year &&
+                        ep.UserId == userId &&
                         ep.User.IsActive == true &&
-                        ep.User.Attendances.Any(at => at.Date.Month == month && 
-                                                    at.Date.Year == year && 
-                                                    at.IsAttendance && 
-                                                    at.IsSalaryByProduct))
+                        userAttendances.Contains(ep.Date))
             .ToListAsync();
-        return query;
+
+        return employeeProducts;
     }
 
     public async Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys)

@@ -18,10 +18,7 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
 {
     public async Task<Result.Success<MonthlyEmployeeSalaryResponse>> Handle(GetMonthlyEmployeeSalaryByUserIdQuery request, CancellationToken cancellationToken)
     {
-        if (request.RoleNameClaim != "MAIN_ADMIN" && request.UserId != request.UserId)
-        {
-            throw new UserNotPermissionException("Bạn không có quyền xem thông tin lương của nhân viên khác!");
-        }
+        await CheckUserPermission(request);
 
         var monthlyEmployeeSalary = await _monthlyEmployeeSalaryRepository
             .GetMonthlyEmployeeSalaryByUserIdAsync(request.UserId, request.Month, request.Year);
@@ -38,36 +35,21 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
         var employeeProductDetails = await _employeeProductRepository
             .GetEmployeeProductsByMonthAndYearAndUserId(request.Month, request.Year, request.UserId);
 
-        var productWorkingResponses = employeeProductDetails.Select(async ep =>
-        {
-            var productName = ep.Product.Name;
-            var quantity = ep.Quantity;
+        var productWorkingResponses = employeeProductDetails
+            .GroupBy(ep => new {ProductId = ep.ProductId,ProductName = ep.Product.Name, ep.PhaseId, ep.Phase.Name, ep.Phase.Description, ep.Product.Images.FirstOrDefault().ImageUrl })
+            .Select(async g => new ProductWorkingResponse(
+                ProductId: g.Key.ProductId,
+                ProductName: g.Key.Name,
+                ProductImage: await _cloudStorage.GetSignedUrlAsync(g.Key.ImageUrl ?? "ImageNotFound"),
+                PhaseId: g.Key.PhaseId,
+                PhaseName: g.Key.Name,
+                PhaseDescription: g.Key.Description,
+                Quantity: g.Sum(ep => ep.Quantity),
+                SalaryPerProduct: g.FirstOrDefault().Product.ProductPhaseSalaries
+                                    .Where(pps => pps.PhaseId == g.Key.PhaseId)
+                                    .FirstOrDefault()?.SalaryPerProduct ?? 0
+            ));
 
-            // Find salary per product based on phase
-            var salaryPerProduct = ep.Product.ProductPhaseSalaries
-                .Where(pps => pps.PhaseId == ep.PhaseId)
-                .FirstOrDefault()?.SalaryPerProduct;
-
-            // Calculate total salary
-            var totalSalary = quantity * salaryPerProduct;
-
-            // Create the response object
-            return new ProductWorkingResponse(
-                ProductId: ep.ProductId,
-                ProductName: productName,
-                ProductImage: await _cloudStorage
-                                .GetSignedUrlAsync(ep.Product.Images
-                                                    .FirstOrDefault()
-                                                    ?.IsMainImage ?? false
-                                                    ? ep.Product.Images.FirstOrDefault()
-                                                    ?.ImageUrl : "ImageNotFound"),
-                PhaseId: ep.PhaseId,
-                PhaseName: ep.Phase.Name,
-                PhaseDescription: ep.Phase.Description,
-                Quantity: quantity,
-                SalaryPerProduct: salaryPerProduct ?? 0
-            );
-        });
 
         var attendanceDetails = await _attendanceRepository
             .GetAttendanceByMonthAndUserIdAsync(request.Month, request.Year, request.UserId);
@@ -108,5 +90,13 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
             );
 
         return Result.Success<MonthlyEmployeeSalaryResponse>.Get(response);
+    }
+
+    private async Task CheckUserPermission(GetMonthlyEmployeeSalaryByUserIdQuery request)
+    {
+        if (request.RoleNameClaim != "MAIN_ADMIN" && request.UserId != request.UserId)
+        {
+            throw new UserNotPermissionException("Bạn không có quyền xem thông tin lương của nhân viên khác!");
+        }
     }
 }
