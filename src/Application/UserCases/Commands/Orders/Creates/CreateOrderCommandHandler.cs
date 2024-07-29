@@ -11,7 +11,6 @@ namespace Application.UserCases.Commands.Orders.Creates;
 
 public sealed class CreateOrderCommandHandler
     (IOrderRepository _orderRepository,
-    ICompanyRepository _companyRepository,
     IOrderDetailRepository _orderDetailRepository,
     IValidator<CreateOrderRequest> _validator,
     IUnitOfWork _unitOfWork
