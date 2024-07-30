@@ -12,7 +12,7 @@ public class Material : EntityBase<Guid>
     public string? Description { get; private set; }
     public string Unit { get; private set; }
     public double? QuantityPerUnit { get; private set; }
-    public string? Image { get; private set; }
+    public string? Image { get; set; }
     public double QuantityInStock { get; private set; }
     public double AvailableQuantity { get; private set; }
     public List<MaterialHistory>? MaterialHistories { get; private set; }

@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Company.ShareDtos;
 using Contract.Services.Material.ShareDto;
-using Contract.Services.MaterialHistory.ShareDto;
 using Contract.Services.Phase.ShareDto;
 using Contract.Services.Product.SharedDto;
 using Contract.Services.Shipment.GetShipmentDetail;
@@ -19,7 +19,7 @@ namespace Application.UserCases.Queries.Shipments.ShipperGetShipmentDetail;
 
 internal sealed class ShipperGetShipmentDetailQueryHandler(
     IShipmentRepository _shipmentRepository,
-    ICompanyRepository _companyRepository,
+    ICloudStorage _cloudStorage,
     IMapper _mapper) : IQueryHandler<ShipperGetShipmentDetailQuery, ShipmentDetailResponse>
 {
     public async Task<Result.Success<ShipmentDetailResponse>> Handle(ShipperGetShipmentDetailQuery request, CancellationToken cancellationToken)
@@ -52,6 +52,11 @@ internal sealed class ShipperGetShipmentDetailQueryHandler(
     {
         if (shipmentDetail.Product is not null && shipmentDetail.Phase is not null)
         {
+            foreach (var image in shipmentDetail.Product.Images)
+            {
+                image.ImageUrl = await _cloudStorage.GetSignedUrlAsync(image.ImageUrl);
+            }
+
             var phaseResponse = _mapper.Map<PhaseResponse>(shipmentDetail.Phase);
             var productResponse = _mapper.Map<ProductResponse>(shipmentDetail.Product);
 
@@ -60,11 +65,14 @@ internal sealed class ShipperGetShipmentDetailQueryHandler(
                 phaseResponse,
                 null,
                 shipmentDetail.Quantity,
+                0,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());
         }
         else if (shipmentDetail.Material is not null)
         {
+            var material = shipmentDetail.Material;
+            material.Image = await _cloudStorage.GetSignedUrlAsync(material.Image);
             var materialResponse = _mapper.Map<MaterialResponse>(shipmentDetail.Material);
 
             return new DetailResponse(
@@ -72,6 +80,7 @@ internal sealed class ShipperGetShipmentDetailQueryHandler(
                 null,
                 materialResponse,
                 shipmentDetail.Quantity,
+                shipmentDetail.MaterialPrice,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());
         }

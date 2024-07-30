@@ -10,5 +10,6 @@ public record DetailResponse(
     PhaseResponse Phase,
     MaterialResponse Material,
     double Quantity,
+    decimal MaterialPrice,
     ProductPhaseType ProductPhaseType,
     string ProductPhaseTypeDescription);
