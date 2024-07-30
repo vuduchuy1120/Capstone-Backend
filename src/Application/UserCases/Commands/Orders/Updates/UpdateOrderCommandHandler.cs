@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Order.Updates;
@@ -20,6 +21,12 @@ public sealed class UpdateOrderCommandHandler
         if (!validationResult.IsValid)
         {
             throw new MyValidationException(validationResult.ToDictionary());
+        }
+        var startDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateOrderRequest.StartOrder);
+        var endDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateOrderRequest.EndOrder);
+        if (startDate > endDate)
+        {
+            throw new MyValidationException("Ngày kết thúc đơn hàng phải lớn hơn ngày bắt đầu đơn hàng.");
         }
 
         var order = await _orderRepository.GetOrderByIdAsync(request.UpdateOrderRequest.OrderId);
