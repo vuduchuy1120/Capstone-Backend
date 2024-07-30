@@ -1,4 +1,5 @@
 ﻿using Contract.Services.ProductPhase.Creates;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.ProductPhase.Updates;
 
 namespace Domain.Entities;
@@ -30,6 +31,38 @@ public class ProductPhase
             AvailableQuantity = request.Quantity,
             CompanyId = request.CompanyId
         };
+    }
+
+    public static ProductPhase Create(Guid productId, Guid phaseId, int quantity, QuantityType quantityType, Guid companyId)
+    {
+        var productPhase = new ProductPhase
+        {
+            ProductId = productId,
+            PhaseId = phaseId,
+            CompanyId = companyId
+        };
+
+        switch (quantityType)
+        {
+            case QuantityType.QUANTITY:
+                productPhase.Quantity = quantity;
+                productPhase.AvailableQuantity = quantity;
+                break;
+            case QuantityType.ERROR_QUANTITY:
+                productPhase.ErrorQuantity = quantity;
+                productPhase.ErrorAvailableQuantity = quantity;
+                break;
+            case QuantityType.FAILURE_QUANTITY:
+                productPhase.FailureQuantity = quantity;
+                productPhase.FailureAvailabeQuantity = quantity;
+                break;
+            case QuantityType.BROKEN_QUANTITY:
+                productPhase.BrokenQuantity = quantity;
+                productPhase.BrokenAvailableQuantity = quantity;
+                break;
+        }
+
+        return productPhase;
     }
 
     public void Update(UpdateProductPhaseRequest request)

@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Create;
@@ -21,6 +22,15 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
         if (!validationResult.IsValid)
         {
             throw new MyValidationException(validationResult.ToDictionary());
+        }
+
+        var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.CreateAttendanceDefaultRequest.Date);
+
+
+        var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
+        if (isSalaryCalculated)
+        {
+            throw new MyValidationException($"Cannot create attendance records for {formattedDate.Month}/{formattedDate.Year} because salary has already been calculated.");
         }
 
         var userIds = request.CreateAttendanceDefaultRequest.CreateAttendances.Select(x => x.UserId).ToList();

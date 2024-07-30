@@ -30,19 +30,12 @@ public sealed class CreateEmployeeProductCommandHandler
 
         var slotId = request.createEmployeeProductRequest.SlotId;
         var date = DateUtil.ConvertStringToDateTimeOnly(request.createEmployeeProductRequest.Date);
+        var dateNow = DateOnly.FromDateTime(DateTime.Now);
         var roleName = request.roleNameClaim;
         var companyId = request.companyIdClaim;
 
         // Permission check
-        if (roleName != "MAIN_ADMIN" && companyId != request.createEmployeeProductRequest.CompanyId)
-        {
-            var isUserValid = await _userRepository
-                .IsAllUserActiveByCompanyId(
-                request.createEmployeeProductRequest.CreateQuantityProducts
-                .Select(c => c.UserId).Distinct().ToList(), companyId);
-            if (!isUserValid)
-                throw new UserNotPermissionException("You don't have permission to create employee products for other companies.");
-        }
+        await CheckPermissionsAndSalaryCalculation(request.createEmployeeProductRequest, roleName, companyId, date, dateNow);
 
         var quantityProducts = request.createEmployeeProductRequest.CreateQuantityProducts;
 
@@ -126,5 +119,37 @@ public sealed class CreateEmployeeProductCommandHandler
                 productPhase.AvailableQuantity += decrement ? -item.Quantity : item.Quantity;
             }
         }
+    }
+
+    private async Task CheckPermissionsAndSalaryCalculation(CreateEmployeeProductRequest request, string roleName, Guid companyId, DateOnly date, DateOnly dateNow)
+    {
+        if (roleName != "MAIN_ADMIN" && companyId != request.CompanyId)
+        {
+            var isUserValid = await _userRepository.IsAllUserActiveByCompanyId(
+                request.CreateQuantityProducts.Select(c => c.UserId).Distinct().ToList(), companyId);
+
+            if (!isUserValid)
+                throw new UserNotPermissionException("You don't have permission to create employee products for other companies.");
+        }
+
+        if (roleName != "MAIN_ADMIN")
+        {
+            if (IsOverTwoDays(date, dateNow))
+            {
+                throw new UserNotPermissionException("Bạn không có quyền udpate bản ghi này do đã quá 2 ngày..");
+            }
+        }
+
+        var isSalaryCalculated = await _employeeProductRepository.IsSalaryCalculatedForMonth(date.Month, date.Year);
+        if (isSalaryCalculated)
+        {
+            throw new MyValidationException($"Cannot create attendance records for {date.Month}/{date.Year} because salary has already been calculated.");
+        }
+    }
+    private bool IsOverTwoDays(DateOnly DateRequest, DateOnly DateNow)
+    {
+        var daysDifference = DateNow.ToDateTime(TimeOnly.MinValue) - DateRequest.ToDateTime(TimeOnly.MinValue);
+
+        return daysDifference.TotalDays > 2;
     }
 }

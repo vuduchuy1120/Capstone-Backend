@@ -31,7 +31,7 @@ public class AttendanceEndpoints : CarterModule
             var createAttendanceDefaultCommand = new CreateAttendanceDefaultCommand(attendanceDefaultRequest, userId, roleName, companyId);
             var result = await sender.Send(createAttendanceDefaultCommand);
             return Results.Ok(result);
-        }).RequireAuthorization("RequireAdminOrBranchAdmin")
+        }).RequireAuthorization("RequireAdminOrCounter")
         .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }
@@ -53,7 +53,7 @@ public class AttendanceEndpoints : CarterModule
 
             return Results.Ok(result);
         })
-        .RequireAuthorization("RequireAdminOrBranchAdmin")
+        .RequireAuthorization("RequireAdminOrCounter")
         .WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Attendance api" } }

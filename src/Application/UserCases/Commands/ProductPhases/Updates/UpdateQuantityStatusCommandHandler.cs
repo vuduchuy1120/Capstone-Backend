@@ -2,8 +2,10 @@
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.ProductPhases.Updates.ChangeQuantityStatus;
+using Contract.Services.ProductPhase.Creates;
 using Contract.Services.ProductPhase.ShareDto;
 using Domain.Abstractions.Exceptions;
+using Domain.Entities;
 using FluentValidation;
 
 namespace Application.UserCases.Commands.ProductPhases.Updates;
@@ -21,7 +23,17 @@ public sealed class UpdateQuantityStatusCommandHandler
         {
             throw new MyValidationException(validator.ToDictionary());
         }
-        var productPhase = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(request.updateQuantityStatusRequest.ProductId, request.updateQuantityStatusRequest.PhaseId, request.updateQuantityStatusRequest.CompanyId);
+
+        var productPhaseFrom = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
+           request.updateQuantityStatusRequest.ProductId,
+           request.updateQuantityStatusRequest.PhaseIdFrom,
+           request.updateQuantityStatusRequest.CompanyId);
+
+        var productPhaseTo = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
+            request.updateQuantityStatusRequest.ProductId,
+            request.updateQuantityStatusRequest.PhaseIdTo,
+            request.updateQuantityStatusRequest.CompanyId);
+
 
         var quantity = request.updateQuantityStatusRequest.Quantity;
         var from = request.updateQuantityStatusRequest.From;
@@ -30,60 +42,75 @@ public sealed class UpdateQuantityStatusCommandHandler
         switch (from)
         {
             case QuantityType.QUANTITY:
-                if (productPhase.AvailableQuantity < quantity)
+                if (productPhaseFrom.AvailableQuantity < quantity)
                 {
                     throw new MyValidationException("Số lượng không đủ để cập nhật.");
                 }
-                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity - quantity);
-                productPhase.UpdateQuantity(productPhase.Quantity - quantity);
+                productPhaseFrom.UpdateAvailableQuantity(productPhaseFrom.AvailableQuantity - quantity);
+                productPhaseFrom.UpdateQuantity(productPhaseFrom.Quantity - quantity);
                 break;
             case QuantityType.ERROR_QUANTITY:
-                if (productPhase.ErrorAvailableQuantity < quantity)
+                if (productPhaseFrom.ErrorAvailableQuantity < quantity)
                 {
                     throw new MyValidationException("Số lượng không đủ để cập nhật.");
                 }
-                productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity - quantity);
-                productPhase.UpdateErrorQuantity(productPhase.ErrorQuantity - quantity);
+                productPhaseFrom.UpdateErrorAvailableQuantity(productPhaseFrom.ErrorAvailableQuantity - quantity);
+                productPhaseFrom.UpdateErrorQuantity(productPhaseFrom.ErrorQuantity - quantity);
                 break;
             case QuantityType.FAILURE_QUANTITY:
-                if (productPhase.FailureAvailabeQuantity < quantity)
+                if (productPhaseFrom.FailureAvailabeQuantity < quantity)
                 {
                     throw new MyValidationException("Số lượng không đủ để cập nhật.");
                 }
-                productPhase.UpdateFailureAvailableQuantity(productPhase.FailureAvailabeQuantity - quantity);
-                productPhase.UpdateFailureQuantity(productPhase.FailureQuantity - quantity);
+                productPhaseFrom.UpdateFailureAvailableQuantity(productPhaseFrom.FailureAvailabeQuantity - quantity);
+                productPhaseFrom.UpdateFailureQuantity(productPhaseFrom.FailureQuantity - quantity);
                 break;
             case QuantityType.BROKEN_QUANTITY:
-                if (productPhase.BrokenAvailableQuantity < quantity)
+                if (productPhaseFrom.BrokenAvailableQuantity < quantity)
                 {
                     throw new MyValidationException("Số lượng không đủ để cập nhật.");
                 }
-                productPhase.UpdateBrokenAvailableQuantity(productPhase.BrokenAvailableQuantity - quantity);
-                productPhase.UpdateBrokenQuantity(productPhase.BrokenQuantity - quantity);
+                productPhaseFrom.UpdateBrokenAvailableQuantity(productPhaseFrom.BrokenAvailableQuantity - quantity);
+                productPhaseFrom.UpdateBrokenQuantity(productPhaseFrom.BrokenQuantity - quantity);
                 break;
         }
 
-        switch (to)
+        if (productPhaseTo == null)
         {
-            case QuantityType.QUANTITY:
-                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + quantity);
-                productPhase.UpdateQuantity(productPhase.Quantity + quantity);
-                break;
-            case QuantityType.ERROR_QUANTITY:
-                productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + quantity);
-                productPhase.UpdateErrorQuantity(productPhase.ErrorQuantity + quantity);
-                break;
-            case QuantityType.FAILURE_QUANTITY:
-                productPhase.UpdateFailureAvailableQuantity(productPhase.FailureAvailabeQuantity + quantity);
-                productPhase.UpdateFailureQuantity(productPhase.FailureQuantity + quantity);
-                break;
-            case QuantityType.BROKEN_QUANTITY:
-                productPhase.UpdateBrokenAvailableQuantity(productPhase.BrokenAvailableQuantity + quantity);
-                productPhase.UpdateBrokenQuantity(productPhase.BrokenQuantity + quantity);
-                break;
+            productPhaseTo = ProductPhase.Create(
+                request.updateQuantityStatusRequest.ProductId,
+                request.updateQuantityStatusRequest.PhaseIdTo,
+                quantity,
+                request.updateQuantityStatusRequest.To,
+                request.updateQuantityStatusRequest.CompanyId
+            );
+            _productPhaseRepository.AddProductPhase(productPhaseTo);
+        }
+        else
+        {
+            switch (to)
+            {
+                case QuantityType.QUANTITY:
+                    productPhaseTo.UpdateAvailableQuantity(productPhaseTo.AvailableQuantity + quantity);
+                    productPhaseTo.UpdateQuantity(productPhaseTo.Quantity + quantity);
+                    break;
+                case QuantityType.ERROR_QUANTITY:
+                    productPhaseTo.UpdateErrorAvailableQuantity(productPhaseTo.ErrorAvailableQuantity + quantity);
+                    productPhaseTo.UpdateErrorQuantity(productPhaseTo.ErrorQuantity + quantity);
+                    break;
+                case QuantityType.FAILURE_QUANTITY:
+                    productPhaseTo.UpdateFailureAvailableQuantity(productPhaseTo.FailureAvailabeQuantity + quantity);
+                    productPhaseTo.UpdateFailureQuantity(productPhaseTo.FailureQuantity + quantity);
+                    break;
+                case QuantityType.BROKEN_QUANTITY:
+                    productPhaseTo.UpdateBrokenAvailableQuantity(productPhaseTo.BrokenAvailableQuantity + quantity);
+                    productPhaseTo.UpdateBrokenQuantity(productPhaseTo.BrokenQuantity + quantity);
+                    break;
+            }
+            _productPhaseRepository.UpdateProductPhase(productPhaseTo);
         }
 
-        _productPhaseRepository.UpdateProductPhase(productPhase);
+        _productPhaseRepository.UpdateProductPhase(productPhaseFrom);
 
         await _unitOfWork.SaveChangesAsync();
 

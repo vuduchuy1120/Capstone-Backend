@@ -268,6 +268,13 @@ public class AttendanceRepository : IAttendanceRepository
         return Task.FromResult(true);
     }
 
+    public async Task<bool> IsSalaryCalculatedForMonth(int month, int year)
+    {
+        var salaryExists = await _context.MonthlyEmployeeSalaries
+            .AnyAsync(s => s.Month == month && s.Year == year);
+        return salaryExists;
+    }
+
     public async Task<(List<Attendance>?, int)> SearchAttendancesAsync(GetAttendanceRequest request)
     {
 
