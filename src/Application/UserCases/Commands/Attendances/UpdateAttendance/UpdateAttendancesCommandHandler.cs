@@ -7,6 +7,7 @@ using Contract.Services.Attendance.Update;
 using Domain.Exceptions.Attendances;
 using FluentValidation;
 using Domain.Exceptions.Users;
+using Contract.Services.Attendance.Create;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
@@ -31,25 +32,9 @@ internal sealed class UpdateAttendancesCommandHandler(
         var roleName = request.RoleNameClaim;
         var companyId = request.CompanyIdClaim;
 
-        var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
-        if (isSalaryCalculated)
-        {
-            throw new MyValidationException($"Cannot update attendance records for {formattedDate.Month}/{formattedDate.Year} because salary has already been calculated.");
-        }
-
-        if (roleName != "MAIN_ADMIN")
-        {
-            var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
-            if (!isCanUpdateAttendance)
-            {
-                throw new MyValidationException("Can not update because over 2 days!");
-            }
-            var isUpdate = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
-            if (!isUpdate)
-            {
-                throw new UserNotPermissionException("You dont have permission update attendance of other user companyID");
-            }
-        }
+        await CheckPermissionAsync(request, formattedDate, DateOnly.FromDateTime(DateTime.Now));
+        await CheckSalaryCalculatedAsync(formattedDate);
+        
         var attendances = await _attendanceRepository.GetAttendancesByKeys(request.UpdateAttendanceRequest.SlotId, formattedDate, userIds);
 
         var updateRequests = request.UpdateAttendanceRequest.UpdateAttendances;
@@ -67,6 +52,41 @@ internal sealed class UpdateAttendancesCommandHandler(
         _attendanceRepository.UpdateRange(attendances);
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Update();
+    }
+
+
+    private bool IsOverTwoDays(DateOnly DateRequest, DateOnly DateNow)
+    {
+        var daysDifference = DateNow.ToDateTime(TimeOnly.MinValue) - DateRequest.ToDateTime(TimeOnly.MinValue);
+
+        return daysDifference.TotalDays > 2;
+    }
+    private async Task CheckPermissionAsync(UpdateAttendancesCommand request, DateOnly formattedDate, DateOnly dateNow)
+    {
+        var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
+        var roleName = request.RoleNameClaim;
+        var companyId = request.CompanyIdClaim;
+        if (roleName != "MAIN_ADMIN")
+        {
+            var check = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
+            if (!check)
+            {
+                throw new UserNotPermissionException("You don't have permission to create attendance for users of this company.");
+            }
+
+            if (IsOverTwoDays(formattedDate, dateNow))
+            {
+                throw new UserNotPermissionException("You do not have permission to update this record as it is over 2 days old.");
+            }
+        }
+    }
+    private async Task CheckSalaryCalculatedAsync(DateOnly formattedDate)
+    {
+        var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
+        if (isSalaryCalculated)
+        {
+            throw new MyValidationException($"Cannot create attendance records for {formattedDate.Month}/{formattedDate.Year} because salary has already been calculated.");
+        }
     }
 
 }
