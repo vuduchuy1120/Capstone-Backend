@@ -128,4 +128,11 @@ public class EmployeeProductRepository : IEmployeeProductRepository
 
         return matchingCount == keys.Count;
     }
+
+    public async Task<bool> IsSalaryCalculatedForMonth(int month, int year)
+    {
+        var salaryExists = await _context.MonthlyEmployeeSalaries
+            .AnyAsync(s => s.Month == month && s.Year == year);
+        return salaryExists;
+    }
 }

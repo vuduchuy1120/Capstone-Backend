@@ -25,10 +25,17 @@ internal sealed class UpdateAttendancesCommandHandler(
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
+
         var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateAttendanceRequest.Date);
         var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
         var roleName = request.RoleNameClaim;
         var companyId = request.CompanyIdClaim;
+
+        var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
+        if (isSalaryCalculated)
+        {
+            throw new MyValidationException($"Cannot update attendance records for {formattedDate.Month}/{formattedDate.Year} because salary has already been calculated.");
+        }
 
         if (roleName != "MAIN_ADMIN")
         {
@@ -61,4 +68,5 @@ internal sealed class UpdateAttendancesCommandHandler(
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Update();
     }
+
 }

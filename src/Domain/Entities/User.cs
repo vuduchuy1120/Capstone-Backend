@@ -23,7 +23,7 @@ public class User : EntityAuditBase<string>
     public Guid CompanyId { get; private set; }
     public Company Company { get; private set; }
     public List<Attendance>? Attendances { get; private set; }
-    public List<EmployeeProduct>? EmployeeProducts { get; private set; }
+    public List<EmployeeProduct>? EmployeeProducts { get; set; }
     public List<Report>? Reports { get; private set; }
     public List<Shipment>? Shipments { get; private set; }
     public List<ShipOrder>? ShipOrders { get; private set; }

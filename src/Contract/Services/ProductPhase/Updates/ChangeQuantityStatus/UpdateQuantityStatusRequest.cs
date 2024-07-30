@@ -9,6 +9,7 @@ public record UpdateQuantityStatusRequest
     QuantityType To,
     int Quantity,
     Guid ProductId,
-    Guid PhaseId,
+    Guid PhaseIdFrom,
+    Guid PhaseIdTo,
     Guid CompanyId
     );
