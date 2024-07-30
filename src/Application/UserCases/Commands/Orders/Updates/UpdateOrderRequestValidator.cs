@@ -33,9 +33,6 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Trạng thái không hợp lệ. Trạng thái phải là 0, 1, 2 hoặc 3.");
 
-        RuleFor(x => x.EndOrder)
-            .GreaterThan(x => x.StartOrder).WithMessage("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-
         RuleFor(x => x.VAT)
             .Must(VAT =>
             {
