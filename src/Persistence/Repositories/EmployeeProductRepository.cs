@@ -67,8 +67,7 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         var userAttendances = await _context.Attendances
         .Where(at => at.Date.Month == month &&
                     at.Date.Year == year &&
-                    at.UserId == userId &&
-                    at.IsAttendance == true &&
+                    at.UserId == userId &&                    
                     at.IsSalaryByProduct == true)
         .Select(at => at.Date)
         .ToListAsync();
