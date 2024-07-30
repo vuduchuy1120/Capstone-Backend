@@ -78,8 +78,8 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
             {
                 return shipmentDetailRequest?.ItemId != null;
             }).WithMessage("Mã vật phẩm không được để trống")
-            .Must((shipmentDetailRequest) => shipmentDetailRequest.MaterialPrice > 0)
-            .WithMessage("Giá nguyên liệu phải lớn hơn 0");
+            .Must((shipmentDetailRequest) => shipmentDetailRequest.MaterialPrice >= 0)
+            .WithMessage("Giá nguyên liệu phải lớn hơn hoặc bằng 0");
 
         //RuleFor(req => req.ShipmentDetailRequests)
         //    .MustAsync(async (req, requests, _) =>

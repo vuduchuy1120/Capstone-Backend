@@ -68,6 +68,7 @@ internal sealed class GetShipmentDetailQueryHandler(
                 phaseResponse, 
                 null, 
                 shipmentDetail.Quantity,
+                0,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());
         }
@@ -82,6 +83,7 @@ internal sealed class GetShipmentDetailQueryHandler(
                 null,
                 materialResponse,
                 shipmentDetail.Quantity,
+                shipmentDetail.MaterialPrice,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());
         }
