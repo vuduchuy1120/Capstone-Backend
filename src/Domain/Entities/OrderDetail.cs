@@ -30,4 +30,9 @@ public class OrderDetail : EntityBase<Guid>
         };
     }
 
+    public void UpdateShippedQuantity(int shippedQuantity)
+    {
+        ShippedQuantity = shippedQuantity;
+    }
+
 }

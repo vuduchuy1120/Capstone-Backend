@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Contract.Services.ShipOrder.GetShipOrdersOfShipper;
+using Domain.Entities;
 
 namespace Application.Abstractions.Data;
 
@@ -10,4 +11,5 @@ public interface IShipOrderRepository
     Task<bool> IsShipOrderExistAndInWaitingStatusAsync(Guid shipOrderId);
     Task<ShipOrder> GetByShipOrderIdAsync(Guid shipOrderId);
     Task<ShipOrder> GetByIdAndStatusIsNotDoneAsync(Guid shipOrderId);
+    Task<(List<ShipOrder>, int)> SearchShipOrderByShipperAsync(GetShipOrdersByShipperIdQuery request);
 }

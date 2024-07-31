@@ -200,15 +200,17 @@ internal sealed class UpdateAcceptedCommandHandler(
                     productPhaseFromCompany.UpdateQuantity(quantityOfFromCompany);
 
                     productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_ERROR)
                 {
                     var quantityOfFromCompany = productPhaseFromCompany.ErrorQuantity - (int)detail.Quantity;
                     if (quantityOfFromCompany < 0)
                         throw new ItemAvailableNotEnoughException($"Số lượng sản phẩm không đủ - id sản phẩm: {detail.ProductId} - ERROR");
-                    productPhaseFromCompany.UpdateErrorAvailableQuantity(quantityOfFromCompany);
+                    productPhaseFromCompany.UpdateErrorQuantity(quantityOfFromCompany);
 
-                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
                 }
                 else
                 {
@@ -234,7 +236,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     .Where(p => p.CompanyId == fromId && p.ProductId == detail.ProductId)
                     .ToList();
 
-                if (productPhasesFromCompany == null)
+                if (productPhasesFromCompany == null || productPhasesFromCompany.Count == 0)
                 {
                     productPhasesFromCompany = await _productPhaseRepository.GetByProductIdAndCompanyIdAsync(
                         (Guid)detail.ProductId,
@@ -268,6 +270,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     else
                     {
                         productPhase.UpdateQuantity(productPhase.Quantity - remainQuantity);
+                        remainQuantity = 0;
                         break;
                     }
 
@@ -279,6 +282,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     else
                     {
                         productPhase.UpdateQuantity(productPhase.ErrorQuantity - remainQuantity);
+                        remainQuantity = 0;
                         break;
                     }
                 }
@@ -305,14 +309,17 @@ internal sealed class UpdateAcceptedCommandHandler(
                 if (detail.ProductPhaseType == ProductPhaseType.NO_PROBLEM)
                 {
                     productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.FACTORY_ERROR)
                 {
                     productPhaseToCompany.UpdateFailureQuantity(productPhaseToCompany.FailureQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateFailureAvailableQuantity(productPhaseToCompany.FailureAvailabeQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR)
                 {
                     productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
                 }
                 else
                 {

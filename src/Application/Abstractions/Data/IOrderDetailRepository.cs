@@ -16,4 +16,5 @@ public interface IOrderDetailRepository
     Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid> productIds);
     Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid> setIds);
     //Task<(List<OrderDetail>?, int)> SearchByOrderId(GetOrderDetailsByOrderIdQuery request);
+    Task<List<OrderDetail>> GetOrderDetailsByOrderIdWithoutInclueAsync(Guid orderId);
 }

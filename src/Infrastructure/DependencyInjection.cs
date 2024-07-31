@@ -60,6 +60,12 @@ public static class DependencyInjection
             .AddPolicy("Require-Counter", policy => policy.RequireClaim("Role", "COUNTER"))
             .AddPolicy("Require-Driver", policy => policy.RequireClaim("Role", "DRIVER"))
             .AddPolicy("Require-Branch-Admin", policy => policy.RequireClaim("Role", "BRANCH_ADMIN"))
+            .AddPolicy("Require-Driver-MainAdmin", policy =>
+                        policy.RequireAssertion(
+                            context =>
+                            context.User.HasClaim(
+                                c => c.Type == "Role" &&
+                                (c.Value == "MAIN_ADMIN" || c.Value == "DRIVER"))))
             .AddPolicy("RequireAdminOrBranchAdmin", policy => 
                         policy.RequireAssertion(
                             context =>

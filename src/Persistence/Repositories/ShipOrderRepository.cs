@@ -1,6 +1,7 @@
 ﻿
 using Application.Abstractions.Data;
 using Contract.Services.Shipment.Share;
+using Contract.Services.ShipOrder.GetShipOrdersOfShipper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,5 +62,29 @@ internal class ShipOrderRepository : IShipOrderRepository
     public void Update(ShipOrder shipOrder)
     {
         _context.ShipOrders.Update(shipOrder);
+    }
+
+    public async Task<(List<ShipOrder>, int)> SearchShipOrderByShipperAsync(GetShipOrdersByShipperIdQuery request)
+    {
+        var query = _context.ShipOrders.Where(s => s.ShipperId == request.ShipperId);
+
+        var searchOption = request.SearchOption;
+
+        if (searchOption.ShipDate != null)
+        {
+            query = query.Where(s => s.ShipDate == searchOption.ShipDate);
+        }
+
+        var totalItems = await query.CountAsync();
+
+        int totalPages = (int)Math.Ceiling((double)totalItems / searchOption.PageSize);
+
+        var shipOrders = await query
+            .Skip((searchOption.PageIndex - 1) * searchOption.PageSize)
+            .Take(searchOption.PageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (shipOrders, totalPages);
     }
 }
