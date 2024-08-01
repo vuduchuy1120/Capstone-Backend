@@ -10,4 +10,6 @@ public interface IShipOrderRepository
     Task<bool> IsShipOrderExistAndInWaitingStatusAsync(Guid shipOrderId);
     Task<ShipOrder> GetByShipOrderIdAsync(Guid shipOrderId);
     Task<ShipOrder> GetByIdAndStatusIsNotDoneAsync(Guid shipOrderId);
+    Task<bool> IsAnyShipOrderNotDone(Guid orderId);
+    Task<bool> IsExistAnyShipOrder(Guid orderId);
 }

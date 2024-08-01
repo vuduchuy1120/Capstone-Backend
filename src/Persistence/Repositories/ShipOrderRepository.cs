@@ -52,6 +52,18 @@ internal class ShipOrderRepository : IShipOrderRepository
             .SingleOrDefaultAsync(s => s.Id == shipOrderId);
     }
 
+    public async Task<bool> IsAnyShipOrderNotDone(Guid orderId)
+    {
+        return await _context.ShipOrders
+            .AnyAsync(s => s.OrderId == orderId && (s.Status == Status.WAIT_FOR_SHIP || s.Status == Status.SHIPPING));
+    }
+
+    public async Task<bool> IsExistAnyShipOrder(Guid orderId)
+    {
+        return await _context.ShipOrders
+            .AnyAsync(s => s.OrderId == orderId);
+    }
+
     public async Task<bool> IsShipOrderExistAndInWaitingStatusAsync(Guid shipOrderId)
     {
         return await _context.ShipOrders
