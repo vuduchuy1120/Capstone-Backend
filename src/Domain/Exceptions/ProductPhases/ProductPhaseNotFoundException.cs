@@ -6,7 +6,7 @@ namespace Domain.Exceptions.ProductPhases;
 public class ProductPhaseNotFoundException : MyException
 {
     public ProductPhaseNotFoundException(Guid id)
-       : base(400, $"Can not found phase has id: {id}")
+       : base(400, $"Không tìm thấy sản phầm có id: {id}")
     {
     }
 

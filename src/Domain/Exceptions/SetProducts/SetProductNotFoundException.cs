@@ -7,7 +7,7 @@ public class SetProductNotFoundException : MyException
 {
     public SetProductNotFoundException() : base(
         (int) HttpStatusCode.NotFound, 
-        "Set product not found")
+        "Không tìm thấy bộ sản phẩm")
     {
     }
 }

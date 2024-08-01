@@ -7,13 +7,13 @@ public class SetNotFoundException : MyException
 {
     public SetNotFoundException(Guid id) : base(
         (int) HttpStatusCode.NotFound, 
-        $"Set has id: {id} is not found")
+        $"Không tìm thấy bộ sản phẩm có id: {id}")
     {
     }
 
     public SetNotFoundException() : base(
         (int)HttpStatusCode.NotFound,
-        "Set not found")
+        "Không tìm thấy bộ sản phẩm")
     {
     }
 }

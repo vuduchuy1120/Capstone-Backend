@@ -7,7 +7,7 @@ public class KindOfShipNotFoundException : MyException
 {
     public KindOfShipNotFoundException() : base(
         (int) HttpStatusCode.NotFound,
-        "Kind of ship not found exception")
+        "Không tìm thấy loại giao hàng phù hợp")
     {
     }
 }

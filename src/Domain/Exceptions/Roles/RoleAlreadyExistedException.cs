@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Roles;
 public class RoleAlreadyExistedException : MyException
 {
     public RoleAlreadyExistedException(string roleName)
-        : base((int)HttpStatusCode.Conflict, $"Role: {roleName} is already exist")
+        : base((int)HttpStatusCode.Conflict, $"Vai trò: {roleName} đã tồn tại")
     {
     }
 }

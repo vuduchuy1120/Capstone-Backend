@@ -318,8 +318,8 @@ internal sealed class UpdateAcceptedCommandHandler(
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR)
                 {
-                    productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
-                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateBrokenQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateBrokenAvailableQuantity(productPhaseToCompany.BrokenAvailableQuantity + (int)detail.Quantity);
                 }
                 else
                 {

@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Users;
 public class UserAlreadyExistedException : MyException
 {
     public UserAlreadyExistedException(string id)
-        : base((int)HttpStatusCode.Conflict, $"User has id: {id} is already existed.")
+        : base((int)HttpStatusCode.Conflict, $"Người dùng có id: {id} đã tồn tại.")
     {
     }
 }
