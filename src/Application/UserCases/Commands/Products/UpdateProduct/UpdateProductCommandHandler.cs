@@ -32,9 +32,29 @@ internal sealed class UpdateProductCommandHandler(
         AddNewProductImages(updateProductRequest?.AddImagesRequest, productId);
 
         product.Update(updateProductRequest, request.UpdatedBy);
+
+        var isImageValid = IsProductImageAfterUpdateValid(product);
+        if(!isImageValid)
+        {
+            throw new ProductBadRequestException("Sản phẩm phải có 1 ảnh chính");
+        }
+
         _productRepository.Update(product);
 
+        await UpdateProductPhaseSalaries(productId, updateProductRequest);
 
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success.Update();
+    }
+
+    private bool IsProductImageAfterUpdateValid(Product product)
+    {
+        return product.Images.Count(image => image.IsMainImage) == 1;
+    }
+
+    private async Task UpdateProductPhaseSalaries(Guid productId, UpdateProductRequest updateProductRequest)
+    {
         // Get all phases
         var phases = await _phaseRepository.GetPhases();
 
@@ -54,7 +74,7 @@ internal sealed class UpdateProductCommandHandler(
         productPhaseSalary1.Update(productId, phase1, updateProductRequest.PricePhase1);
         productPhaseSalary2.Update(productId, phase2, updateProductRequest.PricePhase2);
         productPhaseSalary3.Update(productId, phase3, updateProductRequest.PriceFinished);
-        
+
         var productPhaseSalaries = new List<ProductPhaseSalary>
         {
             productPhaseSalary1,
@@ -63,10 +83,6 @@ internal sealed class UpdateProductCommandHandler(
         };
 
         _productPhaseSalaryRepository.UpdateRange(productPhaseSalaries);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return Result.Success.Update();
     }
 
     private async Task<Product> FindAndValidateRequest(UpdateProductCommand request, Guid productId)

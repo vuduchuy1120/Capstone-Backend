@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
+using AutoMapper.Configuration.Conventions;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Shipment.Share;
@@ -7,12 +8,14 @@ using Contract.Services.ShipmentDetail.Share;
 using Contract.Services.ShipOrder.ChangeStatus;
 using Contract.Services.ShipOrder.Share;
 using Domain.Entities;
+using Domain.Exceptions.OrderDetails;
 using Domain.Exceptions.ShipOrder;
 
 namespace Application.UserCases.Commands.ShipOrders.ChangeStatus;
 
 internal sealed class ChangeShipOrderStatusCommandHandler(
     IShipOrderRepository _shipOrderRepository,
+    IOrderDetailRepository _orderDetailRepository,
     IProductPhaseRepository _productPhaseRepository,
     ISetRepository _setRepository,
     IUnitOfWork _unitOfWork) : ICommandHandler<ChangeShipOrderStatusCommand>
@@ -37,9 +40,10 @@ internal sealed class ChangeShipOrderStatusCommandHandler(
         {
             await UpdateQuantityInProductPhase(shipProductDetails, shipOrder.DeliveryMethod, changeStatusRequest.Status);
 
-            if(changeStatusRequest.Status == Status.SHIPPED)
+            if (changeStatusRequest.Status == Status.SHIPPED)
             {
                 // update quantity in orderDetail
+                await UpdateQuantityShippedInShipOrderDetails(shipOrder.OrderId, shipOrderDetails, shipOrder.DeliveryMethod);
             }
         }
 
@@ -49,6 +53,58 @@ internal sealed class ChangeShipOrderStatusCommandHandler(
         await _unitOfWork.SaveChangesAsync();
 
         return Result.Success.Update();
+    }
+
+    private async Task UpdateQuantityShippedInShipOrderDetails(Guid orderId, List<ShipOrderDetail>? shipOrderDetails, DeliveryMethod deliveryMethod)
+    {
+        var orderDetails = await _orderDetailRepository.GetOrderDetailsByOrderIdWithoutInclueAsync(orderId)
+            ?? throw new OrderDetailNotFoundException();
+
+        foreach (var shipOderDetail in shipOrderDetails)
+        {
+            OrderDetail orderDetail = null;
+            if (shipOderDetail.ProductId is not null && shipOderDetail.SetId is null)
+            {
+                 orderDetail = orderDetails.FirstOrDefault(od => od.ProductId == shipOderDetail.ProductId)
+                    ?? throw new ShipOrderNotFoundException($"Không tìm thấy sản phẩm có id: {shipOderDetail.ProductId} trong chi tiết đơn hàng");
+            }
+            else if (shipOderDetail.SetId is not null && shipOderDetail.ProductId is null)
+            {
+                orderDetail = orderDetails.FirstOrDefault(od => od.SetId == shipOderDetail.SetId)
+                   ?? throw new ShipOrderNotFoundException($"Không tìm thấy bộ sản phẩm có id: {shipOderDetail.SetId} trong chi tiết đơn hàng");
+            }
+            else
+            {
+                throw new ShipOrderBadRequestException("Chi tiết đơn hàng đang có cả bộ và sản phẩm");
+            }
+
+            var newShippedQuantity = GetNewShippedQuantity(deliveryMethod, orderDetail.ShippedQuantity, shipOderDetail.Quantity);
+
+            orderDetail.UpdateShippedQuantity(newShippedQuantity);
+        }
+
+        _orderDetailRepository.UpdateRange(orderDetails);
+    }
+
+    private int GetNewShippedQuantity(DeliveryMethod deliveryMethod, int shippedQuantity, int requestQuantity)
+    {
+        if (deliveryMethod == DeliveryMethod.SHIP_ORDER)
+        {
+            return shippedQuantity + requestQuantity;
+        }
+        else if (deliveryMethod == DeliveryMethod.RETURN_PRODUCT)
+        {
+            if(shippedQuantity < requestQuantity)
+            {
+                throw new QuantityNotValidException("Số lượng trả hàng lớn hơn số lượng đã giao");
+            }
+
+            return shippedQuantity - requestQuantity;
+        }
+        else
+        {
+            throw new ShipOrderBadRequestException("Không tìm thấy loại giao hàng phù hợp");
+        }
     }
 
     private async Task UpdateQuantityInProductPhase(

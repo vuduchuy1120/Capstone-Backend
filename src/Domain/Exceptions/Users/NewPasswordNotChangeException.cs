@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Users;
 public class NewPasswordNotChangeException : MyException
 {
     public NewPasswordNotChangeException() : base(
-        (int) HttpStatusCode.Conflict, "New password can not be the same with old password")
+        (int) HttpStatusCode.Conflict, "Mật khẩu mới không được giống với mật khẩu cũ")
     {
     }
 }

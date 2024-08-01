@@ -10,6 +10,7 @@ using Domain.Exceptions.Materials;
 using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
+using System.Collections.Generic;
 
 namespace Application.UserCases.Commands.Shipments.UpdateAccepted;
 
@@ -56,6 +57,12 @@ internal sealed class UpdateAcceptedCommandHandler(
     {
         var shipmentDetails = shipment.ShipmentDetails ?? throw new ShipmentDetailNotFoundException();
 
+        if(shipment.Status == Status.CANCEL)
+        {
+            await UpdateAvailableQuantityWhenCancel(shipmentDetails, shipment.FromId);
+            return;
+        }
+
         var isFromCompanyThirdParty = await _companyRepository.IsThirdPartyCompanyAsync(shipment.FromId);
 
         if (isFromCompanyThirdParty)
@@ -67,7 +74,63 @@ internal sealed class UpdateAcceptedCommandHandler(
             await UpdateQuantityOfProductPhaseWhenSendFromFactory(shipmentDetails, shipment.ToId, shipment.FromId);
         }
 
-        await UpdateQuantityOfMaterial(shipmentDetails, isFromCompanyThirdParty);
+        await UpdateQuantityOfMaterial(shipmentDetails, isFromCompanyThirdParty, true);
+    }
+
+    private async Task UpdateAvailableQuantityWhenCancel(List<ShipmentDetail> shipmentDetails, Guid fromId)
+    {
+        // update product when cancel
+        await UpdateAvailableProductQuantityWhenCancel(shipmentDetails, fromId);
+
+        var isFromCompanyThirdParty = await _companyRepository.IsThirdPartyCompanyAsync(fromId);
+
+        //update material when cancel
+        await UpdateQuantityOfMaterial(shipmentDetails, isFromCompanyThirdParty, false);
+    }
+
+    private async Task UpdateAvailableProductQuantityWhenCancel(List<ShipmentDetail> shipmentDetails, Guid fromId)
+    {
+        var _productsPhases = new List<ProductPhase>();
+
+        foreach (var detail in shipmentDetails)
+        {
+            if (detail.ProductId != null && detail.PhaseId != null)
+            {
+                var productPhaseFromCompany = _productsPhases
+                    .Where(p => p.PhaseId == detail.PhaseId && p.CompanyId == fromId && p.ProductId == detail.ProductId)
+                    .FirstOrDefault();
+
+                if (productPhaseFromCompany == null)
+                {
+                    productPhaseFromCompany = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
+                        (Guid)detail.ProductId,
+                        (Guid)detail.PhaseId,
+                        fromId) ?? throw new ProductPhaseNotFoundException();
+
+                    _productsPhases.Add(productPhaseFromCompany);
+                }
+
+                switch (detail.ProductPhaseType)
+                {
+                    case ProductPhaseType.NO_PROBLEM:
+                        productPhaseFromCompany.UpdateAvailableQuantity(productPhaseFromCompany.AvailableQuantity + (int) detail.Quantity);
+                        break;
+                    case ProductPhaseType.THIRD_PARTY_ERROR:
+                        productPhaseFromCompany.UpdateErrorAvailableQuantity(productPhaseFromCompany.ErrorAvailableQuantity + (int)detail.Quantity);
+                        break;
+                    case ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR:
+                        productPhaseFromCompany.UpdateBrokenAvailableQuantity(productPhaseFromCompany.BrokenAvailableQuantity + (int)detail.Quantity);
+                        break;
+                    case ProductPhaseType.FACTORY_ERROR:
+                        productPhaseFromCompany.UpdateFailureAvailableQuantity(productPhaseFromCompany.FailureAvailabeQuantity + (int)detail.Quantity);
+                        break;
+                    default:
+                        throw new ShipmentBadRequestException("Không tìm thấy loại sản phẩm phù hợp");
+                }
+            }
+        }
+
+        _productPhaseRepository.UpdateProductPhaseRange(_productsPhases);
     }
 
 
@@ -137,15 +200,17 @@ internal sealed class UpdateAcceptedCommandHandler(
                     productPhaseFromCompany.UpdateQuantity(quantityOfFromCompany);
 
                     productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_ERROR)
                 {
                     var quantityOfFromCompany = productPhaseFromCompany.ErrorQuantity - (int)detail.Quantity;
                     if (quantityOfFromCompany < 0)
                         throw new ItemAvailableNotEnoughException($"Số lượng sản phẩm không đủ - id sản phẩm: {detail.ProductId} - ERROR");
-                    productPhaseFromCompany.UpdateErrorAvailableQuantity(quantityOfFromCompany);
+                    productPhaseFromCompany.UpdateErrorQuantity(quantityOfFromCompany);
 
-                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
                 }
                 else
                 {
@@ -171,7 +236,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     .Where(p => p.CompanyId == fromId && p.ProductId == detail.ProductId)
                     .ToList();
 
-                if (productPhasesFromCompany == null)
+                if (productPhasesFromCompany == null || productPhasesFromCompany.Count == 0)
                 {
                     productPhasesFromCompany = await _productPhaseRepository.GetByProductIdAndCompanyIdAsync(
                         (Guid)detail.ProductId,
@@ -205,6 +270,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     else
                     {
                         productPhase.UpdateQuantity(productPhase.Quantity - remainQuantity);
+                        remainQuantity = 0;
                         break;
                     }
 
@@ -216,6 +282,7 @@ internal sealed class UpdateAcceptedCommandHandler(
                     else
                     {
                         productPhase.UpdateQuantity(productPhase.ErrorQuantity - remainQuantity);
+                        remainQuantity = 0;
                         break;
                     }
                 }
@@ -242,14 +309,17 @@ internal sealed class UpdateAcceptedCommandHandler(
                 if (detail.ProductPhaseType == ProductPhaseType.NO_PROBLEM)
                 {
                     productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.FACTORY_ERROR)
                 {
-                    productPhaseToCompany.UpdateQuantity(productPhaseToCompany.FailureQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateFailureQuantity(productPhaseToCompany.FailureQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateFailureAvailableQuantity(productPhaseToCompany.FailureAvailabeQuantity + (int)detail.Quantity);
                 }
                 else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR)
                 {
-                    productPhaseToCompany.UpdateQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateBrokenQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateBrokenAvailableQuantity(productPhaseToCompany.BrokenAvailableQuantity + (int)detail.Quantity);
                 }
                 else
                 {
@@ -262,7 +332,7 @@ internal sealed class UpdateAcceptedCommandHandler(
         _productPhaseRepository.UpdateProductPhaseRange(_productsPhases);
     }
 
-    private async Task UpdateQuantityOfMaterial(List<ShipmentDetail> shipmentDetails, bool isFromCompanyThirdParty)
+    private async Task UpdateQuantityOfMaterial(List<ShipmentDetail> shipmentDetails, bool isFromCompanyThirdParty, bool isShipSuccess)
     {
         var materialIds = shipmentDetails
             .Where(s => s.MaterialId != null)
@@ -288,11 +358,18 @@ internal sealed class UpdateAcceptedCommandHandler(
                 var material = materials.SingleOrDefault(m => m.Id == detail.MaterialId)
                     ?? throw new MaterialNotFoundException();
 
-                var quantity = material.QuantityInStock - detail.Quantity;
+                if (isShipSuccess)
+                {
+                    var quantity = material.QuantityInStock - detail.Quantity;
+                    if (quantity < 0) throw new ItemAvailableNotEnoughException();
 
-                if (quantity < 0) throw new ItemAvailableNotEnoughException();
-
-                material.UpdateQuantityInStock(quantity);
+                    material.UpdateQuantityInStock(quantity);
+                }
+                else
+                {
+                    var quantity = material.AvailableQuantity + detail.Quantity;
+                    material.UpdateAvailableQuantity(quantity);
+                }
             }
         }
 

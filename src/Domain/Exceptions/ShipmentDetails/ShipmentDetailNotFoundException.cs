@@ -7,7 +7,7 @@ public class ShipmentDetailNotFoundException : MyException
 {
     public ShipmentDetailNotFoundException() : base(
         (int) HttpStatusCode.NotFound, 
-        "Shipment detail is not found")
+        "Không tìm thấy chi tiết đơn giao hàng")
     {
     }
 }

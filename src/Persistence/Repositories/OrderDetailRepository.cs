@@ -101,4 +101,9 @@ public class OrderDetailRepository : IOrderDetailRepository
     {
         _context.OrderDetails.UpdateRange(orderDetails);
     }
+
+    public async Task<List<OrderDetail>> GetOrderDetailsByOrderIdWithoutInclueAsync(Guid orderId)
+    {
+        return await _context.OrderDetails.Where(od => od.OrderId == orderId).ToListAsync();
+    }
 }

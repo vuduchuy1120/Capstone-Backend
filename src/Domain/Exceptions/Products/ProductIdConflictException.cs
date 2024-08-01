@@ -7,7 +7,7 @@ public class ProductIdConflictException : MyException
 {
     public ProductIdConflictException() : base(
         (int) HttpStatusCode.BadRequest, 
-        "There is something wrong with update product id")
+        "Id của sản phẩm không trùng khớp")
     {
     }
 }

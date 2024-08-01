@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Users;
 public class VerifyCodeNotValidException : MyException
 {
     public VerifyCodeNotValidException() : base(
-        (int) HttpStatusCode.BadRequest, "Verify code is not valid")
+        (int) HttpStatusCode.BadRequest, "Mã xác thực không chính xác")
     {
     }
 }
