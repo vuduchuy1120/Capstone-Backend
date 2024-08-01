@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions.Services;
+using Application.UserCases.Commands.MonthlyCompanySalaries.Creates;
 using Application.UserCases.Commands.MonthlyEmployeeSalaries;
 using Contract.Abstractions.Messages;
 using Contract.Services.MonthEmployeeSalary.Creates;
+using Contract.Services.MonthlyCompanySalary.Creates;
 using Infrastructure.AuthOptions;
 using Infrastructure.BackgtoundServiceOptions;
 using Infrastructure.Options;
@@ -66,7 +68,7 @@ public static class DependencyInjection
                             context.User.HasClaim(
                                 c => c.Type == "Role" &&
                                 (c.Value == "MAIN_ADMIN" || c.Value == "DRIVER"))))
-            .AddPolicy("RequireAdminOrBranchAdmin", policy => 
+            .AddPolicy("RequireAdminOrBranchAdmin", policy =>
                         policy.RequireAssertion(
                             context =>
                             context.User.HasClaim(
@@ -103,6 +105,7 @@ public static class DependencyInjection
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ICloudStorage, GoogleCloudStorage>();
         services.AddScoped<ICommandHandler<CreateMonthEmployeeSalaryCommand>, CreateMonthEmployeeSalaryCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateMonthlyCompanySalaryCommand>, CreateMonthlyCompanySalaryCommandHandler>();
 
 
         var apiKeySid = "SK.0.DjKijVdL1BKmr4ktbhuk84ugDaBWb498";

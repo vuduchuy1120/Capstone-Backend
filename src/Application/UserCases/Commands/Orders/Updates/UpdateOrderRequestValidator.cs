@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Order.ShareDtos;
 using Contract.Services.Order.Updates;
 using FluentValidation;
 
@@ -6,7 +7,10 @@ namespace Application.UserCases.Commands.Orders.Updates;
 
 public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
 {
-    public UpdateOrderRequestValidator(IOrderRepository _orderRepository, ICompanyRepository _companyRepository)
+    public UpdateOrderRequestValidator(
+        IOrderRepository _orderRepository,
+        ICompanyRepository _companyRepository,
+        IShipOrderRepository _shipOrderRepository)
     {
         RuleFor(x => x.OrderId)
             .NotEmpty().WithMessage("Mã đơn hàng là bắt buộc.")
@@ -33,6 +37,27 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Trạng thái không hợp lệ. Trạng thái phải là 0, 1, 2 hoặc 3.");
 
+        RuleFor(x => x.Status)
+            .MustAsync(async (request, status,_) =>
+            {
+                var isExistShipOrderNotDone = await _shipOrderRepository.IsAnyShipOrderNotDone(request.OrderId);
+                if (isExistShipOrderNotDone)
+                {
+                    return status == StatusOrder.INPROGRESS;
+                }
+                return true;
+            }).WithMessage("Đơn hàng đang có shipment đang chờ vận chuyển hoặc đang vận chuyển nên không thể thay đổi trạng thái. ");
+
+        RuleFor(x => x.Status)
+            .MustAsync(async (request, status, _) =>
+            {
+                var isExistShipOrder = await _shipOrderRepository.IsExistAnyShipOrder(request.OrderId);
+                if (isExistShipOrder)
+                {
+                    return status != StatusOrder.SIGNED;
+                }
+                return true;
+            }).WithMessage("Đã có sản phẩm được giao đi không thể chuyển trạng thái đơn hàng về đã ký");
         RuleFor(x => x.VAT)
             .Must(VAT =>
             {
