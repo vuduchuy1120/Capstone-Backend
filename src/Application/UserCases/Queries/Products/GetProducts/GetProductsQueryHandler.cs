@@ -9,17 +9,14 @@ using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProducts;
 
-internal sealed class GetProductsQueryHandler(IProductRepository _productRepository, IMapper _mapper)
+internal sealed class GetProductsQueryHandler(IProductRepository _productRepository)
     : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<ProductResponse>>>> Handle(
         GetProductsQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _productRepository.SearchProductAsync(request);
-
-        var products = result.Item1;
-        var totalPage = result.Item2;
+        var (products, totalPage) = await _productRepository.SearchProductAsync(request);
 
         if (products is null || products.Count <= 0 || totalPage <= 0)
         {

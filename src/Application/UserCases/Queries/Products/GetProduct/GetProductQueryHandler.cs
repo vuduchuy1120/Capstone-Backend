@@ -10,7 +10,7 @@ using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProduct;
 
-internal sealed class GetProductQueryHandler(IProductRepository _productRepository, IMapper _mapper)
+internal sealed class GetProductQueryHandler(IProductRepository _productRepository)
     : IQueryHandler<GetProductQuery, ProductWithTotalQuantityResponse>
 {
     public async Task<Result.Success<ProductWithTotalQuantityResponse>> Handle(
