@@ -39,7 +39,7 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
             .GroupBy(ep => new {ProductId = ep.ProductId,ProductName = ep.Product.Name, ep.PhaseId, ep.Phase.Name, ep.Phase.Description, ep.Product.Images.FirstOrDefault().ImageUrl })
             .Select(async g => new ProductWorkingResponse(
                 ProductId: g.Key.ProductId,
-                ProductName: g.Key.Name,
+                ProductName: g.Key.ProductName,
                 ProductImage: await _cloudStorage.GetSignedUrlAsync(g.Key.ImageUrl ?? "ImageNotFound"),
                 PhaseId: g.Key.PhaseId,
                 PhaseName: g.Key.Name,
