@@ -46,6 +46,25 @@ internal class ShipOrderRepository : IShipOrderRepository
             .ToListAsync();
     }
 
+    public async Task<ShipOrder> GetShipOrderDetailByShipOrderIdAsync(Guid shipOrderId)
+    {
+        return await _context.ShipOrders
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(shipOrder => shipOrder.Order)
+                .ThenInclude(order => order.Company)
+            .Include(shipOrder => shipOrder.Shipper)
+            .Include(shipOrder => shipOrder.ShipOrderDetails)
+                .ThenInclude(shipOrderDetail => shipOrderDetail.Product)
+                    .ThenInclude(p => p.Images)
+            .Include(shipOrder => shipOrder.ShipOrderDetails)
+                .ThenInclude(shipOrderDetail => shipOrderDetail.Set)
+                    .ThenInclude(s => s.SetProducts)
+                        .ThenInclude(sp => sp.Product)
+                            .ThenInclude(p => p.Images)
+            .SingleOrDefaultAsync(shipOrder => shipOrder.Id == shipOrderId);
+    }
+
     public async Task<ShipOrder> GetByShipOrderIdAsync(Guid shipOrderId)
     {
         return await _context.ShipOrders
@@ -78,9 +97,9 @@ internal class ShipOrderRepository : IShipOrderRepository
 
     public async Task<(List<ShipOrder>, int)> SearchShipOrderByShipperAsync(GetShipOrdersByShipperIdQuery request)
     {
-        var query = _context.ShipOrders.Where(s => s.ShipperId == request.ShipperId);
-
         var searchOption = request.SearchOption;
+
+        var query = _context.ShipOrders.Where(s => s.ShipperId == request.ShipperId && s.Status == searchOption.Status);
 
         if (searchOption.ShipDate != null)
         {
