@@ -48,6 +48,14 @@ public sealed class CreateMonthlyCompanySalaryCommandHandler
                     productSalary = CalculateProductSalary(shipmentDetails, productPhaseSalaries);
                 }
 
+                var productBrokenShipmentDetails = receivedShipments
+                    .SelectMany(x => x.ShipmentDetails)
+                    .Where(x => x.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR).ToList();
+                if (productBrokenShipmentDetails.Any())
+                {
+                    productBrokenSalary = CalculateProductSalary(productBrokenShipmentDetails, productPhaseSalaries);
+                }
+
             }
             if (sendShipments != null)
             {
@@ -58,14 +66,6 @@ public sealed class CreateMonthlyCompanySalaryCommandHandler
                 if (shipmentDetails.Any())
                 {
                     materialPrice = CalculateMaterial(shipmentDetails);
-                }
-
-                var productBrokenShipmentDetails = sendShipments
-                    .SelectMany(x => x.ShipmentDetails)
-                    .Where(x => x.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR).ToList();
-                if (productBrokenShipmentDetails.Any())
-                {
-                    productBrokenSalary = CalculateProductSalary(productBrokenShipmentDetails, productPhaseSalaries);
                 }
             }
 

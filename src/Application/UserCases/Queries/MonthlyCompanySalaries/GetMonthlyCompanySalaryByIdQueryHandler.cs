@@ -48,18 +48,24 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
 
         double totalProduct = 0;
         decimal totalSalaryProduct = 0;
+
+        var productBrokenResponses = new List<ProductExportResponse>();
+        double totalBroken = 0;
+
         var productExportResponses = new List<ProductExportResponse>();
         if (receivedShipments != null)
         {
             productExportResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.NO_PROBLEM);
             totalProduct = productExportResponses.Sum(pe => pe.Quantity);
             totalSalaryProduct = productExportResponses.Sum(pe => Decimal.Multiply((decimal)pe.Quantity, pe.Price));
+
+            productBrokenResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR);
+            totalBroken = productBrokenResponses.Sum(pb => pb.Quantity);
         }
         var materialResponses = new List<MaterialExportReponse>();
         double totalMaterial = 0;
 
-        var productBrokenResponses = new List<ProductExportResponse>();
-        double totalBroken = 0;
+        
 
         if (sendShipments != null)
         {
@@ -77,9 +83,6 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
 
             materialResponses = (await Task.WhenAll(materialResponseTasks)).ToList();
             totalMaterial = materialResponses.Sum(me => me.Quantity);
-
-            productBrokenResponses = await GetProductExportResponses(sendShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR);
-            totalBroken = productBrokenResponses.Sum(pb => pb.Quantity);
         }
 
         var totalSalaryMaterial = materialResponses.Sum(me => Decimal.Multiply((decimal)me.Quantity, me.Price));
