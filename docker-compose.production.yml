@@ -27,7 +27,7 @@ services:
       - capstone-backend
 
   capstone:
-    image: dihson103/capstone:v5.12
+    image: dihson103/capstone:v5.13
     container_name: capstone
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

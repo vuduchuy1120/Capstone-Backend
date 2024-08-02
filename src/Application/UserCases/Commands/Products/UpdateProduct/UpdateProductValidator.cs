@@ -39,7 +39,7 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
         RuleFor(req => req.UpdateProductRequest.RemoveImageIds)
             .MustAsync(async (req, imageIds, _) =>
             {
-                if (imageIds is null)
+                if (imageIds is null || imageIds.Count == 0)
                 {
                     return true;
                 }

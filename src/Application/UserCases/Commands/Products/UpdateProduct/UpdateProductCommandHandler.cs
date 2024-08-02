@@ -20,6 +20,8 @@ internal sealed class UpdateProductCommandHandler(
     IUnitOfWork _unitOfWork,
     IValidator<UpdateProductCommand> _validator) : ICommandHandler<UpdateProductCommand>
 {
+    private bool IsImageValid;
+
     public async Task<Result.Success> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var updateProductRequest = request.UpdateProductRequest;
@@ -27,14 +29,15 @@ internal sealed class UpdateProductCommandHandler(
 
         var product = await FindAndValidateRequest(request, productId);
 
+        IsImageValid = true;
+
         await RemoveOldProductImages(updateProductRequest?.RemoveImageIds);
 
         AddNewProductImages(updateProductRequest?.AddImagesRequest, productId);
 
         product.Update(updateProductRequest, request.UpdatedBy);
 
-        var isImageValid = IsProductImageAfterUpdateValid(product);
-        if(!isImageValid)
+        if(!IsImageValid)
         {
             throw new ProductBadRequestException("Sản phẩm phải có 1 ảnh chính");
         }
@@ -46,11 +49,6 @@ internal sealed class UpdateProductCommandHandler(
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success.Update();
-    }
-
-    private bool IsProductImageAfterUpdateValid(Product product)
-    {
-        return product.Images.Count(image => image.IsMainImage) == 1;
     }
 
     private async Task UpdateProductPhaseSalaries(Guid productId, UpdateProductRequest updateProductRequest)
@@ -123,16 +121,19 @@ internal sealed class UpdateProductCommandHandler(
         if (productImages is not null && productImages.Count > 0)
         {
             _productImageRepository.DeleteRange(productImages);
+            IsImageValid = !productImages.Any(p => p.IsMainImage);
         }
+
     }
 
     private void AddNewProductImages(List<ImageRequest>? addProductImagesRequest, Guid productId)
     {
         var productImages = addProductImagesRequest?
             .Select(imageRequest => ProductImage.Create(productId, imageRequest));
-        if (productImages != null)
+        if (productImages != null && productImages.Count() > 0)
         {
             _productImageRepository.AddRange(productImages.ToList());
+            IsImageValid = productImages.Count(p => p.IsMainImage) == 1 ? !IsImageValid : IsImageValid;
         }
     }
 }
