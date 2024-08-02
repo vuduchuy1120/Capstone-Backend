@@ -14,4 +14,5 @@ public interface IShipOrderRepository
     Task<bool> IsAnyShipOrderNotDone(Guid orderId);
     Task<bool> IsExistAnyShipOrder(Guid orderId);
     Task<(List<ShipOrder>, int)> SearchShipOrderByShipperAsync(GetShipOrdersByShipperIdQuery request);
+    Task<ShipOrder> GetShipOrderDetailByShipOrderIdAsync(Guid shipOrderId);
 }

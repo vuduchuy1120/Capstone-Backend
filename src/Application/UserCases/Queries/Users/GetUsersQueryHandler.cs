@@ -20,10 +20,7 @@ internal sealed class GetUsersQueryHandler(
         GetUsersQuery request, 
         CancellationToken cancellationToken)
     {
-        var searchResult = await _userRepository.SearchUsersAsync(request);
-
-        var users = searchResult.Item1;
-        var totalPage = searchResult.Item2;
+        var (users, totalPage) = await _userRepository.SearchUsersAsync(request);
 
         if (users is null || users.Count <= 0 || totalPage <= 0)
         {

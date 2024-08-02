@@ -4,6 +4,7 @@ using Contract.Services.Shipment.GetShipmentDetail;
 using Contract.Services.ShipOrder.ChangeStatus;
 using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.GetShipOrderByOrderId;
+using Contract.Services.ShipOrder.GetShipOrderDetail;
 using Contract.Services.ShipOrder.GetShipOrdersOfShipper;
 using Contract.Services.ShipOrder.Update;
 using MediatR;
@@ -38,7 +39,7 @@ public class ShipOrderApiEndpoints : CarterModule
             var result = await sender.Send(new GetShipOrderByOrderIdQuery(id));
 
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Driver-MainAdmin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
         });
@@ -50,6 +51,16 @@ public class ShipOrderApiEndpoints : CarterModule
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Driver").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
+        });
+
+        app.MapGet("detail/{shipOrderId}", async (ISender sender, [FromRoute] Guid shipOrderId) =>
+        {
+            var result = await sender.Send(new GetShipOrderDetailQuery(shipOrderId));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Driver-MainAdmin").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
         });

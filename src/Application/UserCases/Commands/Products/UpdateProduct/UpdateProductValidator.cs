@@ -9,42 +9,43 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
     public UpdateProductValidator(IProductImageRepository productImageRepository)
     {
         RuleFor(req => req.UpdateProductRequest)
-            .NotNull().WithMessage("Update product request can not null");
+    .NotNull().WithMessage("Yêu cầu cập nhật sản phẩm không được để trống");
 
         RuleFor(req => req.UpdateProductRequest.Id)
-            .NotEmpty().WithMessage("Product's id cannot be empty");
+            .NotEmpty().WithMessage("ID sản phẩm không được để trống");
 
         RuleFor(req => req.UpdateProductRequest.Code)
-            .NotEmpty().WithMessage("Product's code cannot be empty")
-            .Matches(@"^[a-zA-Z]{2}\d+$").WithMessage("Product's code must start with two characters followed by numbers");
+            .NotEmpty().WithMessage("Mã sản phẩm không được để trống")
+            .Matches(@"^[a-zA-Z]{2}\d+$").WithMessage("Mã sản phẩm phải bắt đầu bằng hai ký tự và theo sau là các số");
 
         RuleFor(req => req.UpdateProductRequest.PricePhase1)
-                .GreaterThan(0).WithMessage("Product's price must be greater than 0");
+            .GreaterThan(0).WithMessage("Giá sản phẩm phải lớn hơn 0");
 
         RuleFor(req => req.UpdateProductRequest.PricePhase2)
-            .GreaterThan(0).WithMessage("Product's price must be greater than 0");
+            .GreaterThan(0).WithMessage("Giá sản phẩm phải lớn hơn 0");
 
         RuleFor(req => req.UpdateProductRequest.PriceFinished)
-                .Must((request, PriceFinished) =>
-                {
-                    return PriceFinished >= request.UpdateProductRequest.PricePhase1 + request.UpdateProductRequest.PricePhase2;
-                }).WithMessage("Giá hàng hoàn thiện phải  >= tổng giá của 2 giai đoạn");
+            .Must((request, PriceFinished) =>
+            {
+                return PriceFinished >= request.UpdateProductRequest.PricePhase1 + request.UpdateProductRequest.PricePhase2;
+            }).WithMessage("Giá hàng hoàn thiện phải lớn hơn hoặc bằng tổng giá của hai giai đoạn");
 
         RuleFor(req => req.UpdateProductRequest.Size)
-            .NotEmpty().WithMessage("Product's size cannot be empty");
+            .NotEmpty().WithMessage("Kích thước sản phẩm không được để trống");
 
         RuleFor(req => req.UpdateProductRequest.Name)
-           .NotEmpty().WithMessage("Name's description cannot be empty");
+            .NotEmpty().WithMessage("Mô tả tên không được để trống");
 
         RuleFor(req => req.UpdateProductRequest.RemoveImageIds)
             .MustAsync(async (req, imageIds, _) =>
             {
-                if (imageIds is null)
+                if (imageIds is null || imageIds.Count == 0)
                 {
                     return true;
                 }
 
                 return await productImageRepository.IsAllImageIdExist(imageIds, req.ProductId);
-            }).WithMessage("There is any image not exist");
+            }).WithMessage("Có ít nhất một hình ảnh không tồn tại");
+
     }
 }
