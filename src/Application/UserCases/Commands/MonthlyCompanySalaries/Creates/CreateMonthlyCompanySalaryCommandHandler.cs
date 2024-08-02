@@ -5,9 +5,9 @@ using Contract.Services.MonthlyCompanySalary.Creates;
 using Contract.Services.ShipmentDetail.Share;
 using Domain.Entities;
 
-namespace Application.UserCases.Commands.MonthlyCompanySalaries;
+namespace Application.UserCases.Commands.MonthlyCompanySalaries.Creates;
 
-internal sealed class CreateMonthlyCompanySalaryCommandHandler
+public sealed class CreateMonthlyCompanySalaryCommandHandler
     (IShipmentRepository _shipmentRepository,
     IShipmentDetailRepository _shipmentDetailRepository,
     IMonthlyCompanySalaryRepository _monthlyCompanySalaryRepository,
@@ -48,6 +48,14 @@ internal sealed class CreateMonthlyCompanySalaryCommandHandler
                     productSalary = CalculateProductSalary(shipmentDetails, productPhaseSalaries);
                 }
 
+                var productBrokenShipmentDetails = receivedShipments
+                    .SelectMany(x => x.ShipmentDetails)
+                    .Where(x => x.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR).ToList();
+                if (productBrokenShipmentDetails.Any())
+                {
+                    productBrokenSalary = CalculateProductSalary(productBrokenShipmentDetails, productPhaseSalaries);
+                }
+
             }
             if (sendShipments != null)
             {
@@ -58,14 +66,6 @@ internal sealed class CreateMonthlyCompanySalaryCommandHandler
                 if (shipmentDetails.Any())
                 {
                     materialPrice = CalculateMaterial(shipmentDetails);
-                }
-
-                var productBrokenShipmentDetails = sendShipments
-                    .SelectMany(x => x.ShipmentDetails)
-                    .Where(x => x.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR).ToList();
-                if (productBrokenShipmentDetails.Any())
-                {
-                    productBrokenSalary = CalculateProductSalary(productBrokenShipmentDetails, productPhaseSalaries);
                 }
             }
 
@@ -96,15 +96,15 @@ internal sealed class CreateMonthlyCompanySalaryCommandHandler
                 pps => (pps.ProductId, pps.PhaseId),
                 (sd, pps) => (sd.Quantity, pps.SalaryPerProduct)
             )
-            .Where(x => x.Item1 > 0 && x.Item2 > 0 && Decimal.Multiply((decimal)x.Item1, x.Item2) > 0)
-            .Sum(x => Decimal.Multiply((decimal)x.Item1, x.Item2));
+            .Where(x => x.Item1 > 0 && x.Item2 > 0 && decimal.Multiply((decimal)x.Item1, x.Item2) > 0)
+            .Sum(x => decimal.Multiply((decimal)x.Item1, x.Item2));
     }
 
     private decimal CalculateMaterial(List<ShipmentDetail> shipmentDetails)
     {
         return shipmentDetails
             .Where(x => x.MaterialId.HasValue)
-            .Sum(x => Decimal.Multiply(x.MaterialPrice, (decimal)x.Quantity));
+            .Sum(x => decimal.Multiply(x.MaterialPrice, (decimal)x.Quantity));
     }
 }
 
