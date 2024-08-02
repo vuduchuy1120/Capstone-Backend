@@ -6,6 +6,7 @@ using Contract.Services.EmployeeProduct.Creates;
 using Contract.Services.ProductPhase.Creates;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.EmployeeProducts;
 using Domain.Exceptions.Users;
 using FluentValidation;
 
@@ -129,7 +130,7 @@ public sealed class CreateEmployeeProductCommandHandler
                 request.CreateQuantityProducts.Select(c => c.UserId).Distinct().ToList(), companyId);
 
             if (!isUserValid)
-                throw new UserNotPermissionException("You don't have permission to create employee products for other companies.");
+                throw new UserNotPermissionException("Bạn không có quyền tạo điểm danh cho user của công ty này.");
         }
 
         if (roleName != "MAIN_ADMIN")
@@ -143,7 +144,7 @@ public sealed class CreateEmployeeProductCommandHandler
         var isSalaryCalculated = await _employeeProductRepository.IsSalaryCalculatedForMonth(date.Month, date.Year);
         if (isSalaryCalculated)
         {
-            throw new MyValidationException($"Cannot create attendance records for {date.Month}/{date.Year} because salary has already been calculated.");
+            throw new EmployeeProductCannotCreateException();
         }
     }
     private bool IsOverTwoDays(DateOnly DateRequest, DateOnly DateNow)

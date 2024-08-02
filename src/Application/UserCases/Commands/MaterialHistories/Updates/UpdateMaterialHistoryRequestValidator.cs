@@ -2,11 +2,6 @@
 using Application.Utils;
 using Contract.Services.MaterialHistory.Update;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.UserCases.Commands.MaterialHistories.Update;
 
@@ -16,44 +11,47 @@ public sealed class UpdateMaterialHistoryRequestValidator : AbstractValidator<Up
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage("Id is required")
+            .WithMessage("Id là bắt buộc")
             .MustAsync(async (id, cancellationToken) =>
             {
                 return await _materialHistoryRepository.IsMaterialHistoryExist(id);
             })
-            .WithMessage("Material history not found");
+            .WithMessage("Lịch sử vật liệu không tồn tại");
 
         RuleFor(x => x.MaterialId)
             .NotEmpty()
-            .WithMessage("MaterialId is required")
+            .WithMessage("Mã vật liệu là bắt buộc")
             .MustAsync(async (materialId, cancellationToken) =>
             {
                 return await _materialRepository.IsMaterialExist(materialId);
             })
-            .WithMessage("Material not found");
+            .WithMessage("Vật liệu không tồn tại");
 
         RuleFor(x => x.Quantity)
             .NotEmpty()
-            .WithMessage("Quantity is required")
+            .WithMessage("Số lượng là bắt buộc")
             .GreaterThan(0)
-            .WithMessage("Quantity must be greater than 0");
+            .WithMessage("Số lượng phải lớn hơn 0");
+
         RuleFor(x => x.ImportDate)
-           .NotEmpty().WithMessage("Import Date cannot be empty")
-           .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Import Date must be in the format dd/MM/yyyy")
-           .Must(BeAValidDate).WithMessage("Date is invalid.");
+            .NotEmpty().WithMessage("Ngày nhập không được để trống")
+            .Matches(@"^\d{2}/\d{2}/\d{4}$").WithMessage("Ngày nhập phải theo định dạng dd/MM/yyyy")
+            .Must(BeAValidDate).WithMessage("Ngày không hợp lệ");
+
         RuleFor(x => x.ImportDate)
             .Must(ImportDate =>
             {
                 var formatedDate = DateUtil.ConvertStringToDateTimeOnly(ImportDate);
                 return formatedDate.Year > 1900 && formatedDate <= DateOnly.FromDateTime(DateTime.Now.Date);
-            }).WithMessage("Import Date must be greater than 1900 and less than or equal date now");
+            }).WithMessage("Ngày nhập phải lớn hơn năm 1900 và nhỏ hơn hoặc bằng ngày hiện tại");
+
         RuleFor(x => x.Price)
             .NotEmpty()
-            .WithMessage("Price is required")
+            .WithMessage("Giá là bắt buộc")
             .GreaterThan(0)
-            .WithMessage("Price must be greater than 0");
-
+            .WithMessage("Giá phải lớn hơn 0");
     }
+
     private bool BeAValidDate(string dob)
     {
         return DateTime.TryParseExact(dob, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out _);

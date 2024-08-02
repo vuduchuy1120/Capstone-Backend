@@ -1,9 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
 using Contract.Services.Attendance.Update;
-using Domain.Entities;
 using FluentValidation;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
@@ -12,15 +10,15 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
     public UpdateAttendancesRequestValidator(IUserRepository userRepository, ISlotRepository slotRepository, IAttendanceRepository attendanceRepository)
     {
         RuleFor(x => x.SlotId)
-        .NotEmpty().WithMessage("SlotID is required!")
+        .NotEmpty().WithMessage("Mã ca làm việc là bắt buộc!")
         .MustAsync(async (SlotId, _) =>
         {
             var slot = await slotRepository.IsSlotExisted(SlotId);
             return slot;
-        }).WithMessage("SlotID invalad or notfound!");
+        }).WithMessage("Mã ca làm việc không hợp lệ hoặc không tồn tại!");
 
+        RuleFor(x => x.UpdateAttendances).NotEmpty().WithMessage("Danh sách chấm công là bắt buộc!");
 
-        RuleFor(x => x.UpdateAttendances).NotEmpty();
         RuleFor(x => x.Date)
         .Must(Date =>
         {
@@ -29,38 +27,34 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
             {
                 return false;
             }
-
             return true;
-        }).WithMessage("Date must be a valid date in the format dd/MM/yyyy");
+        }).WithMessage("Ngày phải là một ngày hợp lệ theo định dạng dd/MM/yyyy");
 
         RuleFor(x => x.UpdateAttendances)
             .MustAsync(async (updateAttendances, cancellationToken) =>
             {
                 var userIds = updateAttendances.Select(x => x.UserId).ToList();
                 return await userRepository.IsAllUserActiveAsync(userIds);
-            }).WithMessage("One or more UserId is invalid or doesn't exist!");
+            }).WithMessage("Một hoặc nhiều mã nhân viên không hợp lệ hoặc không tồn tại!");
 
-        //IsAllAttendanceExist
         RuleFor(x => x.UpdateAttendances)
             .MustAsync(async (request, updateAttendances, _) =>
             {
                 var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.Date);
                 var userIds = updateAttendances.Select(x => x.UserId).ToList();
-
                 return await attendanceRepository.IsAllAttendancesExist(request.SlotId, formattedDate, userIds);
-            }).WithMessage("One or more Attendance is invalid or doesn't exist");
+            }).WithMessage("Một hoặc nhiều chấm công không hợp lệ hoặc không tồn tại!");
 
-        // validate each attendance with user, date, hourOverTIme
         RuleForEach(x => x.UpdateAttendances)
-            .NotEmpty().WithMessage("Attendance is required!")
+            .NotEmpty().WithMessage("Chấm công là bắt buộc!")
             .Must(attendance =>
             {
                 return attendance.HourOverTime >= 0;
-            }).WithMessage("HourOverTime must be greater than or equal to 0!")
+            }).WithMessage("Số giờ làm thêm phải lớn hơn hoặc bằng 0!")
             .Must(attendance =>
             {
                 return attendance.HourOverTime <= 5;
-            }).WithMessage("HourOverTime must be less than or equal to 5!")
+            }).WithMessage("Số giờ làm thêm phải nhỏ hơn hoặc bằng 5!")
             .Must((request, attendance) =>
             {
                 if (request.SlotId == 1 || request.SlotId == 2)
@@ -68,11 +62,11 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
                     return attendance.HourOverTime <= 3;
                 }
                 return true;
-            }).WithMessage("HourOverTime must be less than or equal to 3 for slot is morning and after!")
+            }).WithMessage("Số giờ làm thêm phải nhỏ hơn hoặc bằng 3 đối với ca sáng và ca chiều!")
             .Must(attendance =>
             {
                 return attendance.HourOverTime % 0.5 == 0;
-            }).WithMessage("HourOverTime must be a multiple of 0.5!")
+            }).WithMessage("Số giờ làm thêm phải là bội số của 0.5!")
             .Must(attendance =>
             {
                 if (!attendance.IsAttendance)
@@ -80,9 +74,6 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
                     return attendance.IsOverTime == false && attendance.HourOverTime == 0;
                 }
                 return true;
-            }).WithMessage("IsAttendance must be true when hour over time has value!");
-
+            }).WithMessage("Phải có mặt khi có giờ làm thêm!");
     }
 }
-
-
