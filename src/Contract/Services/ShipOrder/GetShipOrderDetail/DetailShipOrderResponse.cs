@@ -14,5 +14,5 @@ public record DetailShipOrderResponse(
     string StatusDescription,
     DeliveryMethod DeliveryMethod,
     string DeliveryMethodDescription,
-    List<ShipOrderDetailResponse> ShipOrderDetailResponses,
+    List<ShipOrderDetailWithImageLinkResponse> ShipOrderDetailResponses,
     CompanyResponse CompanyResponse);

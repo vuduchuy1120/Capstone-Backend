@@ -47,14 +47,14 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
             });
             // getphasebyid
-            app.MapGet("{id}", async (ISender sender, Guid id) =>
-            {
-                var result = await sender.Send(new GetPhaseByIdQuery(id));
-                return Results.Ok(result);
-            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-            {
-                Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
-            });
+            //app.MapGet("{id}", async (ISender sender, Guid id) =>
+            //{
+            //    var result = await sender.Send(new GetPhaseByIdQuery(id));
+            //    return Results.Ok(result);
+            //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            //{
+            //    Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
+            //});
 
         }
     }
