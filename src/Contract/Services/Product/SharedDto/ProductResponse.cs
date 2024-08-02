@@ -13,6 +13,16 @@ public record ProductResponse(
     bool IsInProcessing,
     List<ImageResponse> ImageResponses);
 
+public record ProductWithOneImageResponse(
+    Guid Id,
+    string Name,
+    string Code,
+    decimal Price,
+    string Size,
+    string Description,
+    bool IsInProcessing,
+    string Image);
+
 public record ProductWithQuantityResponse(
     Guid Id,
     string Name,

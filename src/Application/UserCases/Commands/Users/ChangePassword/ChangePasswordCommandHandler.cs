@@ -56,7 +56,7 @@ internal sealed class ChangePasswordCommandHandler(
 
         if (!isPasswordValid)
         {
-            throw new WrongIdOrPasswordException((int) HttpStatusCode.Conflict, "Mật khẩu không chính xác");
+            throw new WrongIdOrPasswordException((int) HttpStatusCode.Conflict, "Mật khẩu hiện tại không chính xác");
         }
 
         return user;
