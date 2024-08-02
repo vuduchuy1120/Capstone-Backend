@@ -5,9 +5,9 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Create;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.Attendances;
 using Domain.Exceptions.Users;
 using FluentValidation;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Data;
 
 namespace Application.UserCases.Commands.Attendances.CreateAttendance;
@@ -67,12 +67,12 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
             var check = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
             if (!check)
             {
-                throw new UserNotPermissionException("You don't have permission to create attendance for users of this company.");
+                throw new UserNotPermissionException("Bạn không có quyền tạo điểm danh cho user của công ty này.");
             }
 
             if (IsOverTwoDays(formattedDate, dateNow))
             {
-                throw new UserNotPermissionException("You do not have permission to create this record as it is over 2 days old.");
+                throw new UserNotPermissionException("Bạn không thể tạo hoặc sửa điểm danh do đã quá 2 ngày.");
             }
         }
     }
@@ -81,7 +81,7 @@ internal sealed class CreateAttendanceDefaultCommandHandler(
         var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
         if (isSalaryCalculated)
         {
-            throw new MyValidationException($"Cannot create attendance records for {formattedDate.Month}/{formattedDate.Year} because salary has already been calculated.");
+            throw new AttendanceCannotCreateOrUpdateException();
         }
     }
 
