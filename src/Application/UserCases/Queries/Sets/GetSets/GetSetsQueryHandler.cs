@@ -17,10 +17,7 @@ internal sealed class GetSetsQueryHandler(
         GetSetsQuery request, 
         CancellationToken cancellationToken)
     {
-        var result = await _setRepository.SearchSetAsync(request);
-
-        var sets = result.Item1;
-        var totalPages = result.Item2;
+        var (sets, totalPages) = await _setRepository.SearchSetAsync(request);
 
         if (sets is null || sets.Count <= 0 || totalPages <= 0)
         {

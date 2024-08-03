@@ -15,6 +15,7 @@ public class UserMappingProfile : Profile
                src.Id,
                src.FirstName,
                src.LastName,
+               src.AccountBalance,
                src.Phone,
                src.Address,
                src.Avatar,

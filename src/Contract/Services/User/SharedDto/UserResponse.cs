@@ -6,6 +6,7 @@ public record UserResponse(
         string Id,
         string FirstName,
         string LastName,
+        decimal? AccountBalance,
         string Phone,
         string Address,
         string Avatar,
