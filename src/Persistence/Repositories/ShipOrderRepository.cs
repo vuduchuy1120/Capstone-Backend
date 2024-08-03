@@ -25,7 +25,7 @@ internal class ShipOrderRepository : IShipOrderRepository
     {
         return await _context.ShipOrders
             .Include(s => s.ShipOrderDetails)
-            .SingleOrDefaultAsync(s => s.Id == shipOrderId && (s.Status == Status.WAIT_FOR_SHIP || s.Status == Status.SHIPPING));
+            .SingleOrDefaultAsync(s => s.Id == shipOrderId && s.IsAccepted == false);
     }
 
     public async Task<List<ShipOrder>> GetByOrderIdAsync(Guid orderId)

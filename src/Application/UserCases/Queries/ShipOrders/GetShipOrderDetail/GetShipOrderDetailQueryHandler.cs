@@ -46,6 +46,7 @@ internal sealed class GetShipOrderDetailQueryHandler(
                 shipOrder.ShipperId,
                 shipOrder.Shipper.FirstName + " " + shipOrder.Shipper.LastName,
                 shipOrder.ShipDate,
+                shipOrder.IsAccepted,
                 shipOrder.Status,
                 shipOrder.Status.GetDescription(),
                 shipOrder.DeliveryMethod,

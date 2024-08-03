@@ -26,7 +26,7 @@ internal sealed class GetShipOrdersByShipperIdQueryHandler(IShipOrderRepository 
         }
 
         var shipOrderResponse = shipOrders.Select(s => new ShipOrderForShipperResponse(
-            s.Id, s.ShipDate, s.Status, s.Status.GetDescription(), s.DeliveryMethod, s.DeliveryMethod.GetDescription()))
+            s.Id, s.ShipDate, s.IsAccepted, s.Status, s.Status.GetDescription(), s.DeliveryMethod, s.DeliveryMethod.GetDescription()))
             .ToList();
         var result = new SearchResponse<List<ShipOrderForShipperResponse>>(request.SearchOption.PageIndex, totalPages, shipOrderResponse);
 

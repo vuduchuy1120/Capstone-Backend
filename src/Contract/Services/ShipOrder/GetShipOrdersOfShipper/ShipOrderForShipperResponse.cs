@@ -6,6 +6,7 @@ namespace Contract.Services.ShipOrder.GetShipOrdersOfShipper;
 public record ShipOrderForShipperResponse(
     Guid ShipOrderId,
     DateTime ShipDate,
+    bool IsAccepted,
     Status Status,
     string StatusDescription,
     DeliveryMethod DeliveryMethod,
