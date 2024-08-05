@@ -111,6 +111,8 @@ internal class ShipOrderRepository : IShipOrderRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / searchOption.PageSize);
 
         var shipOrders = await query
+            .Include(shipOrder => shipOrder.Order)
+                .ThenInclude(order => order.Company)
             .Skip((searchOption.PageIndex - 1) * searchOption.PageSize)
             .Take(searchOption.PageSize)
             .AsNoTracking()

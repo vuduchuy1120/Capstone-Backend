@@ -1,4 +1,5 @@
-﻿using Contract.Services.Shipment.Share;
+﻿using Contract.Services.Company.ShareDtos;
+using Contract.Services.Shipment.Share;
 using Contract.Services.ShipOrder.Share;
 
 namespace Contract.Services.ShipOrder.GetShipOrdersOfShipper;
@@ -10,4 +11,5 @@ public record ShipOrderForShipperResponse(
     Status Status,
     string StatusDescription,
     DeliveryMethod DeliveryMethod,
-    string DeliveryMethodDescription);
+    string DeliveryMethodDescription,
+    CompanyResponse ToCompany);

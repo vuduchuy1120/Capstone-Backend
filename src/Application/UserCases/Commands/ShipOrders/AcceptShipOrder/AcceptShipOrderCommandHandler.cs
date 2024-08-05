@@ -180,9 +180,8 @@ internal sealed class AcceptShipOrderCommandHandler(
             var productDetailRequest = shipProductDetails.SingleOrDefault(s => s.ProductId == product.ProductId)
                 ?? throw new ShipOrderDetailNotFoundException();
 
-            var errorQuantity = product.ErrorQuantity + productDetailRequest.Quantity;
-
-            product.UpdateErrorQuantity(errorQuantity);
+            product.UpdateErrorQuantity(product.ErrorQuantity + productDetailRequest.Quantity);
+            product.UpdateErrorAvailableQuantity(product.ErrorAvailableQuantity + productDetailRequest.Quantity);
         }
 
         _productPhaseRepository.UpdateProductPhaseRange(productPhases);

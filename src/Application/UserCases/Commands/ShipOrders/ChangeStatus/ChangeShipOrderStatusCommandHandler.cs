@@ -15,9 +15,6 @@ namespace Application.UserCases.Commands.ShipOrders.ChangeStatus;
 
 internal sealed class ChangeShipOrderStatusCommandHandler(
     IShipOrderRepository _shipOrderRepository,
-    IOrderDetailRepository _orderDetailRepository,
-    IProductPhaseRepository _productPhaseRepository,
-    ISetRepository _setRepository,
     IUnitOfWork _unitOfWork) : ICommandHandler<ChangeShipOrderStatusCommand>
 {
     public async Task<Result.Success> Handle(ChangeShipOrderStatusCommand request, CancellationToken cancellationToken)
