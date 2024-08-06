@@ -21,7 +21,7 @@ public class GetProductQueryHandlerTest
     {
         _productRepositoryMock = new();
         _mapperMock = new();
-        _getProductQueryHandler = new GetProductQueryHandler(_productRepositoryMock.Object, _mapperMock.Object);
+        _getProductQueryHandler = new GetProductQueryHandler(_productRepositoryMock.Object);
     }
 
     //[Fact]

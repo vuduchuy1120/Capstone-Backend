@@ -43,6 +43,7 @@ internal sealed class GetShipOrderByOrderIdQueryHandler(IShipOrderRepository _sh
                 shipOrder.ShipperId,
                 shipOrder.Shipper.FirstName + " " + shipOrder.Shipper.LastName,
                 shipOrder.ShipDate,
+                shipOrder.IsAccepted,
                 shipOrder.Status,
                 shipOrder.Status.GetDescription(),
                 shipOrder.DeliveryMethod,

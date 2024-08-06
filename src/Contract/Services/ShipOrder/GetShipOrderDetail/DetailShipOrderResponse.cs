@@ -10,6 +10,7 @@ public record DetailShipOrderResponse(
     string ShipperId,
     string ShipperName,
     DateTime ShipDate,
+    bool IsAccepted,
     Status Status,
     string StatusDescription,
     DeliveryMethod DeliveryMethod,

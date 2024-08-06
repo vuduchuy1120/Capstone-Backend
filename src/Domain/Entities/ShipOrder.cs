@@ -14,6 +14,7 @@ public class ShipOrder : EntityAuditBase<Guid>
     public User Shipper { get; private set; }
     public DateTime ShipDate { get; private set; }
     public Status Status { get; private set; }
+    public bool IsAccepted { get; private set; } = false;
     public DeliveryMethod DeliveryMethod { get; private set; }
     public List<ShipOrderDetail>? ShipOrderDetails { get; private set; }
 
@@ -32,7 +33,8 @@ public class ShipOrder : EntityAuditBase<Guid>
             ShipperId = request.ShipperId,
             ShipDate = request.ShipDate,
             Status = Status.WAIT_FOR_SHIP,
-            DeliveryMethod = request.KindOfShipOrder
+            DeliveryMethod = request.KindOfShipOrder,
+            IsAccepted = false
         };
     }
 
@@ -52,5 +54,12 @@ public class ShipOrder : EntityAuditBase<Guid>
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
         Status = status;
+    }
+
+    public void UpdateAccepted(string updatedBy)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        IsAccepted = true;
     }
 }

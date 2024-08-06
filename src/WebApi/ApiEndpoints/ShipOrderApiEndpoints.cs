@@ -1,6 +1,7 @@
 ﻿using Application.Utils;
 using Carter;
 using Contract.Services.Shipment.GetShipmentDetail;
+using Contract.Services.ShipOrder.AcceptShipOrder;
 using Contract.Services.ShipOrder.ChangeStatus;
 using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.GetShipOrderByOrderId;
@@ -91,6 +92,21 @@ public class ShipOrderApiEndpoints : CarterModule
 
             return Results.Ok(result);
         }).RequireAuthorization("Require-Driver-MainAdmin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
+        });
+
+        app.MapPatch("accept/{shipOrderId}", async (
+            ISender sender,
+            ClaimsPrincipal claim,
+            [FromRoute] Guid shipOrderId) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+
+            var result = await sender.Send(new AcceptShipOrderCommand(shipOrderId, userId));
+
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Ship order api" } }
         });

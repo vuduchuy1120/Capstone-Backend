@@ -25,7 +25,7 @@ internal class ShipOrderRepository : IShipOrderRepository
     {
         return await _context.ShipOrders
             .Include(s => s.ShipOrderDetails)
-            .SingleOrDefaultAsync(s => s.Id == shipOrderId && (s.Status == Status.WAIT_FOR_SHIP || s.Status == Status.SHIPPING));
+            .SingleOrDefaultAsync(s => s.Id == shipOrderId && s.IsAccepted == false);
     }
 
     public async Task<List<ShipOrder>> GetByOrderIdAsync(Guid orderId)
@@ -111,6 +111,8 @@ internal class ShipOrderRepository : IShipOrderRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / searchOption.PageSize);
 
         var shipOrders = await query
+            .Include(shipOrder => shipOrder.Order)
+                .ThenInclude(order => order.Company)
             .Skip((searchOption.PageIndex - 1) * searchOption.PageSize)
             .Take(searchOption.PageSize)
             .AsNoTracking()

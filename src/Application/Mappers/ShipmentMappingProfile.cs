@@ -16,6 +16,7 @@ public class ShipmentMappingProfile : Profile
                     src.Id,
                     context.Mapper.Map<CompanyResponse>(src.FromCompany),
                     context.Mapper.Map<CompanyResponse>(src.ToCompany),
+                    src.IsAccepted,
                     src.ShipDate,
                     src.Status.GetDescription(),
                     src.Status

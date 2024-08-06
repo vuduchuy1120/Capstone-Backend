@@ -6,6 +6,7 @@ public record ShipmentResponse(
     Guid Id,
     CompanyResponse From, 
     CompanyResponse To,
+    bool IsAccepted,
     DateTime ShipDate, 
     string StatusDescription,
     Status Status);
