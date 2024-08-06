@@ -25,11 +25,6 @@ public class OrderRepository : IOrderRepository
         return await _context.Orders.Include(c => c.Company).FirstOrDefaultAsync(x => x.Id.Equals(id));
     }
 
-    public Task<List<Order>> GetOrdersByCompanyIdAsync(Guid companyId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> IsOrderExist(Guid id)
     {
         return await _context.Orders.AnyAsync(x => x.Id.Equals(id));
@@ -81,5 +76,28 @@ public class OrderRepository : IOrderRepository
     public async Task<bool> IsOrderIdValidToShipAsync(Guid id)
     {
         return await _context.Orders.AnyAsync(o => o.Id == id && o.Status == StatusOrder.INPROGRESS);
+    }
+
+    public async Task<bool> IsCompanyNotChange(Guid orderId, Guid companyId)
+    {
+        return await _context.Orders.AnyAsync(o => o.Id == orderId && o.CompanyId == companyId);
+    }
+
+    public async Task<bool> IsOrderComplete(Guid orderId)
+    {
+        var query = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .Where(o => o.Id == orderId)
+            .ToListAsync();
+
+        var orderDetails = query.SelectMany(o => o.OrderDetails).ToList();
+        foreach (var orderDetail in orderDetails)
+        {
+            if (orderDetail.Quantity > orderDetail.ShippedQuantity)
+            {
+                return false;
+            }
+        }
+        return true;           
     }
 }

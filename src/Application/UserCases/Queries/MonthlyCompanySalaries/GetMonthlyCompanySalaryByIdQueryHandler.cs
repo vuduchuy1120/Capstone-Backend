@@ -8,14 +8,12 @@ using Contract.Services.ShipmentDetail.Share;
 using Domain.Entities;
 using Domain.Exceptions.MonthlyCompanySalaries;
 using Domain.Exceptions.Shipments;
-using System.Linq;
 
 namespace Application.UserCases.Queries.MonthlyCompanySalaries;
 
 internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
     (IMonthlyCompanySalaryRepository _monthlyCompanySalaryRepository,
     IShipmentRepository _shipmentRepository,
-    IShipmentDetailRepository _shipmentDetailRepository,
     IProductPhaseSalaryRepository _productPhaseSalaryRepository,
     ICloudStorage _cloudStorage
     ) : IQueryHandler<GetMonthlyCompanySalaryByIdQuery, MonthlyCompanySalaryDetailResponse>
@@ -65,7 +63,7 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
         var materialResponses = new List<MaterialExportReponse>();
         double totalMaterial = 0;
 
-        
+
 
         if (sendShipments != null)
         {

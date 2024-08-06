@@ -8,7 +8,7 @@ using Contract.Services.MonthlyCompanySalary.ShareDtos;
 
 namespace Application.UserCases.Queries.MonthlyCompanySalaries;
 
-internal sealed class SearchMonthlyCompanySalaries
+internal sealed class SearchMonthlyCompanySalariesHandler
     (IMonthlyCompanySalaryRepository _monthlyCompanySalaryRepository,
     IMapper _mapper) : IQueryHandler<GetMonthlyCompanySalaryQuery, SearchResponse<List<MonthlyCompanySalaryResponse>>>
 {

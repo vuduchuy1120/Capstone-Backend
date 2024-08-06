@@ -1,5 +1,4 @@
 ﻿using Application.Abstractions.Data;
-using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Queries;
@@ -9,7 +8,7 @@ using Domain.Exceptions.Attendances;
 namespace Application.UserCases.Queries.Attendances;
 
 public sealed class GetAttendancesByMonthAndUserIdQueryHandler
-    (IAttendanceRepository _attendanceRepository, IMapper _mapper
+    (IAttendanceRepository _attendanceRepository
     ) : IQueryHandler<GetAttendancesByMonthAndUserIdQuery, AttendanceUserResponse>
 {
     public async Task<Result.Success<AttendanceUserResponse>> Handle(GetAttendancesByMonthAndUserIdQuery request, CancellationToken cancellationToken)
@@ -20,7 +19,7 @@ public sealed class GetAttendancesByMonthAndUserIdQueryHandler
             throw new AttendanceNotFoundException();
         }
         var attendanceResponse = attendances
-                .OrderBy(a => a.Date) 
+                .OrderBy(a => a.Date)
                 .GroupBy(a => new { a.Date.Month, a.Date.Year, a.UserId })
                 .Select(group => new AttendanceUserResponse(
                     Month: group.Key.Month,

@@ -11,8 +11,7 @@ using Domain.Exceptions.Users;
 namespace Application.UserCases.Queries.PaidSalaries;
 
 internal sealed class GetPaidSalaryByUserIdQueryHandler
-    (IPaidSalaryRepository _paidSalaryRepository,
-    IMapper _mapper
+    (IPaidSalaryRepository _paidSalaryRepository
     ) : IQueryHandler<GetPaidSalaryByUserIdQuery, SearchResponse<List<PaidSalaryResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<PaidSalaryResponse>>>> Handle(GetPaidSalaryByUserIdQuery request, CancellationToken cancellationToken)
