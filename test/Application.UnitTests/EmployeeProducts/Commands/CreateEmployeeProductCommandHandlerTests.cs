@@ -41,7 +41,6 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             _handler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
-                _companyRepositoryMock.Object,
                 _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);
@@ -64,7 +63,6 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             var createEmployeeProductCommandHandler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
-                _companyRepositoryMock.Object,
                 _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);

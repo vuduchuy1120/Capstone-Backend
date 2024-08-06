@@ -10,9 +10,8 @@ using FluentValidation;
 namespace Application.UserCases.Commands.ProductPhases.Updates;
 
 public class UpdateQuantityPhaseCommnadHandler
-    (IPhaseRepository _phaseRepository,
+    (
     IProductPhaseRepository _productPhaseRepository,
-    ICompanyRepository _companyRepository,
     IValidator<UpdateQuantityPhaseRequest> _validator,
     IUnitOfWork _unitOfWork)
      : ICommandHandler<UpdateQuantityPhaseCommand>

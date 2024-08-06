@@ -25,7 +25,7 @@ public class OrderDetail : EntityBase<Guid>
             SetId = request.isProductId ? null : request.ProductIdOrSetId,
             Quantity = request.Quantity,
             UnitPrice = request.UnitPrice,
-            Note = request.Note,
+            Note = request.Note.Trim(),
             ShippedQuantity = shippedQuantity
         };
     }

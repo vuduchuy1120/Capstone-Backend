@@ -15,8 +15,7 @@ namespace Application.UserCases.Queries.Attendances;
 
 internal sealed class GetAttendancesQueryHandler
     (IAttendanceRepository _attendanceRepository,
-    ICloudStorage _cloudStorage,
-    IMapper _mapper) : IQueryHandler<GetAttendancesQuery, SearchResponse<List<AttendanceResponse>>>
+    ICloudStorage _cloudStorage) : IQueryHandler<GetAttendancesQuery, SearchResponse<List<AttendanceResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<AttendanceResponse>>>> Handle(GetAttendancesQuery request, CancellationToken cancellationToken)
     {

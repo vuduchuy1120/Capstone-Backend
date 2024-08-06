@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Data;
 using Application.Utils;
-using Contract.Abstractions.Shared.Utils;
 using Contract.Services.Order.Creates;
 using Contract.Services.Order.ShareDtos;
 using FluentValidation;
@@ -42,10 +41,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .NotNull().WithMessage("Chi tiết đơn hàng không được bỏ trống.")
             .Must(x => x.Count > 0).WithMessage("Chi tiết đơn hàng là bắt buộc.");
 
-        RuleFor(x=> x.StartOrder)
+        RuleFor(x => x.StartOrder)
             .Must((request, startOrder) =>
             {
-                if(request.Status == StatusOrder.COMPLETED || request.Status == StatusOrder.CANCELLED)
+                if (request.Status == StatusOrder.COMPLETED || request.Status == StatusOrder.CANCELLED)
                     return DateUtil.BeLessThanCurrentDate(startOrder);
                 return true;
             }).WithMessage("Ngày bắt đầu phải nhỏ hơn ngày hiện tại");

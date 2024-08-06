@@ -11,8 +11,7 @@ using Domain.Exceptions.Attendances;
 namespace Application.UserCases.Queries.Attendances;
 
 public sealed class GetAttendanceByUserIdAndDateQueryHandler
-    (IAttendanceRepository _attendanceRepository,
-    IMapper _mapper
+    (IAttendanceRepository _attendanceRepository
     ) : IQueryHandler<GetAttendanceByUserIdAndDateQuery, AttendanceUserDetailResponse>
 {
     public async Task<Result.Success<AttendanceUserDetailResponse>> Handle(GetAttendanceByUserIdAndDateQuery request, CancellationToken cancellationToken)

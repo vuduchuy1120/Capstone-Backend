@@ -15,7 +15,6 @@ namespace Application.UserCases.Commands.EmployeeProducts.Creates;
 public sealed class CreateEmployeeProductCommandHandler
     (IEmployeeProductRepository _employeeProductRepository,
     IUserRepository _userRepository,
-    ICompanyRepository _companyRepository,
     IProductPhaseRepository _productPhaseRepository,
     IValidator<CreateEmployeeProductRequest> _validator,
     IUnitOfWork _unitOfWork) : ICommandHandler<CreateEmployeeProductComand>

@@ -9,7 +9,6 @@ namespace Application.UserCases.Commands.MonthlyCompanySalaries.Creates;
 
 public sealed class CreateMonthlyCompanySalaryCommandHandler
     (IShipmentRepository _shipmentRepository,
-    IShipmentDetailRepository _shipmentDetailRepository,
     IMonthlyCompanySalaryRepository _monthlyCompanySalaryRepository,
     IProductPhaseSalaryRepository _productPhaseSalaryRepository,
     ICompanyRepository _companyRepository,

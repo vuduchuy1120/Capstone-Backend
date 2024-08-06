@@ -6,6 +6,7 @@ using Contract.Services.Order.Creates;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.UserCases.Commands.Orders.Creates;
 

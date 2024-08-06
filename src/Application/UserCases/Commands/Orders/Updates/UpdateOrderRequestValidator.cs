@@ -58,6 +58,28 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
                 }
                 return true;
             }).WithMessage("Đã có sản phẩm được giao đi không thể chuyển trạng thái đơn hàng về đã ký");
+
+        RuleFor(x => x.CompanyId)
+           .MustAsync(async (request, CompanyId, _) =>
+           {
+               var isExistShipOrder = await _shipOrderRepository.IsExistAnyShipOrder(request.OrderId);
+               if (isExistShipOrder)
+               {
+                   return await _orderRepository.IsCompanyNotChange(request.OrderId, CompanyId);
+               }
+               return false;
+           }).WithMessage("Đã có sản phẩm được giao đi không thể thay đổi công ty đặt hàng.");
+
+        RuleFor(x => x.Status)
+            .MustAsync(async (request, status, _) =>
+            {
+                var isOrderComplete = await _orderRepository.IsOrderComplete(request.OrderId);
+                if (!isOrderComplete)
+                {
+                    return status != StatusOrder.COMPLETED;
+                }
+                return true;
+            }).WithMessage("Đơn hàng có những sản phẩm chưa được giao hết không thể thay đổi trạng thái thành hoàn thành.");
         RuleFor(x => x.VAT)
             .Must(VAT =>
             {
