@@ -13,6 +13,7 @@ public record UserResponse(
         string Gender,
         DateOnly DOB,
         SalaryHistoryResponse SalaryHistoryResponse,
+        DateOnly LastPaidSalaryDate,
         bool IsActive,        
         int RoleId,
         string RoleDescription,

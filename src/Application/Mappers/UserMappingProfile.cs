@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using Application.Utils;
+using AutoMapper;
+using Contract.Abstractions.Shared.Utils;
 using Contract.Services.SalaryHistory.ShareDtos;
 
 using Contract.Services.User.SharedDto;
@@ -33,8 +35,12 @@ public class UserMappingProfile : Profile
                            .OrderByDescending(sh => sh.StartDate)
                            .FirstOrDefault()
                    ),
+               DateUtil.ConvertStringToDateTimeOnly(src.PaidSalaries
+                   .OrderByDescending(ps => ps.CreatedDate)
+                   .Select(ps => ps.CreatedDate)
+                   .FirstOrDefault().ToString("dd/MM/yyyy")),
                src.IsActive,
-               src.RoleId,               
+               src.RoleId,
                src.Role.RoleName,
                src.Company.Name,
                src.CompanyId

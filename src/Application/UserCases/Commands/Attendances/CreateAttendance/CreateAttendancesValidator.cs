@@ -7,7 +7,10 @@ namespace Application.UserCases.Commands.Attendances.CreateAttendance;
 
 public sealed class CreateAttendancesValidator : AbstractValidator<CreateAttendanceDefaultRequest>
 {
-    public CreateAttendancesValidator(IUserRepository userRepository, ISlotRepository slotRepository, IAttendanceRepository attendanceRepository)
+    public CreateAttendancesValidator(
+        IUserRepository userRepository, 
+        ISlotRepository slotRepository, 
+        IAttendanceRepository attendanceRepository)
     {
         RuleFor(x => x.Date)
         .Must(Date =>
