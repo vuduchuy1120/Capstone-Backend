@@ -40,6 +40,7 @@ internal class UserRepository : IUserRepository
             .Include(user => user.Role)
             .Include(u => u.Company)
             .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
     }
 
@@ -49,6 +50,7 @@ internal class UserRepository : IUserRepository
             .Include(user => user.Role)
             .Include(u => u.Company)
             .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
@@ -58,6 +60,7 @@ internal class UserRepository : IUserRepository
             .Include(user => user.Role)
             .Include(user => user.Company)
             .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive);
     }
 
@@ -68,6 +71,7 @@ internal class UserRepository : IUserRepository
             .Include(user => user.Role)
             .Include(user => user.Company)
             .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .Where(user => user.CompanyId == companyId && user.IsActive == true)
             .ToListAsync();
     }
