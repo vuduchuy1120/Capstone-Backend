@@ -8,10 +8,11 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordRequest>
     public ChangePasswordValidator()
     {
         RuleFor(req => req.newPassword)
-                .NotEmpty().WithMessage("Password cannot be empty")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long")
-                .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
-                .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter")
-                .Matches(@"[\W_]").WithMessage("Password must contain at least one special character");
+            .NotEmpty().WithMessage("Mật khẩu không được để trống")
+            .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự")
+            .Matches(@"[a-z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái thường")
+            .Matches(@"[A-Z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái hoa")
+            .Matches(@"[\W_]").WithMessage("Mật khẩu phải chứa ít nhất một ký tự đặc biệt");
+
     }
 }

@@ -8,8 +8,8 @@ using Domain.Exceptions.Users;
 
 namespace Application.UserCases.Queries.Users;
 
-public class GetUsersByCompanyIdQueryHandler
-    (IUserRepository _userRepository,
+public class GetUsersByCompanyIdQueryHandler(
+    IUserRepository _userRepository,
     IMapper _mapper
     ) : IQueryHandler<GetUsersByCompanyIdQuery, List<UserResponse>>
 {

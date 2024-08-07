@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Users;
 public class UserIdConflictException : MyException
 {
     public UserIdConflictException() : base(
-        (int) HttpStatusCode.Conflict, "There are something conflict with userId")
+        (int) HttpStatusCode.Conflict, "Mã người dùng không chính xác")
     {
     }
 }
