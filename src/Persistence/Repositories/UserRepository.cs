@@ -136,6 +136,7 @@ internal class UserRepository : IUserRepository
         var users = await query
             .Include(user => user.Role)
             .Include(user => user.Company)
+            .Include(user => user.PaidSalaries)
             .Include(s => s.SalaryHistories)
             .OrderBy(user => user.CreatedDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
