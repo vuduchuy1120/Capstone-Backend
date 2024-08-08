@@ -27,6 +27,17 @@ public class UserEndpoints : CarterModule
             var result = await sender.Send(new GetUserByIdQuery(id));
 
             return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "User api" } }
+        });
+
+        app.MapGet("/me", async (ISender sender, ClaimsPrincipal claim) =>
+        {
+            var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            var result = await sender.Send(new GetUserByIdQuery(userId));
+
+            return Results.Ok(result);
         }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "User api" } }
