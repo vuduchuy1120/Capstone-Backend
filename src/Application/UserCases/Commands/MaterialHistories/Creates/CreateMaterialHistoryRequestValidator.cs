@@ -8,7 +8,7 @@ namespace Application.UserCases.Commands.MaterialHistories.Create;
 
 public sealed class CreateMaterialHistoryRequestValidator : AbstractValidator<CreateMaterialHistoryRequest>
 {
-    public CreateMaterialHistoryRequestValidator(IMaterialHistoryRepository _materialHistoryRepository, IMaterialRepository _materialRepository)
+    public CreateMaterialHistoryRequestValidator(IMaterialRepository _materialRepository)
     {
         RuleFor(m => m.MaterialId)
             .NotEmpty().WithMessage("Mã vật liệu không được để trống!")

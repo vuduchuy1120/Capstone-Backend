@@ -6,7 +6,7 @@ namespace Application.UserCases.Commands.Reports.Creates;
 
 public class CreateReportRequestValidator : AbstractValidator<CreateReportRequest>
 {
-    public CreateReportRequestValidator(IReportRepository _reportRepository, IUserRepository _userRepository)
+    public CreateReportRequestValidator()
     {
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Bạn phải nhập nội dung báo cáo.")

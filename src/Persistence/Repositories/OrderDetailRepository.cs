@@ -41,6 +41,7 @@ public class OrderDetailRepository : IOrderDetailRepository
         return await _context.OrderDetails
             .Include(x => x.Product).ThenInclude(x => x.Images)
             .Include(x => x.Set).ThenInclude(x => x.SetProducts).ThenInclude(x => x.Product).ThenInclude(x => x.Images)
+            .Include(x => x.Set).ThenInclude(x => x.SetProducts).ThenInclude(x => x.Product).ThenInclude(x => x.ProductPhaseSalaries).ThenInclude(x => x.Phase).ThenInclude(x => x.ProductPhases)
             .Include(x=>x.Product).ThenInclude(x=>x.ProductPhaseSalaries).ThenInclude(x=> x.Phase).ThenInclude(x=>x.ProductPhases)
             .Where(x => x.OrderId.Equals(id)).ToListAsync();
     }

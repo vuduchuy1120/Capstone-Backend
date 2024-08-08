@@ -5,15 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.Material.Get;
 using Contract.Services.Material.ShareDto;
-using Contract.Services.User.SharedDto;
-using Domain.Entities;
 using Domain.Exceptions.Materials;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Queries.Materials;
 public sealed class GetMaterialsQueryHandler(
@@ -33,7 +25,7 @@ public sealed class GetMaterialsQueryHandler(
         }
 
         var result = _mapper.Map<List<MaterialResponse>>(materials);
-        var searchResponse = new SearchResponse<List<MaterialResponse>>( request.PageIndex, totalPage, result);
+        var searchResponse = new SearchResponse<List<MaterialResponse>>(request.PageIndex, totalPage, result);
 
         return Result.Success<SearchResponse<List<MaterialResponse>>>.Get(searchResponse);
     }
