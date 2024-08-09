@@ -63,11 +63,11 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
                  .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày sinh phải lớn hơn 01/01/1900");
 
         RuleFor(req => req.SalaryByDayRequest)
-            .NotEmpty().WithMessage("SalaryByDayRequest không được trống");
+            .NotEmpty().WithMessage("Lương theo ngày không được trống");
         RuleFor(req => req.SalaryOverTimeRequest)
-            .NotEmpty().WithMessage("SalaryOverTimeRequest không được trống");
+            .NotEmpty().WithMessage("Lương tăng ca không được trống");
         RuleFor(req => req.SalaryByDayRequest.Salary)
-            .NotEmpty().WithMessage("Salary không được trống")
+            .NotEmpty().WithMessage("Lương không được trống")
             .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
         RuleFor(req => req.SalaryByDayRequest.StartDate)
             .Must(DateUtil.BeAValidDate).WithMessage("Ngày bắt đầu tính lương phải là một ngày hợp lệ theo định dạng dd/MM/yyyy")
