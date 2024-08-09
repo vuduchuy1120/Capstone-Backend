@@ -67,7 +67,7 @@ public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderR
                {
                    return await _orderRepository.IsCompanyNotChange(request.OrderId, CompanyId);
                }
-               return false;
+               return true;
            }).WithMessage("Đã có sản phẩm được giao đi không thể thay đổi công ty đặt hàng.");
 
         RuleFor(x => x.Status)
