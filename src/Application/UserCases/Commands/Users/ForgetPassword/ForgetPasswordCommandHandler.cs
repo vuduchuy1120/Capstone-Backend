@@ -10,7 +10,8 @@ namespace Application.UserCases.Commands.Users.ForgetPassword;
 
 internal sealed class ForgetPasswordCommandHandler(
     IRedisService _redisService, 
-    IUserRepository _userRepository)
+    IUserRepository _userRepository,
+    ISpeedSMSAPI _smsApi)
     : ICommandHandler<ForgetPasswordCommand>
 {
     public async Task<Result.Success> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
@@ -19,6 +20,7 @@ internal sealed class ForgetPasswordCommandHandler(
 
         var forgetPasswordRedis = await GetVerifyForgetPasswordRequest(request.userId, cancellationToken);
         await StoreVerifyCodeToRedis(request.userId, forgetPasswordRedis, cancellationToken);
+        await SendVerifyCodeToUser(forgetPasswordRedis.VerifyCode, request.userId);
 
         return Result.Success.RequestForgetPassword();
     }
@@ -55,8 +57,9 @@ internal sealed class ForgetPasswordCommandHandler(
         await _redisService.SetAsync(ConstantUtil.ForgetPassword_Prefix + userId, forgetPasswordRedis, cancellationToken);
     }
 
-    private async Task SendVerifyCodeToUser(string verifyCode)
+    private async Task SendVerifyCodeToUser(string verifyCode, string userId)
     {
-
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        _smsApi.sendSMS([user.Phone], $"Mã xác thực của bạn là: {verifyCode}", 2);
     }
 }

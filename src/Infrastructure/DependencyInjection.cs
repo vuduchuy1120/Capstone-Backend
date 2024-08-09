@@ -108,10 +108,10 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateMonthlyCompanySalaryCommand>, CreateMonthlyCompanySalaryCommandHandler>();
 
 
-        var apiKeySid = "SK.0.DjKijVdL1BKmr4ktbhuk84ugDaBWb498";
-        var apiKeySecret = "MVZtVzh1TWhpZTZuY2cwV3g2WmZyZjZxbnFFTnJCcFE=";
+        var apiSMSKey = "pRO2ZNA_YLfLyn94k8qN9o_5ApuSl3Cd";
+        var sender = "e7a3d6d5cba8797a";
 
-        services.AddSingleton<ISmsService>(new SmsService(apiKeySid, apiKeySecret));
+        services.AddSingleton<ISpeedSMSAPI>(new SpeedSMSAPI(apiSMSKey, sender));
 
         services.ConfigureOptions<JwtOptionsSetup>();
 
