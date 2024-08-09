@@ -224,7 +224,7 @@ namespace Application.UseCases.Commands.Shipments.Update
                                     productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
                                     break;
                                 default:
-                                    throw new ShipmentBadRequestException("Shipments from the facility must be either non-defective products or third-party defective products.");
+                                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
                             }
                         }
                     }
@@ -240,16 +240,16 @@ namespace Application.UseCases.Commands.Shipments.Update
                             {
                                 case ProductPhaseType.NO_PROBLEM:
                                     int availableQuantity = productPhase.AvailableQuantity - (int)request.Quantity;
-                                    if (availableQuantity < 0) throw new ShipmentBadRequestException($"Not enough product {request.ItemId} in phase {request.PhaseId} in the facility.");
+                                    if (availableQuantity < 0) throw new ShipmentBadRequestException($"Không có đủ sản phẩm có id: {request.ItemId} của giai đoạn {request.PhaseId} trong kho.");
                                     productPhase.UpdateAvailableQuantity(availableQuantity);
                                     break;
                                 case ProductPhaseType.THIRD_PARTY_ERROR:
                                     int errorAvailableQuantity = productPhase.ErrorAvailableQuantity - (int)request.Quantity;
-                                    if (errorAvailableQuantity < 0) throw new ShipmentBadRequestException($"Not enough defective product {request.ItemId} in phase {request.PhaseId} in the facility.");
+                                    if (errorAvailableQuantity < 0) throw new ShipmentBadRequestException($"Không có đủ sản phẩm lỗi có id: {request.ItemId} của giai đoạn {request.PhaseId} trong kho.");
                                     productPhase.UpdateErrorAvailableQuantity(errorAvailableQuantity);
                                     break;
                                 default:
-                                    throw new ShipmentBadRequestException("Shipments from the facility must be either non-defective products or third-party defective products.");
+                                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
                             }
                         }
                     }
@@ -303,7 +303,7 @@ namespace Application.UseCases.Commands.Shipments.Update
                                 productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
                                 break;
                             default:
-                                throw new ShipmentBadRequestException("Shipments from the facility must be either non-defective products or third-party defective products.");
+                                throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
                         }
                     }
                 }

@@ -33,20 +33,20 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Paid Salary api" } }
             });
 
-            app.MapPut(string.Empty, async (
-                ISender sender,
-                ClaimsPrincipal claim,
-                [FromBody] UpdatePaidSalaryRequest request
-                ) =>
-            {
-                var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
-                var command = new UpdatePaidSalaryCommand(request, userId);
-                var result = await sender.Send(command);
-                return Results.Ok(result);
-            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-            {
-                Tags = new List<OpenApiTag> { new() { Name = "Paid Salary api" } }
-            });
+            //app.MapPut(string.Empty, async (
+            //    ISender sender,
+            //    ClaimsPrincipal claim,
+            //    [FromBody] UpdatePaidSalaryRequest request
+            //    ) =>
+            //{
+            //    var userId = UserUtil.GetUserIdFromClaimsPrincipal(claim);
+            //    var command = new UpdatePaidSalaryCommand(request, userId);
+            //    var result = await sender.Send(command);
+            //    return Results.Ok(result);
+            //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            //{
+            //    Tags = new List<OpenApiTag> { new() { Name = "Paid Salary api" } }
+            //});
 
             app.MapGet("/users/{UserId}", async (
                 ISender sender,

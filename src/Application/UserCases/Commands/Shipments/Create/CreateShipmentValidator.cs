@@ -13,7 +13,6 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
     public CreateShipmentValidator(
         ICompanyRepository companyRepository,
         IMaterialRepository materialRepository,
-        IProductPhaseRepository productPhaseRepository,
         IUserRepository userRepository)
     {
         RuleFor(req => req.FromId)
