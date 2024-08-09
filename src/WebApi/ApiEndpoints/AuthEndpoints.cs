@@ -66,14 +66,6 @@ public class AuthEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
         });
 
-        app.MapPost("test", () =>
-        {
-            return Results.Ok("Hello Nguyen Dinh Son");
-        }).WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "Authentication api" } }
-        });
-
         app.MapPost("refresh-token", async (ISender sender, [FromBody] RefreshTokenCommand refreshTokenCommand) =>
         {
             var result = await sender.Send(refreshTokenCommand);

@@ -2,7 +2,6 @@
 using Application.Utils;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
-using Contract.Services.ShipOrder.Create;
 using Contract.Services.ShipOrder.Share;
 using Contract.Services.ShipOrder.Update;
 using Domain.Abstractions.Exceptions;

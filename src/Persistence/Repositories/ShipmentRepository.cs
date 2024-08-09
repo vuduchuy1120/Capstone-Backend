@@ -84,11 +84,15 @@ internal class ShipmentRepository : IShipmentRepository
 
     public async Task<(List<Shipment>, int)> SearchShipmentOfShipperAsync(GetShipmentsQuery request, string shipperId)
     {
-        var query = _context.Shipments.Where(s => s.Status == request.Status && s.ShipperId == shipperId);
+        var query = _context.Shipments
+            .Include(s => s.FromCompany)
+            .Include(s => s.ToCompany)
+            .Where(s => s.Status == request.Status && s.ShipperId == shipperId);
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(s => s.Id.ToString().Contains(request.SearchTerm));
+            var search = request.SearchTerm.ToLower();
+            query = query.Where(s => s.FromCompany.Name.ToLower().Contains(search) || s.ToCompany.Name.ToLower().Contains(search));
         }
 
         var totalItems = await query.CountAsync();
@@ -96,8 +100,6 @@ internal class ShipmentRepository : IShipmentRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
 
         var shipments = await query
-            .Include(s => s.FromCompany)
-            .Include(s => s.ToCompany)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
