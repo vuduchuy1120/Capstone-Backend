@@ -25,18 +25,18 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
             }).WithMessage("Cơ sở không tồn tại");
 
         RuleFor(req => req.FirstName)
-            .NotEmpty().WithMessage("First name cannot be empty")
+            .NotEmpty().WithMessage("Họ không được để trống")
             .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
             .WithMessage("Họ chỉ chứa các chữ cái, dấu cách và ký tự tiếng Việt");
 
         RuleFor(req => req.LastName)
-            .NotEmpty().WithMessage("Last name cannot be empty")
+            .NotEmpty().WithMessage("Tên không được để trống")
             .Matches(@"^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]*$")
             .WithMessage("Tên chỉ chứa các chữ cái, dấu cách và ký tự tiếng Việt");
 
 
         RuleFor(req => req.Phone)
-            .NotEmpty().WithMessage("Phone number cannot be empty")
+            .NotEmpty().WithMessage("Số điện thoại không được để trống")
             .Matches(@"^\d{10}$").WithMessage("Số điện thoại phải có đúng 10 chữ số")
             .MustAsync(async (phone, _) =>
             {
@@ -74,7 +74,7 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
             .Must(DateUtil.BeLessThanOrEqualCurrentDate).WithMessage("Ngày bắt đầu tính lương phải nhỏ hơn ngày hiện tại")
             .Must(DateUtil.BeMoreThanMinDate).WithMessage("Ngày bắt đầu tính lương phải lớn hơn 01/01/1900");
         RuleFor(req => req.SalaryOverTimeRequest.Salary)
-            .NotEmpty().WithMessage("Salary không được trống")
+            .NotEmpty().WithMessage("Lương không được trống")
             .GreaterThanOrEqualTo(0).WithMessage("Lương phải lớn hơn hoặc bằng 0");
         RuleFor(req => req.SalaryOverTimeRequest.StartDate)
             .Must(DateUtil.BeAValidDate).WithMessage("Ngày bắt đầu tính lương phải là một ngày hợp lệ theo định dạng dd/MM/yyyy")

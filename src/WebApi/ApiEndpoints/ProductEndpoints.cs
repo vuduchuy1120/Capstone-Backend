@@ -68,9 +68,8 @@ public class ProductEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
         });
 
-        app.MapGet("search", async (ISender sender, [FromQuery] string search) =>
+        app.MapGet("search", async (ISender sender, [AsParameters] SearchProductQuery searchProductQuery) =>
         {
-            var searchProductQuery = new SearchProductQuery(search);
             var result = await sender.Send(searchProductQuery);
 
             return Results.Ok(result);

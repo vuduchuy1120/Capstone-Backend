@@ -1,12 +1,14 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Shared.Utils;
 using Contract.Services.Company.Shared;
+using Contract.Services.Product.Search;
 using Contract.Services.ProductPhase.Queries;
 using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
 using Domain.Exceptions.Companies;
 using Domain.Exceptions.Phases;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace Persistence.Repositories;
 
@@ -230,5 +232,29 @@ public class ProductPhaseRepository : IProductPhaseRepository
     public Task<ProductPhase> GetProductPhaseByProductIdPhaseIdAndCompanyId(Guid productId, Guid phaseId, Guid companyId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<(List<ProductPhase>, int)> SearchProductByPhaseAndCompanyAsync(SearchProductQuery request)
+    {
+        var query = _context.ProductPhases
+           .Include(pp => pp.Product)
+                .ThenInclude(p => p.Images)
+           .AsQueryable();
+
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            var search = request.Search.ToLower().Trim();
+            query = query.Where(pp => pp.Product.Name.ToLower().Contains(search));
+        }
+
+        var totalItems = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
+        var productphases = await query
+           .Skip((request.PageIndex - 1) * request.PageSize)
+           .Take(request.PageSize)
+           .AsNoTracking()
+           .ToListAsync();
+
+        return (productphases, totalPages);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Contract.Services.ProductPhase.Queries;
+﻿using Contract.Services.Product.Search;
+using Contract.Services.ProductPhase.Queries;
 using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
 
@@ -27,4 +28,6 @@ public interface IProductPhaseRepository
     Task<(List<ProductPhase>, int)> SearchProductPhase(SearchProductPhaseQuery request);
     Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId, Guid companyId);
     Task<ProductPhase> GetProductPhaseByProductIdPhaseIdAndCompanyId(Guid productId, Guid phaseId, Guid companyId);
+
+    Task<(List<ProductPhase>, int)> SearchProductByPhaseAndCompanyAsync(SearchProductQuery request);
 }
