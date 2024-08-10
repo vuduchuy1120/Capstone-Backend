@@ -9,7 +9,6 @@ public record CreateUserRequest(
         string? Avatar,
         string Phone,
         string Address,
-        string Password,
         string Gender,
         string DOB,
         SalaryByDayRequest SalaryByDayRequest,

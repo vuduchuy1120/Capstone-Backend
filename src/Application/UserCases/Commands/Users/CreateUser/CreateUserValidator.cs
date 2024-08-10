@@ -43,12 +43,12 @@ public sealed class CreateUserValidator : AbstractValidator<CreateUserRequest>
                 return !await userRepository.IsPhoneNumberExistAsync(phone);
             }).WithMessage("Số điện thoại đã được sử dụng");
 
-        RuleFor(req => req.Password)
-            .NotEmpty().WithMessage("Mật khẩu không được trống")
-            .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự")
-            .Matches(@"[a-z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái thường")
-            .Matches(@"[A-Z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái hoa")
-            .Matches(@"[\W_]").WithMessage("Mật khẩu phải chứa ít nhất một ký tự đặc biệt");
+        //RuleFor(req => req.Password)
+        //    .NotEmpty().WithMessage("Mật khẩu không được trống")
+        //    .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự")
+        //    .Matches(@"[a-z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái thường")
+        //    .Matches(@"[A-Z]").WithMessage("Mật khẩu phải chứa ít nhất một chữ cái hoa")
+        //    .Matches(@"[\W_]").WithMessage("Mật khẩu phải chứa ít nhất một ký tự đặc biệt");
 
         RuleFor(req => req.Gender)
                 .NotEmpty().WithMessage("Gender cannot be empty")

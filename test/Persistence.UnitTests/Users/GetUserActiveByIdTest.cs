@@ -69,7 +69,6 @@ public class GetUserActiveByIdTest : IDisposable
             Avatar: "image",
             Phone: "123-456-7890",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
@@ -77,7 +76,7 @@ public class GetUserActiveByIdTest : IDisposable
             company.Id,
             RoleId: 1
         );
-        var user = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
+        var user = User.Create(createUserRequest, "SecurePassword123", createUserRequest.Id);
 
         var createUserRequest_2 = new CreateUserRequest(
             Id: "001201011092",
@@ -86,7 +85,6 @@ public class GetUserActiveByIdTest : IDisposable
             Avatar: "image",
             Phone: "123-456-7890",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
@@ -94,7 +92,7 @@ public class GetUserActiveByIdTest : IDisposable
             company.Id,
             RoleId: 1
         );
-        var user_2 = User.Create(createUserRequest_2, createUserRequest_2.Password, createUserRequest.Id);
+        var user_2 = User.Create(createUserRequest_2, "SecurePassword123", createUserRequest.Id);
         user_2.UpdateStatus(new ChangeUserStatusCommand(user.Id, user_2.Id, false));
 
         _context.Roles.Add(role);

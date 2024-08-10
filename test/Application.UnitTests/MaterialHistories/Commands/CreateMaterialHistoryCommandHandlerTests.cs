@@ -23,7 +23,6 @@ public class CreateMaterialHistoryCommandHandlerTests
         _materialRepositoryMock = new Mock<IMaterialRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _validator = new CreateMaterialHistoryRequestValidator(
-            _materialHistoryRepositoryMock.Object,
             _materialRepositoryMock.Object);
         _handler = new CreateMaterialHistoryCommandHandler(
                                     _materialHistoryRepositoryMock.Object,

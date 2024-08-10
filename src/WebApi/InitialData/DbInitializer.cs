@@ -232,7 +232,6 @@ public class DbInitializer
             "iamge",
             "0976099351",
             "Ha Noi",
-            "12345",
             "Male",
             "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(100000, "01/01/2024"),
@@ -240,7 +239,7 @@ public class DbInitializer
             companyId,
             adminRole.Id
             );
-        var hash = passwordService.Hash(userCreateRequest.Password);
+        var hash = passwordService.Hash("Password123@");
         var user = User.Create(userCreateRequest, hash, userCreateRequest.Id);
 
         context.Users.Add(user);

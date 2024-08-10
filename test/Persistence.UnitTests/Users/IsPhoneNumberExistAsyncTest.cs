@@ -35,7 +35,6 @@ public class IsPhoneNumberExistAsyncTest : IDisposable
             Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
@@ -43,7 +42,7 @@ public class IsPhoneNumberExistAsyncTest : IDisposable
             Guid.NewGuid(),
             RoleId: 1
         );
-        var user = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
+        var user = User.Create(createUserRequest, "SecurePassword123", createUserRequest.Id);
 
         var createUserRequest_2 = new CreateUserRequest(
             Id: "001201011092",
@@ -52,7 +51,6 @@ public class IsPhoneNumberExistAsyncTest : IDisposable
             Avatar: "image",
             Phone: "0976099352",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
             SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
@@ -60,7 +58,7 @@ public class IsPhoneNumberExistAsyncTest : IDisposable
             Guid.NewGuid(),
             RoleId: 1
         );
-        var user_2 = User.Create(createUserRequest_2, createUserRequest_2.Password, createUserRequest.Id);
+        var user_2 = User.Create(createUserRequest_2, "SecurePassword123", createUserRequest.Id);
         user_2.UpdateStatus(new ChangeUserStatusCommand(user.Id, user_2.Id, false));
 
         _context.Roles.Add(role);

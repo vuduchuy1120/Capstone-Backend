@@ -17,6 +17,7 @@ internal sealed class CreateUserCommandHandler(
     ISalaryHistoryRepository _salaryHistoryRepository,
     IUnitOfWork _unitOfWork,
     IPasswordService _passwordService,
+    ISpeedSMSAPI _speedSMSAPI,
     IValidator<CreateUserRequest> _validator) : ICommandHandler<CreateUserCommand>
 {
 
@@ -31,7 +32,9 @@ internal sealed class CreateUserCommandHandler(
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
-        string hashPassword = _passwordService.Hash(createUserRequest.Password);
+        var password = PasswordGenerator.GenerateRandomPassword();
+
+        string hashPassword = _passwordService.Hash(password);
         var user = User.Create(createUserRequest, hashPassword, request.CreatedBy);
         var salaryByDay = createUserRequest.SalaryByDayRequest;
         var salaryOverTime = createUserRequest.SalaryOverTimeRequest;
@@ -44,6 +47,8 @@ internal sealed class CreateUserCommandHandler(
         _salaryHistoryRepository.AddRangeSalaryHistory(salaryhistories);
 
         await _unitOfWork.SaveChangesAsync();
+
+        _speedSMSAPI.sendSMS([user.Phone], $"Bạn đã được tạo tài khoản đăng nhập hệ thống TienHuyBamboo với mật khẩu: {password}", 2);
 
         return Result.Success.Create();
     }
