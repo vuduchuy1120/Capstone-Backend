@@ -247,6 +247,16 @@ public class ProductPhaseRepository : IProductPhaseRepository
             query = query.Where(pp => pp.Product.Name.ToLower().Contains(search));
         }
 
+        if(request.PhaseId != Guid.Empty)
+        {
+            query = query.Where(pp => pp.PhaseId == request.PhaseId);
+        }
+
+        if(request.CompanyId != Guid.Empty)
+        {
+            query = query.Where(pp => pp.CompanyId == request.CompanyId);
+        }
+
         var totalItems = await query.CountAsync();
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
         var productphases = await query
