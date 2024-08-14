@@ -244,7 +244,7 @@ public class ProductPhaseRepository : IProductPhaseRepository
         if (!string.IsNullOrEmpty(request.Search))
         {
             var search = request.Search.ToLower().Trim();
-            query = query.Where(pp => pp.Product.Name.ToLower().Contains(search));
+            query = query.Where(pp => pp.Product.Name.ToLower().Contains(search) || pp.Product.Code.ToLower().Contains(search));
         }
 
         if(request.PhaseId != Guid.Empty)
