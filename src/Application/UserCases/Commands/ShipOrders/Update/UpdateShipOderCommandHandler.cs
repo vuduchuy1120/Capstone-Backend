@@ -70,8 +70,6 @@ internal sealed class UpdateShipOderCommandHandler(
         return await _shipOrderRepository.GetByShipOrderIdAsync(shipOrderId);
     }
 
-    
-
     private async Task<List<ShipProductDetail>> GetOldProductDetails (ShipOrder shipOrder)
     {
         var shipOrderDetailRequests = ShipOrderUtil.GetShipOrderRequestFromShipOrder(shipOrder);
