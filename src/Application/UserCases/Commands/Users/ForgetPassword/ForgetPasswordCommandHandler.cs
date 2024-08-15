@@ -54,7 +54,7 @@ internal sealed class ForgetPasswordCommandHandler(
         ForgetPasswordRedis forgetPasswordRedis, 
         CancellationToken cancellationToken)
     {
-        await _redisService.SetAsync(ConstantUtil.ForgetPassword_Prefix + userId, forgetPasswordRedis, cancellationToken);
+        await _redisService.SetAsync(ConstantUtil.ForgetPassword_Prefix + userId, forgetPasswordRedis);
     }
 
     private async Task SendVerifyCodeToUser(string verifyCode, string userId)

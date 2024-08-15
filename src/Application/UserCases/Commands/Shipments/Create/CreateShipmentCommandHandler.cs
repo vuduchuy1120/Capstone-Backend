@@ -75,7 +75,7 @@ internal sealed class CreateShipmentCommandHandler(
             var isHasShipThirdPartyBrokenProduct = shipmentDetailRequests.Any(s => s.ProductPhaseType == ProductPhaseType.THIRD_PARTY_ERROR);
             if (isHasShipThirdPartyBrokenProduct)
             {
-                throw new ShipmentBadRequestException("Công ty bên thứ 3 không được sản phẩm hỏng do bên thứ 3");
+                throw new ShipmentBadRequestException("Công ty bên thứ 3 không được gửi sản phẩm hỏng do bên thứ 3");
             }
 
             var uniqueItemIds = shipmentDetailRequests

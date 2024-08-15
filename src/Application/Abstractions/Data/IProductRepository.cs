@@ -1,4 +1,5 @@
 ﻿using Contract.Services.Product.GetProducts;
+using Contract.Services.Product.SearchWithSearchTerm;
 using Domain.Entities;
 
 namespace Application.Abstractions.Data;
@@ -15,6 +16,6 @@ public interface IProductRepository
     Task<Product?> GetProductByIdWithoutImages(Guid id);
     Task<(List<Product>?, int)> SearchProductAsync(GetProductsQuery getProductsQuery);
     Task<bool> IsProductIdExist(Guid id);
-    Task<List<Product>> SearchProductAsync(string search);
+    Task<(List<Product>, int)> SearchProductAsync(GetWithSearchTermQuery request);
     Task<bool> IsAllProductInProgress(List<Guid> productIds);
 }

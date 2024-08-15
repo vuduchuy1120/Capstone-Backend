@@ -1,8 +1,11 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Product.GetProduct;
 using Contract.Services.Product.GetProducts;
+using Contract.Services.Product.SearchWithSearchTerm;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace Persistence.Repositories;
 
@@ -107,21 +110,34 @@ internal sealed class ProductRepository : IProductRepository
         return (products, totalPages);
     }
 
-    public async Task<List<Product>> SearchProductAsync(string search)
+    public async Task<(List<Product>, int)> SearchProductAsync(GetWithSearchTermQuery request)
     {
-        if (string.IsNullOrWhiteSpace(search))
+        var query = _context.Products
+            .Include(p => p.Images) 
+            .AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            return null;
+            var searchTermLower = request.SearchTerm.ToLower();
+            query = query.Where(p => p.Name.ToLower().Contains(searchTermLower)
+                || p.Code.ToLower().Contains(searchTermLower));
         }
 
-        return await _context.Products
-            .Include(p => p.Images)
-            .AsNoTracking()
-            .AsSingleQuery()
-            .Where(p => p.Name.ToLower().Contains(search.ToLower())
-                || p.Code.ToLower().Contains(search.ToLower()))
+        var totalItems = await query.CountAsync();
+
+        int totalPages = request.PageSize > 0 ? (int)Math.Ceiling((double)totalItems / request.PageSize) : 0;
+
+        var pageIndex = Math.Max(request.PageIndex, 1);
+
+        var products = await query
+            .Skip((pageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .AsSplitQuery()
             .ToListAsync();
+
+        return (products, totalPages);
     }
+
 
     public void Update(Product product)
     {

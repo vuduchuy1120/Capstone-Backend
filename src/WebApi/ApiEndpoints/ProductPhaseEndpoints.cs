@@ -1,6 +1,7 @@
 ﻿using Carter;
 using Contract.ProductPhases.Updates.ChangeQuantityStatus;
 using Contract.Services.ProductPhase.Queries;
+using Contract.Services.ProductPhase.SearchByThirdPartyCompany;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -49,6 +50,17 @@ public class ProductPhaseEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new() { Name = "Product Phase api" } }
 
+        });
+
+        app.MapGet("search", async (
+              ISender sender,
+              [AsParameters] SearchByThirdPartyCompanyQuery request) =>
+        {
+            var result = await sender.Send(request);
+            return Results.Ok(result);
+        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Product Phase api" } }
         });
 
     }
