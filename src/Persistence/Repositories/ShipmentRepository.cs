@@ -52,7 +52,8 @@ internal class ShipmentRepository : IShipmentRepository
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(s => s.Id.ToString().Contains(request.SearchTerm));
+            var search = request.SearchTerm.ToLower();
+            query = query.Where(s => s.FromCompany.Name.ToLower().Contains(search) || s.ToCompany.Name.ToLower().Contains(search));
         }
 
         var totalItems = await query.CountAsync();
