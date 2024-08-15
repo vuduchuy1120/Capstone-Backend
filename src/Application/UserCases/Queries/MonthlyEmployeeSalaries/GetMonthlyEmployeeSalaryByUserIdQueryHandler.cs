@@ -40,6 +40,7 @@ public sealed class GetMonthlyEmployeeSalaryByUserIdQueryHandler
             .Select(async g => new ProductWorkingResponse(
                 ProductId: g.Key.ProductId,
                 ProductName: g.Key.ProductName,
+                ProductCode: g.FirstOrDefault().Product.Code,
                 ProductImage: await _cloudStorage.GetSignedUrlAsync(g.Key.ImageUrl ?? "ImageNotFound"),
                 PhaseId: g.Key.PhaseId,
                 PhaseName: g.Key.Name,
