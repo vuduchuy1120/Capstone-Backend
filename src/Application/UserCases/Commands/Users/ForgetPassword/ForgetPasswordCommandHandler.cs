@@ -60,6 +60,6 @@ internal sealed class ForgetPasswordCommandHandler(
     private async Task SendVerifyCodeToUser(string verifyCode, string userId)
     {
         var user = await _userRepository.GetUserByIdAsync(userId);
-        _smsApi.sendSMS([user.Phone], $"Mã xác thực của bạn là: {verifyCode}", 2);
+        _smsApi.sendSMS([user.Phone], $"Mã xác thực của bạn là: {verifyCode}", 5);
     }
 }

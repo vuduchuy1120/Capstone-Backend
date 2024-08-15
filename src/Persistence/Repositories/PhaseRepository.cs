@@ -29,7 +29,7 @@ public class PhaseRepository : IPhaseRepository
 
     public async Task<List<Phase>> GetPhases()
     {
-        return await _context.Phases.ToListAsync();
+        return await _context.Phases.OrderBy(p=>p.Name).ToListAsync();
     }
 
     public async Task<bool> IsAllPhase1(List<Guid> phaseIds)
