@@ -176,7 +176,7 @@ namespace Application.UseCases.Commands.Shipments.Update
                             var productPhase = productPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == phase.Id)
                                  ?? throw new ProductPhaseNotFoundException();
 
-                            productPhase.UpdateAvailableQuantity(productPhase.Quantity + (int)detail.Quantity);
+                            productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
                         }
                     }
 
