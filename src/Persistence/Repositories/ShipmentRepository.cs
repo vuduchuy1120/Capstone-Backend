@@ -105,6 +105,7 @@ internal class ShipmentRepository : IShipmentRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
 
         var shipments = await query
+            .OrderByDescending(s => s.ShipDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()

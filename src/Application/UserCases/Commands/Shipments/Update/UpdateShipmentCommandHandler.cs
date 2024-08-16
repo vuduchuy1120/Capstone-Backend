@@ -195,7 +195,7 @@ namespace Application.UseCases.Commands.Shipments.Update
 
                             int remainingQuantity = (int)request.Quantity;
 
-                            foreach (var ph in productPhases)
+                            foreach (var ph in products)
                             {
                                 remainingQuantity = UpdateQuantity(ph, remainingQuantity);
                                 if (remainingQuantity == 0)

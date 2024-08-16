@@ -125,8 +125,7 @@ internal class UserRepository : IUserRepository
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(user => user.Phone.Contains(request.SearchTerm)
-            || user.FirstName.ToLower().Contains(request.SearchTerm.ToLower())
-            || user.LastName.ToLower().Contains(request.SearchTerm.ToLower()));
+            || ($"{user.FirstName} {user.LastName}").ToLower().Contains(request.SearchTerm.ToLower()));
         }
 
         var totalItems = await query.CountAsync();

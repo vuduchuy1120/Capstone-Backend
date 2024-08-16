@@ -43,6 +43,7 @@ internal class ShipOrderRepository : IShipOrderRepository
                         .ThenInclude(sp => sp.Product)
                             .ThenInclude(p => p.Images)
             .Where(shipOrder => shipOrder.OrderId == orderId)
+            .OrderByDescending(s => s.ShipDate)
             .ToListAsync();
     }
 
@@ -113,6 +114,7 @@ internal class ShipOrderRepository : IShipOrderRepository
         var shipOrders = await query
             .Include(shipOrder => shipOrder.Order)
                 .ThenInclude(order => order.Company)
+            .OrderBy(s => s.ShipDate)
             .Skip((searchOption.PageIndex - 1) * searchOption.PageSize)
             .Take(searchOption.PageSize)
             .AsNoTracking()
