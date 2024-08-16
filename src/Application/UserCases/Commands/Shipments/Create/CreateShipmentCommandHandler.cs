@@ -83,7 +83,7 @@ internal sealed class CreateShipmentCommandHandler(
                 .Distinct()
                 .ToList();
 
-            var productPhasesTest = await _productPhaseRepository.GetByProductIdsAndCompanyIdAsync(uniqueItemIds, fromCompany);
+            var productPhasesResults = await _productPhaseRepository.GetByProductIdsAndCompanyIdAsync(uniqueItemIds, fromCompany);
 
             //var productPhasesTasks = uniqueItemIds
             //.Select(uniqueItem => _productPhaseRepository.GetByProductIdAndCompanyIdAsync(uniqueItem, fromCompany))
@@ -104,7 +104,7 @@ internal sealed class CreateShipmentCommandHandler(
 
             var shipmentDetails = shipmentDetailRequests.Select(detailRequest =>
             {
-                var productPhases = productPhasesTest.Where(p => p.ProductId == detailRequest.ItemId) 
+                var productPhases = productPhasesResults.Where(p => p.ProductId == detailRequest.ItemId) 
                     ?? throw new ProductPhaseNotFoundException();
                 return CreateShipmentDetailFromThirdPartyCompany(detailRequest, shipmentId, productPhases.ToList());
             });

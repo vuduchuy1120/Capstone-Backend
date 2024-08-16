@@ -321,6 +321,11 @@ internal sealed class UpdateAcceptedCommandHandler(
                     productPhaseToCompany.UpdateBrokenQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
                     productPhaseToCompany.UpdateBrokenAvailableQuantity(productPhaseToCompany.BrokenAvailableQuantity + (int)detail.Quantity);
                 }
+                else if(detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_ERROR)
+                {
+                    productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                    productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
+                }
                 else
                 {
                     throw new ShipmentBadRequestException("Bên thứ 3 chỉ được gửi sản phẩm bình thường, " +
