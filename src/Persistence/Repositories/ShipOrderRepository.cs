@@ -114,7 +114,7 @@ internal class ShipOrderRepository : IShipOrderRepository
         var shipOrders = await query
             .Include(shipOrder => shipOrder.Order)
                 .ThenInclude(order => order.Company)
-            .OrderBy(s => s.ShipDate)
+            .OrderByDescending(s => s.ShipDate)
             .Skip((searchOption.PageIndex - 1) * searchOption.PageSize)
             .Take(searchOption.PageSize)
             .AsNoTracking()

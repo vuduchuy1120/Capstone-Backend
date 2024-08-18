@@ -66,7 +66,7 @@ internal class ShipmentRepository : IShipmentRepository
         var shipments = await query
             .Include(s => s.FromCompany)
             .Include(s => s.ToCompany)
-            .OrderBy(s => s.ShipDate)
+            .OrderByDescending(s => s.ShipDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
