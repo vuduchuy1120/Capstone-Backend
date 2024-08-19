@@ -302,9 +302,14 @@ internal sealed class UpdateAcceptedCommandHandler(
                     productPhaseToCompany = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
                         (Guid)detail.ProductId,
                         (Guid)detail.PhaseId,
-                        toId) ?? ProductPhase.Create(new CreateProductPhaseRequest((Guid)detail.ProductId, (Guid)detail.PhaseId, 0, 0, toId));
+                        toId);
 
-                    _newProductPhases.Add(productPhaseToCompany);
+                    if(productPhaseToCompany == null)
+                    {
+                        productPhaseToCompany = ProductPhase.Create(new CreateProductPhaseRequest((Guid)detail.ProductId, (Guid)detail.PhaseId, 0, 0, toId));
+                        _newProductPhases.Add(productPhaseToCompany);
+                    }
+
                     _productsPhases.Add(productPhaseToCompany);
                 }
 
