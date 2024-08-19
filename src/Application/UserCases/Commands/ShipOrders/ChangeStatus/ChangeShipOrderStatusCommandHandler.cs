@@ -9,6 +9,7 @@ using Contract.Services.ShipOrder.ChangeStatus;
 using Contract.Services.ShipOrder.Share;
 using Domain.Entities;
 using Domain.Exceptions.OrderDetails;
+using Domain.Exceptions.Shipments;
 using Domain.Exceptions.ShipOrder;
 
 namespace Application.UserCases.Commands.ShipOrders.ChangeStatus;
@@ -23,6 +24,11 @@ internal sealed class ChangeShipOrderStatusCommandHandler(
         if(request.Id != changeStatusRequest.ShipOrderId)
         {
             throw new ShipOrderIdConflictException();
+        }
+
+        if(!Enum.IsDefined(typeof(Status), changeStatusRequest.Status))
+        {
+            throw new ShipmentBadRequestException("Trạng thái không hợp lệ");
         }
 
         var shipOrder = await _shipOrderRepository.GetByIdAndStatusIsNotDoneAsync(changeStatusRequest.ShipOrderId)

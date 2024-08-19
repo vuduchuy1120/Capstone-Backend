@@ -4,6 +4,7 @@ public record ProductWorkingResponse
 (
     Guid ProductId,
     string ProductName,
+    string ProductCode,
     string ProductImage,
     Guid PhaseId,
     string PhaseName,

@@ -51,14 +51,14 @@ public class UpdateShipmentValidator : AbstractValidator<UpdateShipmentRequest>
                 return await userRepository.IsShipperExistAsync(id);
             }).WithMessage("Người giao hàng không tồn tại");
 
-        RuleFor(req => req.ShipDate)
-            .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
-            .Must((req, shipDate) =>
-            {
-                var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
-                var now = DateTime.UtcNow;
-                return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
-            }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
+        //RuleFor(req => req.ShipDate)
+        //    .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
+        //    .Must((req, shipDate) =>
+        //    {
+        //        var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
+        //        var now = DateTime.UtcNow;
+        //        return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
+        //    }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
 
         RuleForEach(req => req.ShipmentDetailRequests)
             .NotNull().WithMessage("Vật phẩm giao không được để trống")

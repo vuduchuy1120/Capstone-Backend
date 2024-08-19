@@ -176,7 +176,7 @@ namespace Application.UseCases.Commands.Shipments.Update
                             var productPhase = productPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == phase.Id)
                                  ?? throw new ProductPhaseNotFoundException();
 
-                            productPhase.UpdateAvailableQuantity(productPhase.Quantity + (int)detail.Quantity);
+                            productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
                         }
                     }
 
@@ -195,7 +195,7 @@ namespace Application.UseCases.Commands.Shipments.Update
 
                             int remainingQuantity = (int)request.Quantity;
 
-                            foreach (var ph in productPhases)
+                            foreach (var ph in products)
                             {
                                 remainingQuantity = UpdateQuantity(ph, remainingQuantity);
                                 if (remainingQuantity == 0)

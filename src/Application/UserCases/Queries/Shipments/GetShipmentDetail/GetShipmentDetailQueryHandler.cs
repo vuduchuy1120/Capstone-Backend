@@ -63,12 +63,14 @@ internal sealed class GetShipmentDetailQueryHandler(
             var phaseResponse = _mapper.Map<PhaseResponse>(shipmentDetail.Phase);
             var productResponse = _mapper.Map<ProductResponse>(shipmentDetail.Product);
 
+            var productPhaseSalary = shipmentDetail.Product.ProductPhaseSalaries.SingleOrDefault(ps => ps.PhaseId == shipmentDetail.PhaseId);
+
             return new DetailResponse(
                 productResponse, 
                 phaseResponse, 
                 null, 
                 shipmentDetail.Quantity,
-                0,
+                productPhaseSalary.SalaryPerProduct,
                 shipmentDetail.ProductPhaseType,
                 shipmentDetail.ProductPhaseType.GetDescription());
         }

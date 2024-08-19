@@ -41,7 +41,7 @@ internal class UserRepository : IUserRepository
             .Include(u => u.Company)
             .Include(s => s.SalaryHistories)
             .Include(u => u.PaidSalaries)
-            .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
+            .FirstOrDefaultAsync(user => (user.Id.Equals(id) || user.Phone == id) && user.IsActive == true);
     }
 
     public async Task<User?> GetUserByIdAsync(string id)
@@ -124,9 +124,9 @@ internal class UserRepository : IUserRepository
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
+            string searchTermLower = request.SearchTerm.ToLower();
             query = query.Where(user => user.Phone.Contains(request.SearchTerm)
-            || user.FirstName.ToLower().Contains(request.SearchTerm.ToLower())
-            || user.LastName.ToLower().Contains(request.SearchTerm.ToLower()));
+                || (user.FirstName + " " + user.LastName).ToLower().Contains(searchTermLower));
         }
 
         var totalItems = await query.CountAsync();

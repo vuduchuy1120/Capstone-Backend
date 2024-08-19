@@ -35,6 +35,9 @@ internal class ShipmentRepository : IShipmentRepository
             .ThenInclude(sd => sd.Product)
                 .ThenInclude(p => p.Images)
         .Include(s => s.ShipmentDetails)
+            .ThenInclude(sd => sd.Product)
+                .ThenInclude(p => p.ProductPhaseSalaries)
+        .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.Phase)
         .Include(s => s.ShipmentDetails)
             .ThenInclude(sd => sd.Material)
@@ -63,6 +66,7 @@ internal class ShipmentRepository : IShipmentRepository
         var shipments = await query
             .Include(s => s.FromCompany)
             .Include(s => s.ToCompany)
+            .OrderByDescending(s => s.ShipDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
@@ -101,6 +105,7 @@ internal class ShipmentRepository : IShipmentRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
 
         var shipments = await query
+            .OrderByDescending(s => s.ShipDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
