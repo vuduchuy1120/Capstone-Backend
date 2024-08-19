@@ -135,7 +135,7 @@ internal sealed class AcceptShipOrderCommandHandler(
         }
         else
         {
-            throw new QuantityNotValidException("Không tìm thấy loại giao hàng phù hợp");
+            //throw new QuantityNotValidException("Không tìm thấy loại giao hàng phù hợp");
         }
     }
 
