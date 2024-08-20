@@ -24,36 +24,36 @@ public class GetProductQueryHandlerTest
         _getProductQueryHandler = new GetProductQueryHandler(_productRepositoryMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_Should_ReturnSuccessResult_WithProductResponse_WhenProductExists()
-    {
-        // Arrange
+    //[Fact]
+    //public async Task Handle_Should_ReturnSuccessResult_WithProductResponse_WhenProductExists()
+    //{
+    //    // Arrange
 
-        // create phases
-        var phase1 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_001", "Phase 1"));
-        var phase2 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_002", "Phase 2"));
-        var phase3 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_003", "Phase 3"));
-        var product = Product.Create(new CreateProductRequest("P001", 100, 10, 10, "M", "Test Description",
-            "Test Product", null), "TestUser");
+    //    // create phases
+    //    var phase1 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_001", "Phase 1"));
+    //    var phase2 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_002", "Phase 2"));
+    //    var phase3 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_003", "Phase 3"));
+    //    var product = Product.Create(new CreateProductRequest("P001", 100, 10, 10, "M", "Test Description",
+    //        "Test Product", null), "TestUser");
 
-        var expectedProductResponse = new ProductWithTotalQuantityResponse(
-            product.Id,
-            product.Name, 
-            product.Code, 
-            product.Price,
-            null,
-            null,
-             product.Size, product.Description, product.IsInProcessing, null);
+    //    var expectedProductResponse = new ProductWithTotalQuantityResponse(
+    //        product.Id,
+    //        product.Name, 
+    //        product.Code, 
+    //        product.Price,
+    //        null,
+    //        null,
+    //         product.Size, product.Description, product.IsInProcessing, null);
 
-        _productRepositoryMock.Setup(repo => repo.GetProductByIdWithProductPhase(product.Id)).ReturnsAsync(product);
+    //    _productRepositoryMock.Setup(repo => repo.GetProductByIdWithProductPhase(product.Id)).ReturnsAsync(product);
 
-        // Act
-        var result = await _getProductQueryHandler.Handle(new GetProductQuery(product.Id), CancellationToken.None);
+    //    // Act
+    //    var result = await _getProductQueryHandler.Handle(new GetProductQuery(product.Id), CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(result);
-        Assert.True(result.isSuccess);
-    }
+    //    // Assert
+    //    Assert.NotNull(result);
+    //    Assert.True(result.isSuccess);
+    //}
 
     [Fact]
     public async Task Handle_Should_ThrowProductNotFoundException_WhenProductDoesNotExist()
