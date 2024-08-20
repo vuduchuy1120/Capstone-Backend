@@ -17,7 +17,7 @@ public class GetProductByIdWithoutImagesTest : IDisposable
         _context = new AppDbContext(optionsBuilder.Options);
         _productRepository = new ProductRepository(_context);
 
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description", "Name", null);
+        var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description", "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
         _productRepository.Add(product);

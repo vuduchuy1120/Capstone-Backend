@@ -5,9 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.Shipment.GetShipments;
 using Contract.Services.Shipment.Share;
-using Contract.Services.User.SharedDto;
 using Domain.Exceptions.Shipments;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.UserCases.Queries.Shipments.GetShipments;
 
@@ -19,16 +17,18 @@ internal sealed class GetShipmentsQueryHandler(
         GetShipmentsQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _shipmentRepository.SearchShipmentAsync(request);
+        var (shipments, totalPages) = await _shipmentRepository.SearchShipmentAsync(request);
 
-        var shipments = result.Item1;
-        var totalPages = result.Item2;
+        List<ShipmentResponse> data = null;
 
         if(shipments is null || shipments.Count == 0 || totalPages == 0)
         {
-            throw new ShipmentNotFoundException();
+            data = new List<ShipmentResponse>();
         }
-        var data = shipments.ConvertAll(s => _mapper.Map<ShipmentResponse>(s));
+        else
+        {
+            data = shipments.ConvertAll(s => _mapper.Map<ShipmentResponse>(s));
+        }
 
         var searchResponse = new SearchResponse<List<ShipmentResponse>>(request.PageIndex, totalPages, data);
 

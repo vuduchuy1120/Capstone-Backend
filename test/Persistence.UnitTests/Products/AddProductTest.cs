@@ -21,7 +21,7 @@ public class AddProductTest : IDisposable
     [Fact]
     public async Task AddProduct_Success_ShouldHaveNewProductInDb()
     {
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description", "Name", null);
+        var createProductRequest = new CreateProductRequest("Code", 3434,100,100, "Size", "Description", "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
         _productRepository.Add(product);
@@ -37,7 +37,7 @@ public class AddProductTest : IDisposable
     [Fact]
     public async Task AddProduct_IdExisted_Error_ShouldNotHaveNewUserToDb()
     {
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description", "Name", null);
+        var createProductRequest = new CreateProductRequest("Code", 3434, 100, 100, "Size", "Description", "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
         _productRepository.Add(product);

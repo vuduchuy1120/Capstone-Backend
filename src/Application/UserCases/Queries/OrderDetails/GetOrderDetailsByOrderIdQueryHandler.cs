@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.OrderDetail.Queries;
@@ -11,10 +12,12 @@ namespace Application.UserCases.Queries.OrderDetails
     public sealed class GetOrderDetailsByOrderIdQueryHandler : IQueryHandler<GetOrderDetailsByOrderIdQuery, OrderDetailResponse>
     {
         private readonly IOrderDetailRepository _orderDetailRepository;
+        private readonly ICloudStorage _cloudStorage;
 
-        public GetOrderDetailsByOrderIdQueryHandler(IOrderDetailRepository orderDetailRepository)
+        public GetOrderDetailsByOrderIdQueryHandler(IOrderDetailRepository orderDetailRepository, ICloudStorage cloudStorage)
         {
             _orderDetailRepository = orderDetailRepository;
+            _cloudStorage = cloudStorage;
         }
 
         public async Task<Result.Success<OrderDetailResponse>> Handle(GetOrderDetailsByOrderIdQuery request, CancellationToken cancellationToken)
@@ -33,37 +36,64 @@ namespace Application.UserCases.Queries.OrderDetails
             {
                 if (orderDetail.ProductId != null && orderDetail.Product != null)
                 {
+                    var imageUrl = orderDetail.Product.Images.FirstOrDefault(x => x.IsMainImage)?.ImageUrl ?? string.Empty;
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        imageUrl = await _cloudStorage.GetSignedUrlAsync(imageUrl);
+                    }
+
                     products.Add(new ProductOrderResponse(
                         orderDetail.Product.Id,
                         orderDetail.Product.Code,
                         orderDetail.Product.Name,
                         orderDetail.Product.Description,
-                        orderDetail.Product.Images.FirstOrDefault(x => x.IsMainImage)?.ImageUrl ?? string.Empty,
+                        imageUrl,
                         orderDetail.Quantity,
+                        orderDetail.ShippedQuantity,
                         orderDetail.UnitPrice,
                         orderDetail.Note
                     ));
                 }
                 else if (orderDetail.SetId != null && orderDetail.Set != null)
                 {
-                    var productResponses = orderDetail.Set.SetProducts.Select(sp => new ProductResponse(
-                        sp.Product.Id,
-                        sp.Product.Name,
-                        sp.Product.Code,
-                        sp.Product.Price,
-                        sp.Product.Size,
-                        sp.Product.Description,
-                        sp.Product.IsInProcessing,
-                        sp.Product.Images.Select(img => new ImageResponse(img.Id, img.ImageUrl, img.IsBluePrint, img.IsMainImage)).ToList()
-                    )).ToList();
+                    var setImageUrl = orderDetail.Set.ImageUrl;
+                    if (!string.IsNullOrEmpty(setImageUrl))
+                    {
+                        setImageUrl = await _cloudStorage.GetSignedUrlAsync(setImageUrl);
+                    }
+
+                    var productResponses = await Task.WhenAll(orderDetail.Set.SetProducts.Select(async sp =>
+                    {
+                        var productImageUrls = await Task.WhenAll(sp.Product.Images.Select(async img =>
+                        {
+                            var signedUrl = await _cloudStorage.GetSignedUrlAsync(img.ImageUrl);
+                            return new ImageResponse(img.Id, signedUrl, img.IsBluePrint, img.IsMainImage);
+                        }));
+
+
+                        var productResponse = new ProductResponse(
+                            sp.Product.Id,
+                            sp.Product.Name,
+                            sp.Product.Code,
+                            sp.Product.ProductPhaseSalaries.FirstOrDefault().SalaryPerProduct,
+                            sp.Product.Size,
+                            sp.Product.Description,
+                            sp.Product.IsInProcessing,
+                            productImageUrls.ToList()
+                        );
+                        return productResponse;
+
+                    }).ToList());
 
                     sets.Add(new SetOrderResponse(
                         orderDetail.Set.Id,
+                        orderDetail.Set.Code,
                         orderDetail.Set.Name,
                         orderDetail.Set.Description,
-                        orderDetail.Set.ImageUrl,
-                        productResponses,
+                        setImageUrl,
+                        productResponses.ToList(),
                         orderDetail.Quantity,
+                        orderDetail.ShippedQuantity,
                         orderDetail.UnitPrice,
                         orderDetail.Note
                     ));

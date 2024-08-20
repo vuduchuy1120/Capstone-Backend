@@ -3,6 +3,7 @@ using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Set.GetSet;
+using Contract.Services.Set.GetSets;
 using Contract.Services.Set.Search;
 
 namespace Application.UserCases.Queries.Sets.Search;

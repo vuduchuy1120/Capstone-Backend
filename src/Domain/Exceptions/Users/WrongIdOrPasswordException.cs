@@ -5,8 +5,8 @@ namespace Domain.Exceptions.Users;
 
 public class WrongIdOrPasswordException : MyException
 {
-    public WrongIdOrPasswordException()
-        : base((int)HttpStatusCode.Unauthorized, "Wrong id or password")
+    public WrongIdOrPasswordException(int status = (int)HttpStatusCode.Unauthorized, string message = "Sai tài khoản hoặc mật khẩu")
+        : base(status, message)
     {
     }
 }

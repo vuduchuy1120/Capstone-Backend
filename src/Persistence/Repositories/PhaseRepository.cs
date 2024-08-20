@@ -22,9 +22,20 @@ public class PhaseRepository : IPhaseRepository
         return await _context.Phases.SingleOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<Phase> GetPhaseByName(string name)
+    {
+        return await _context.Phases.SingleOrDefaultAsync(x => x.Name == name);
+    }
+
     public async Task<List<Phase>> GetPhases()
     {
-        return await _context.Phases.ToListAsync();
+        return await _context.Phases.OrderBy(p=>p.Name).ToListAsync();
+    }
+
+    public async Task<bool> IsAllPhase1(List<Guid> phaseIds)
+    {
+        var phaseExistCount = await _context.Phases.CountAsync(x => phaseIds.Contains(x.Id) && x.Name.Equals("PH_001"));
+        return phaseExistCount == phaseIds.Count;
     }
 
     public async Task<bool> IsAllPhaseExistByIdAsync(List<Guid> phaseIds)
@@ -36,6 +47,11 @@ public class PhaseRepository : IPhaseRepository
     public async Task<bool> IsExistById(Guid id)
     {
         return await _context.Phases.AnyAsync(x => x.Id == id);
+    }
+
+    public async Task<bool> IsPhase2(Guid phaseId)
+    {
+        return await _context.Phases.AnyAsync(x => x.Id == phaseId && x.Name == "PH_002");
     }
 
     public void UpdatePhase(Phase phase)

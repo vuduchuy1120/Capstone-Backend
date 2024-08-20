@@ -1,5 +1,4 @@
 ﻿using Application.Abstractions.Data;
-using AutoMapper;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Queries;
@@ -9,7 +8,7 @@ using Domain.Exceptions.Attendances;
 namespace Application.UserCases.Queries.Attendances;
 
 public sealed class GetAttendancesByMonthAndUserIdQueryHandler
-    (IAttendanceRepository _attendanceRepository, IMapper _mapper
+    (IAttendanceRepository _attendanceRepository
     ) : IQueryHandler<GetAttendancesByMonthAndUserIdQuery, AttendanceUserResponse>
 {
     public async Task<Result.Success<AttendanceUserResponse>> Handle(GetAttendancesByMonthAndUserIdQuery request, CancellationToken cancellationToken)
@@ -20,7 +19,7 @@ public sealed class GetAttendancesByMonthAndUserIdQueryHandler
             throw new AttendanceNotFoundException();
         }
         var attendanceResponse = attendances
-                .OrderBy(a => a.Date) 
+                .OrderBy(a => a.Date)
                 .GroupBy(a => new { a.Date.Month, a.Date.Year, a.UserId })
                 .Select(group => new AttendanceUserResponse(
                     Month: group.Key.Month,
@@ -28,16 +27,44 @@ public sealed class GetAttendancesByMonthAndUserIdQueryHandler
                     UserId: group.Key.UserId,
                     Attendances: group
                         .GroupBy(a => a.Date.ToString("dd/MM/yyyy"))
-                        .Select(dateGroup => new AttendanceUserReportResponse(
-                            Date: dateGroup.Key,
-                            AttedanceDateReport: new AttedanceDateReport(
-                                IsPresentSlot1: dateGroup.Any(a => a.SlotId == 1 && a.IsAttendance),
-                                IsPresentSlot2: dateGroup.Any(a => a.SlotId == 2 && a.IsAttendance),
-                                IsPresentSlot3: dateGroup.Any(a => a.SlotId == 3 && a.IsAttendance),
-                                IsSalaryByProduct: dateGroup.Any(a => a.IsSalaryByProduct),
-                                IsOverTime: dateGroup.Any(a => a.IsOverTime)
-                            )
-                        )).ToList()
+                        .Select(dateGroup =>
+                        {
+                            var isSalaryByProduct = dateGroup.Count(a => a.IsSalaryByProduct) >= 1;
+                            var isOverTime = dateGroup.Count(a => a.IsOverTime) >= 1;
+                            var attendanceCount = dateGroup.Count(a => a.IsAttendance && a.SlotId != 3);
+
+                            var isHalfWork = false;
+                            var isOneWork = false;
+
+                            if (attendanceCount == 2)
+                            {
+                                var salaryByProductCount = dateGroup.Count(a => a.IsSalaryByProduct && a.SlotId != 3);
+                                if (salaryByProductCount == 1)
+                                {
+                                    isHalfWork = true;
+                                }
+                                else if (salaryByProductCount == 0)
+                                {
+                                    isOneWork = true;
+                                }
+                            }
+                            else if (attendanceCount == 1 && !isSalaryByProduct)
+                            {
+                                isHalfWork = true;
+                            }
+
+
+                            return new AttendanceUserReportResponse(
+                                Date: dateGroup.Key,
+                                AttedanceDateReport: new AttedanceDateReport(
+                                    IsHalfWork: isHalfWork,
+                                    IsOneWork: isOneWork,
+                                    IsSalaryByProduct: isSalaryByProduct,
+                                    IsOverTime: isOverTime
+                                )
+                            );
+                        })
+                        .ToList()
                 )).FirstOrDefault();
 
         return Result.Success<AttendanceUserResponse>.Get(attendanceResponse);

@@ -42,11 +42,17 @@ internal class RedisService : IRedisService
         await Task.WhenAll(tasks);
     }
 
-    public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default) where T : class
+    public async Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default) where T : class
     {
         string cacheValue = JsonConvert.SerializeObject(value);
 
-        await _distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow,
+            SlidingExpiration = slidingExpiration
+        };
+
+        await _distributedCache.SetStringAsync(key, cacheValue, cacheOptions, cancellationToken);
 
         CacheKeys.TryAdd(key, false);
     }

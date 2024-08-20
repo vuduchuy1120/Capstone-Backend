@@ -14,19 +14,22 @@ public class User : EntityAuditBase<string>
     public string Address { get; private set; }
     public string Password { get; private set; }
     public string Gender { get; private set; }
+    public string? Avatar { get; private set; } 
     public DateOnly DOB { get; set; }
-    public decimal SalaryByDay { get; private set; }
     public bool IsActive { get; private set; }
     public int RoleId { get; private set; }
+    public decimal? AccountBalance { get; private set; } = 0;
     public Role Role { get; private set; }
     public Guid CompanyId { get; private set; }
     public Company Company { get; private set; }
     public List<Attendance>? Attendances { get; private set; }
-    public List<EmployeeProduct>? EmployeeProducts { get; private set; }
+    public List<EmployeeProduct>? EmployeeProducts { get; set; }
     public List<Report>? Reports { get; private set; }
     public List<Shipment>? Shipments { get; private set; }
     public List<ShipOrder>? ShipOrders { get; private set; }
-
+    public List<SalaryHistory>? SalaryHistories { get; private set; }
+    public List<PaidSalary>? PaidSalaries { get; private set; }
+    public List<MonthlyEmployeeSalary>? MonthlyEmployeeSalaries { get; private set; }
     public static User Create(CreateUserRequest request, string hashPassword, string createdBy)
     {
         return new()
@@ -41,12 +44,12 @@ public class User : EntityAuditBase<string>
             UpdatedDate = DateTime.UtcNow,
             RoleId = request.RoleId,
             IsActive = true,
-            SalaryByDay = request.SalaryByDay,
             DOB = CovertStringToDateTimeOnly(request.DOB),
             LastName = request.LastName,
             FirstName = request.FirstName,
             Gender = request.Gender,
             CompanyId = request.CompanyId,
+            Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar,
         };
     }
 
@@ -55,7 +58,6 @@ public class User : EntityAuditBase<string>
         Phone = request.Phone;
         Address = request.Address;
         RoleId = request.RoleId;
-        SalaryByDay = request.SalaryByDay;
         DOB = CovertStringToDateTimeOnly(request.DOB);
         LastName = request.LastName;
         FirstName = request.FirstName;
@@ -63,6 +65,7 @@ public class User : EntityAuditBase<string>
         UpdatedBy = updatedBy;
         UpdatedDate = DateTime.UtcNow;
         CompanyId = request.CompanyId;
+        Avatar = string.IsNullOrWhiteSpace(request.Avatar) ? "image_not_found.png" : request.Avatar;
     }
 
     public void UpdateStatus(ChangeUserStatusCommand request)
@@ -75,6 +78,10 @@ public class User : EntityAuditBase<string>
     public void UpdatePassword(string password)
     {
         Password = password;
+    }
+    public void UpdateAccountBalance(decimal balance)
+    {
+        AccountBalance = balance;
     }
 
     private static DateOnly CovertStringToDateTimeOnly(string dateString)

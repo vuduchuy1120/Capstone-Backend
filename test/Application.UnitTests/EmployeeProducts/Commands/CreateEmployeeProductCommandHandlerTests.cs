@@ -41,7 +41,6 @@ namespace Application.UnitTests.EmployeeProducts.Commands
             _handler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
-                _companyRepositoryMock.Object,
                 _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);
@@ -57,14 +56,13 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
             var createEmployeeProductCommandHandler = new CreateEmployeeProductCommandHandler(
                 _employeeProductRepositoryMock.Object,
                 _userRepositoryMock.Object,
-                _companyRepositoryMock.Object,
                 _productPhaseRepositoryMock.Object,
                 _validator,
                 _unitOfWorkMock.Object);
@@ -75,8 +73,8 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 .ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveAsync(It.IsAny<List<string>>()))
                 .ReturnsAsync(true);
-            _productRepositoryMock.Setup(repo => repo.IsAllProductIdsExistAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
-            _phaseRepositoryMock.Setup(repo => repo.IsAllPhaseExistByIdAsync(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _productRepositoryMock.Setup(repo => repo.IsAllProductInProgress(It.IsAny<List<Guid>>())).ReturnsAsync(true);
+            _phaseRepositoryMock.Setup(repo => repo.IsAllPhase1(It.IsAny<List<Guid>>())).ReturnsAsync(true);
             _userRepositoryMock.Setup(repo => repo.IsAllUserActiveByCompanyId(It.IsAny<List<string>>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _employeeProductRepositoryMock.Setup(repo => repo.GetEmployeeProductsByDateAndSlotId(createEmployeeProductRequest.SlotId, DateUtil.ConvertStringToDateTimeOnly(createEmployeeProductRequest.Date), Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286")))
                 .ReturnsAsync(new List<EmployeeProduct>());
@@ -99,7 +97,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -134,7 +132,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: slotId,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), quantity, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -168,7 +166,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                     SlotId: 1,
                     CreateQuantityProducts: new List<CreateQuantityProductRequest>
                     {
-                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                     });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -199,7 +197,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                     SlotId: 1,
                     CreateQuantityProducts: new List<CreateQuantityProductRequest>
                     {
-                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                        new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                     });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -232,7 +230,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                             SlotId: 1,
                             CreateQuantityProducts: new List<CreateQuantityProductRequest>
                             {
-                                new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                                new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                             });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 
@@ -263,7 +261,7 @@ namespace Application.UnitTests.EmployeeProducts.Commands
                 SlotId: 1,
                 CreateQuantityProducts: new List<CreateQuantityProductRequest>
                 {
-                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1", true)
+                    new CreateQuantityProductRequest(Guid.NewGuid(), Guid.NewGuid(), 10, "user1")
                 });
             var command = new CreateEmployeeProductComand(createEmployeeProductRequest, "admin", "MAIN_ADMIN", Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"));
 

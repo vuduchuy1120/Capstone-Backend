@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Services;
 using Domain.Entities;
-using Domain.Exceptions.Users;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,7 +13,7 @@ internal class JwtService : IJwtService
 {
     //TODO change 5 to 50
     private const int Access_Token_Time_In_Minutes = 50;
-    private const int Refresh_Token_Time_In_Minutes = 10;
+    private const int Refresh_Token_Time_In_Minutes = 100;
 
     private readonly JwtOptions _jwtOptions;
 

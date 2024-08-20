@@ -6,16 +6,15 @@ using Contract.Services.EmployeeProduct.Creates;
 using Contract.Services.ProductPhase.Creates;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.EmployeeProducts;
 using Domain.Exceptions.Users;
 using FluentValidation;
-using System.Linq;
 
 namespace Application.UserCases.Commands.EmployeeProducts.Creates;
 
 public sealed class CreateEmployeeProductCommandHandler
     (IEmployeeProductRepository _employeeProductRepository,
     IUserRepository _userRepository,
-    ICompanyRepository _companyRepository,
     IProductPhaseRepository _productPhaseRepository,
     IValidator<CreateEmployeeProductRequest> _validator,
     IUnitOfWork _unitOfWork) : ICommandHandler<CreateEmployeeProductComand>
@@ -31,19 +30,12 @@ public sealed class CreateEmployeeProductCommandHandler
 
         var slotId = request.createEmployeeProductRequest.SlotId;
         var date = DateUtil.ConvertStringToDateTimeOnly(request.createEmployeeProductRequest.Date);
+        var dateNow = DateOnly.FromDateTime(DateTime.Now);
         var roleName = request.roleNameClaim;
         var companyId = request.companyIdClaim;
 
         // Permission check
-        if (roleName != "MAIN_ADMIN" && companyId != request.createEmployeeProductRequest.CompanyId)
-        {
-            var isUserValid = await _userRepository
-                .IsAllUserActiveByCompanyId(
-                request.createEmployeeProductRequest.CreateQuantityProducts
-                .Select(c => c.UserId).Distinct().ToList(), companyId);
-            if (!isUserValid)
-                throw new UserNotPermissionException("You don't have permission to create employee products for other companies.");
-        }
+        await CheckPermissionsAndSalaryCalculation(request.createEmployeeProductRequest, roleName, companyId, date, dateNow);
 
         var quantityProducts = request.createEmployeeProductRequest.CreateQuantityProducts;
 
@@ -52,7 +44,7 @@ public sealed class CreateEmployeeProductCommandHandler
             .Select(g => (g.Key.ProductId, g.Key.PhaseId, g.Sum(x => x.Quantity)))
             .ToList();
 
-        var company = await _companyRepository.GetCompanyByNameAsync("Co so chinh");
+        var company = request.createEmployeeProductRequest.CompanyId;
 
 
         // Deleting existing EmployeeProducts
@@ -67,7 +59,7 @@ public sealed class CreateEmployeeProductCommandHandler
         if (empProDeletes.Any())
         {
             _employeeProductRepository.DeleteRangeEmployeeProduct(empProDeletes);
-            await UpdateProductPhaseQuantities(groupedByProductAndPhaseDelete, company.First().Id, phaseProductsUpdate, decrement: true);
+            await UpdateProductPhaseQuantities(groupedByProductAndPhaseDelete, company, phaseProductsUpdate, decrement: true);
         }
 
         var employeeProducts = new List<EmployeeProduct>();
@@ -79,7 +71,7 @@ public sealed class CreateEmployeeProductCommandHandler
         }
 
         _employeeProductRepository.AddRangeEmployeeProduct(employeeProducts);
-        await UpdateProductPhaseQuantities(groupedByProductAndPhase, company.First().Id, phaseProductsUpdate, phaseProductsNew);
+        await UpdateProductPhaseQuantities(groupedByProductAndPhase, company, phaseProductsUpdate, phaseProductsNew);
 
         if (phaseProductsNew.Any())
             _productPhaseRepository.AddProductPhaseRange(phaseProductsNew);
@@ -90,11 +82,11 @@ public sealed class CreateEmployeeProductCommandHandler
         return Result.Success.Create();
     }
     private async Task UpdateProductPhaseQuantities(
-        List<(Guid ProductId, Guid PhaseId, int Quantity)> groupedByProductAndPhase,
-        Guid companyId,
-        Dictionary<(Guid ProductId, Guid PhaseId), ProductPhase> phaseProductsUpdate,
-        List<ProductPhase> phaseProductsNew = null,
-        bool decrement = false)
+     List<(Guid ProductId, Guid PhaseId, int Quantity)> groupedByProductAndPhase,
+     Guid companyId,
+     Dictionary<(Guid ProductId, Guid PhaseId), ProductPhase> phaseProductsUpdate,
+     List<ProductPhase> phaseProductsNew = null,
+     bool decrement = false)
     {
         foreach (var item in groupedByProductAndPhase)
         {
@@ -109,6 +101,7 @@ public sealed class CreateEmployeeProductCommandHandler
                         ProductId: item.ProductId,
                         PhaseId: item.PhaseId,
                         Quantity: item.Quantity,
+                        AvailableQuantity: item.Quantity,
                         CompanyId: companyId
                     ));
                     phaseProductsNew?.Add(productPhase);
@@ -119,10 +112,44 @@ public sealed class CreateEmployeeProductCommandHandler
                 }
             }
 
-            if (productPhase != null)
+            // Chỉ cập nhật nếu productPhase đã tồn tại trước đó
+            if (phaseProductsUpdate.ContainsKey(key))
             {
                 productPhase.Quantity += decrement ? -item.Quantity : item.Quantity;
+                productPhase.AvailableQuantity += decrement ? -item.Quantity : item.Quantity;
             }
         }
+    }
+
+    private async Task CheckPermissionsAndSalaryCalculation(CreateEmployeeProductRequest request, string roleName, Guid companyId, DateOnly date, DateOnly dateNow)
+    {
+        if (roleName != "MAIN_ADMIN" && companyId != request.CompanyId)
+        {
+            var isUserValid = await _userRepository.IsAllUserActiveByCompanyId(
+                request.CreateQuantityProducts.Select(c => c.UserId).Distinct().ToList(), companyId);
+
+            if (!isUserValid)
+                throw new UserNotPermissionException("Bạn không có quyền tạo điểm danh cho user của công ty này.");
+        }
+
+        if (roleName != "MAIN_ADMIN")
+        {
+            if (IsOverTwoDays(date, dateNow))
+            {
+                throw new UserNotPermissionException("Bạn không có quyền udpate bản ghi này do đã quá 2 ngày..");
+            }
+        }
+
+        var isSalaryCalculated = await _employeeProductRepository.IsSalaryCalculatedForMonth(date.Month, date.Year);
+        if (isSalaryCalculated)
+        {
+            throw new EmployeeProductCannotCreateException();
+        }
+    }
+    private bool IsOverTwoDays(DateOnly DateRequest, DateOnly DateNow)
+    {
+        var daysDifference = DateNow.ToDateTime(TimeOnly.MinValue) - DateRequest.ToDateTime(TimeOnly.MinValue);
+
+        return daysDifference.TotalDays > 2;
     }
 }

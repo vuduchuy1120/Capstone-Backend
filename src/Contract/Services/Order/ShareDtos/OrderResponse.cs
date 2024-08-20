@@ -7,7 +7,9 @@ public record OrderResponse
     Guid Id,
     Guid CompanyId,
     CompanyResponse Company,
-    string Status,
+    StatusOrder Status,
+    string StatusType,
+    string StatusDescription,
     DateOnly? StartOrder,
     DateOnly? EndOrder,
     double VAT);

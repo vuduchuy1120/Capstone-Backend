@@ -62,6 +62,33 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         return results;
     }
 
+    public async Task<List<EmployeeProduct>> GetEmployeeProductsByMonthAndYearAndUserId(int month, int year, string userId)
+    {
+        var userAttendances = await _context.Attendances
+        .Where(at => at.Date.Month == month &&
+                    at.Date.Year == year &&
+                    at.UserId == userId &&                    
+                    at.IsSalaryByProduct == true)
+        .Select(at => at.Date)
+        .ToListAsync();
+
+        var employeeProducts = await _context.EmployeeProducts
+            .Include(ep => ep.Product)
+                .ThenInclude(p => p.ProductPhaseSalaries)
+            .Include(ep => ep.Product)
+                .ThenInclude(p => p.Images)
+            .Include(ep => ep.Phase)
+            .Include(ep => ep.User)
+            .Where(ep => ep.Date.Month == month &&
+                        ep.Date.Year == year &&
+                        ep.UserId == userId &&
+                        ep.User.IsActive == true &&
+                        userAttendances.Contains(ep.Date))
+            .ToListAsync();
+
+        return employeeProducts;
+    }
+
     public async Task<bool> IsAllEmployeeProductExistAsync(List<CompositeKey> keys)
     {
         var keySets = keys.Select(k => new
@@ -99,5 +126,12 @@ public class EmployeeProductRepository : IEmployeeProductRepository
         }
 
         return matchingCount == keys.Count;
+    }
+
+    public async Task<bool> IsSalaryCalculatedForMonth(int month, int year)
+    {
+        var salaryExists = await _context.MonthlyEmployeeSalaries
+            .AnyAsync(s => s.Month == month && s.Year == year);
+        return salaryExists;
     }
 }

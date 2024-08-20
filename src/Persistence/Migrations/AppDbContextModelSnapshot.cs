@@ -134,9 +134,6 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsMold")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
@@ -159,11 +156,12 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<double>("AvailableQuantity")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -207,8 +205,8 @@ namespace Persistence.Migrations
                     b.Property<DateOnly>("ImportDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -221,6 +219,66 @@ namespace Persistence.Migrations
                     b.HasIndex("MaterialId");
 
                     b.ToTable("MaterialHistories", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.MonthlyCompanySalary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("MonthlyCompanySalaries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MonthlyEmployeeSalary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MonthlyEmployeeSalaries");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -245,9 +303,8 @@ namespace Persistence.Migrations
                     b.Property<DateOnly?>("StartOrder")
                         .HasColumnType("date");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -286,6 +343,9 @@ namespace Persistence.Migrations
                     b.Property<Guid?>("SetId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("ShippedQuantity")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric");
 
@@ -298,6 +358,42 @@ namespace Persistence.Migrations
                     b.HasIndex("SetId");
 
                     b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaidSalaries");
                 });
 
             modelBuilder.Entity("Domain.Entities.Phase", b =>
@@ -336,7 +432,6 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsInProcessing")
@@ -360,6 +455,9 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -404,7 +502,22 @@ namespace Persistence.Migrations
                     b.Property<int>("AvailableQuantity")
                         .HasColumnType("integer");
 
+                    b.Property<int>("BrokenAvailableQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BrokenQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ErrorAvailableQuantity")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ErrorQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FailureAvailabeQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FailureQuantity")
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
@@ -417,6 +530,24 @@ namespace Persistence.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductPhases");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProductPhaseSalary", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PhaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("SalaryPerProduct")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ProductId", "PhaseId");
+
+                    b.HasIndex("PhaseId");
+
+                    b.ToTable("ProductPhaseSalaries");
                 });
 
             modelBuilder.Entity("Domain.Entities.Report", b =>
@@ -439,13 +570,11 @@ namespace Persistence.Migrations
                     b.Property<string>("ReplyMessage")
                         .HasColumnType("text");
 
-                    b.Property<string>("ReportType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ReportType")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -488,6 +617,32 @@ namespace Persistence.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("Domain.Entities.SalaryHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SalaryType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SalaryHistories");
+                });
+
             modelBuilder.Entity("Domain.Entities.Set", b =>
                 {
                     b.Property<Guid>("Id")
@@ -525,6 +680,9 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("Sets");
                 });
 
@@ -559,6 +717,12 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DeliveryMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
@@ -587,6 +751,35 @@ namespace Persistence.Migrations
                     b.ToTable("ShipOrders");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShipOrderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("ShipOrderId");
+
+                    b.ToTable("ShipOrderDetails");
+                });
+
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -602,6 +795,9 @@ namespace Persistence.Migrations
 
                     b.Property<Guid>("FromId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("ShipDate")
                         .HasColumnType("timestamp with time zone");
@@ -639,8 +835,11 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MaterialHistoryId")
+                    b.Property<Guid?>("MaterialId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("MaterialPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid?>("PhaseId")
                         .HasColumnType("uuid");
@@ -651,29 +850,19 @@ namespace Persistence.Migrations
                     b.Property<int>("ProductPhaseType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
+                    b.Property<double>("Quantity")
+                        .HasColumnType("double precision");
 
-                    b.Property<Guid?>("SetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ShipOrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ShipmentId")
+                    b.Property<Guid>("ShipmentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MaterialHistoryId");
+                    b.HasIndex("MaterialId");
 
                     b.HasIndex("PhaseId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("SetId");
-
-                    b.HasIndex("ShipOrderId");
 
                     b.HasIndex("ShipmentId");
 
@@ -702,8 +891,14 @@ namespace Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("AccountBalance")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Address")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Avatar")
                         .HasColumnType("text");
 
                     b.Property<Guid>("CompanyId")
@@ -745,9 +940,6 @@ namespace Persistence.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("SalaryByDay")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
@@ -757,6 +949,9 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -828,6 +1023,28 @@ namespace Persistence.Migrations
                     b.Navigation("Material");
                 });
 
+            modelBuilder.Entity("Domain.Entities.MonthlyCompanySalary", b =>
+                {
+                    b.HasOne("Domain.Entities.Company", "Company")
+                        .WithMany("MonthlyCompanySalaries")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MonthlyEmployeeSalary", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("MonthlyEmployeeSalaries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
                     b.HasOne("Domain.Entities.Company", "Company")
@@ -860,6 +1077,17 @@ namespace Persistence.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Set");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PaidSalary", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("PaidSalaries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProductImage", b =>
@@ -900,10 +1128,40 @@ namespace Persistence.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ProductPhaseSalary", b =>
+                {
+                    b.HasOne("Domain.Entities.Phase", "Phase")
+                        .WithMany("ProductPhaseSalaries")
+                        .HasForeignKey("PhaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("ProductPhaseSalaries")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Phase");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Domain.Entities.Report", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Reports")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SalaryHistory", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("SalaryHistories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -949,6 +1207,29 @@ namespace Persistence.Migrations
                     b.Navigation("Shipper");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ShipOrderDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Domain.Entities.Set", "Set")
+                        .WithMany()
+                        .HasForeignKey("SetId");
+
+                    b.HasOne("Domain.Entities.ShipOrder", "ShipOrder")
+                        .WithMany("ShipOrderDetails")
+                        .HasForeignKey("ShipOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Set");
+
+                    b.Navigation("ShipOrder");
+                });
+
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
                 {
                     b.HasOne("Domain.Entities.Company", "FromCompany")
@@ -978,9 +1259,9 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ShipmentDetail", b =>
                 {
-                    b.HasOne("Domain.Entities.MaterialHistory", "MaterialHistory")
+                    b.HasOne("Domain.Entities.Material", "Material")
                         .WithMany("ShipmentDetails")
-                        .HasForeignKey("MaterialHistoryId");
+                        .HasForeignKey("MaterialId");
 
                     b.HasOne("Domain.Entities.Phase", "Phase")
                         .WithMany("ShipmentDetails")
@@ -990,27 +1271,17 @@ namespace Persistence.Migrations
                         .WithMany("ShipmentDetails")
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("Domain.Entities.Set", "Set")
-                        .WithMany("ShipmentDetails")
-                        .HasForeignKey("SetId");
-
-                    b.HasOne("Domain.Entities.ShipOrder", "ShipOrder")
-                        .WithMany("ShipmentDetails")
-                        .HasForeignKey("ShipOrderId");
-
                     b.HasOne("Domain.Entities.Shipment", "Shipment")
                         .WithMany("ShipmentDetails")
-                        .HasForeignKey("ShipmentId");
+                        .HasForeignKey("ShipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("MaterialHistory");
+                    b.Navigation("Material");
 
                     b.Navigation("Phase");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Set");
-
-                    b.Navigation("ShipOrder");
 
                     b.Navigation("Shipment");
                 });
@@ -1036,6 +1307,8 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
+                    b.Navigation("MonthlyCompanySalaries");
+
                     b.Navigation("Orders");
 
                     b.Navigation("ProductPhases");
@@ -1046,10 +1319,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Material", b =>
                 {
                     b.Navigation("MaterialHistories");
-                });
 
-            modelBuilder.Entity("Domain.Entities.MaterialHistory", b =>
-                {
                     b.Navigation("ShipmentDetails");
                 });
 
@@ -1064,6 +1334,8 @@ namespace Persistence.Migrations
                 {
                     b.Navigation("EmployeeProducts");
 
+                    b.Navigation("ProductPhaseSalaries");
+
                     b.Navigation("ProductPhases");
 
                     b.Navigation("ShipmentDetails");
@@ -1076,6 +1348,8 @@ namespace Persistence.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("ProductPhaseSalaries");
 
                     b.Navigation("ProductPhases");
 
@@ -1094,13 +1368,11 @@ namespace Persistence.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("SetProducts");
-
-                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.ShipOrder", b =>
                 {
-                    b.Navigation("ShipmentDetails");
+                    b.Navigation("ShipOrderDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Shipment", b =>
@@ -1121,7 +1393,13 @@ namespace Persistence.Migrations
 
                     b.Navigation("EmployeeProducts");
 
+                    b.Navigation("MonthlyEmployeeSalaries");
+
+                    b.Navigation("PaidSalaries");
+
                     b.Navigation("Reports");
+
+                    b.Navigation("SalaryHistories");
 
                     b.Navigation("ShipOrders");
 

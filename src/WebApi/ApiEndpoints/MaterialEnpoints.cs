@@ -46,10 +46,10 @@ public class MaterialEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material api" } }
         });
 
-        app.MapGet("{id:int}", async (
+        app.MapGet("{id}", async (
             ISender sender,
             ClaimsPrincipal claim,
-            [FromRoute] int id) =>
+            [FromRoute] Guid id) =>
         {
             var getMaterialByIdQuery = new GetMaterialByIdQuery(id);
             var result = await sender.Send(getMaterialByIdQuery);
@@ -60,18 +60,18 @@ public class MaterialEndpoints : CarterModule
             Tags = new List<OpenApiTag> { new() { Name = "Material api" } }
         });
 
-        app.MapGet("units", async (
-            ISender sender,
-            ClaimsPrincipal claim) =>
-        {
-            var getMaterialUnitsQuery = new GetMaterialUnitsQuery();
-            var result = await sender.Send(getMaterialUnitsQuery);
+        //app.MapGet("units", async (
+        //    ISender sender,
+        //    ClaimsPrincipal claim) =>
+        //{
+        //    var getMaterialUnitsQuery = new GetMaterialUnitsQuery();
+        //    var result = await sender.Send(getMaterialUnitsQuery);
 
-            return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new() { Name = "Material api" } }
-        });
+        //    return Results.Ok(result);
+        //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        //{
+        //    Tags = new List<OpenApiTag> { new() { Name = "Material api" } }
+        //});
 
         app.MapGet(string.Empty, async (
             ISender sender,

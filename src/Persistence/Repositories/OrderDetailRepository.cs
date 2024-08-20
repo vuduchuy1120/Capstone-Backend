@@ -1,7 +1,5 @@
 ﻿using Application.Abstractions.Data;
-using Contract.Services.OrderDetail.Queries;
 using Domain.Entities;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
@@ -23,6 +21,11 @@ public class OrderDetailRepository : IOrderDetailRepository
         _context.OrderDetails.AddRange(orderDetails);
     }
 
+    public void Delete(OrderDetail orderDetail)
+    {
+        _context.OrderDetails.Remove(orderDetail);
+    }
+
     public void DeleteRange(List<OrderDetail> orderDetails)
     {
         _context.OrderDetails.RemoveRange(orderDetails);
@@ -38,17 +41,20 @@ public class OrderDetailRepository : IOrderDetailRepository
         return await _context.OrderDetails
             .Include(x => x.Product).ThenInclude(x => x.Images)
             .Include(x => x.Set).ThenInclude(x => x.SetProducts).ThenInclude(x => x.Product).ThenInclude(x => x.Images)
+            .Include(x => x.Set).ThenInclude(x => x.SetProducts).ThenInclude(x => x.Product).ThenInclude(x => x.ProductPhaseSalaries).ThenInclude(x => x.Phase).ThenInclude(x => x.ProductPhases)
+            .Include(x=>x.Product).ThenInclude(x=>x.ProductPhaseSalaries).ThenInclude(x=> x.Phase).ThenInclude(x=>x.ProductPhases)
             .Where(x => x.OrderId.Equals(id)).ToListAsync();
     }
 
-    public async Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid?> productIds)
+    public async Task<bool> IsAllOrderDetailProductIdsExistedAsync(Guid orderId, List<Guid> productIds)
     {
         if (productIds == null || !productIds.Any())
         {
             throw new ArgumentException("ProductIds must contain at least one ID.", nameof(productIds));
         }
 
-        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && productIds.Contains(x.ProductId));
+        var query = _context.OrderDetails
+            .Where(x => x.OrderId.Equals(orderId) && productIds.Contains((Guid) x.ProductId));
 
         var count = await query.CountAsync();
 
@@ -56,13 +62,13 @@ public class OrderDetailRepository : IOrderDetailRepository
 
     }
 
-    public async Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid?> setIds)
+    public async Task<bool> IsAllOrderDetailSetIdsExistedAsync(Guid orderId, List<Guid> setIds)
     {
         if (setIds == null || !setIds.Any())
         {
             throw new ArgumentException("SetIds must contain at least one ID.", nameof(setIds));
         }
-        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && setIds.Contains(x.SetId));
+        var query = _context.OrderDetails.Where(x => x.OrderId.Equals(orderId) && setIds.Contains((Guid)x.SetId));
         var count = await query.CountAsync();
         return (count == setIds.Count());
     }
@@ -95,5 +101,10 @@ public class OrderDetailRepository : IOrderDetailRepository
     public void UpdateRange(List<OrderDetail> orderDetails)
     {
         _context.OrderDetails.UpdateRange(orderDetails);
+    }
+
+    public async Task<List<OrderDetail>> GetOrderDetailsByOrderIdWithoutInclueAsync(Guid orderId)
+    {
+        return await _context.OrderDetails.Where(od => od.OrderId == orderId).ToListAsync();
     }
 }

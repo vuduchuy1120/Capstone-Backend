@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -27,17 +28,18 @@ public class AddUserTest : IDisposable
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "123-456-7890",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB:"10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 2
         );
 
-        var user = User.Create(createUserRequest, createUserRequest.Password, "001201011091");
+        var user = User.Create(createUserRequest, "SecurePassword123", "001201011091");
         _userRepository.AddUser(user);
         await _context.SaveChangesAsync();
 
@@ -55,21 +57,22 @@ public class AddUserTest : IDisposable
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "123-456-7890",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 2
         );
 
-        var user = User.Create(createUserRequest, createUserRequest.Password, "001201011091");
+        var user = User.Create(createUserRequest, "SecurePassword123", "001201011091");
         _userRepository.AddUser(user);
         await _context.SaveChangesAsync();
 
-        var duplicateUser = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
+        var duplicateUser = User.Create(createUserRequest, "SecurePassword123", createUserRequest.Id);
 
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {

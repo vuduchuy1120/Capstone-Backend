@@ -2,9 +2,9 @@
 using Application.Abstractions.Shared.Utils;
 using Application.Utils;
 using Contract.Services.Order.Queries;
+using Contract.Services.Order.ShareDtos;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace Persistence.Repositories;
 
@@ -22,12 +22,7 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order?> GetOrderByIdAsync(Guid id)
     {
-        return await _context.Orders.FirstOrDefaultAsync(x => x.Id.Equals(id));
-    }
-
-    public Task<List<Order>> GetOrdersByCompanyIdAsync(Guid companyId)
-    {
-        throw new NotImplementedException();
+        return await _context.Orders.Include(c => c.Company).FirstOrDefaultAsync(x => x.Id.Equals(id));
     }
 
     public async Task<bool> IsOrderExist(Guid id)
@@ -40,21 +35,24 @@ public class OrderRepository : IOrderRepository
         var query = _context.Orders.Include(o => o.Company).AsQueryable();
         if (!string.IsNullOrWhiteSpace(request.CompanyName))
         {
-            query = query.Where(x => x.Company.NameUnAccent.Equals(StringUtils.RemoveDiacritics(request.CompanyName)));
+            query = query.Where(x => x.Company.NameUnAccent.ToLower().Trim().Contains(StringUtils.RemoveDiacritics(request.CompanyName.ToLower().Trim())));
         }
         if (!string.IsNullOrWhiteSpace(request.Status))
         {
-            query = query.Where(x => x.Status.Equals(request.Status));
+            if (Enum.TryParse<StatusOrder>(request.Status, true, out var statusType))
+            {
+                query = query.Where(status => status.Status == statusType);
+            }
         }
         if (!string.IsNullOrWhiteSpace(request.StartOrder))
         {
             var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.StartOrder);
-            query = query.Where(x => x.StartOrder == formatedDate);
+            query = query.Where(x => x.StartOrder >= formatedDate);
         }
         if (!string.IsNullOrWhiteSpace(request.EndOrder))
         {
             var formatedDate = DateUtil.ConvertStringToDateTimeOnly(request.EndOrder);
-            query = query.Where(x => x.EndOrder == formatedDate);
+            query = query.Where(x => x.EndOrder <= formatedDate);
         }
         var totalItems = await query.CountAsync();
 
@@ -68,15 +66,38 @@ public class OrderRepository : IOrderRepository
             .ToListAsync();
 
         return (orders, totalPages);
-
-
-
-
-
     }
 
     public void UpdateOrder(Order order)
     {
         _context.Orders.Update(order);
+    }
+
+    public async Task<bool> IsOrderIdValidToShipAsync(Guid id)
+    {
+        return await _context.Orders.AnyAsync(o => o.Id == id && o.Status == StatusOrder.INPROGRESS);
+    }
+
+    public async Task<bool> IsCompanyNotChange(Guid orderId, Guid companyId)
+    {
+        return await _context.Orders.AnyAsync(o => o.Id == orderId && o.CompanyId == companyId);
+    }
+
+    public async Task<bool> IsOrderComplete(Guid orderId)
+    {
+        var query = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .Where(o => o.Id == orderId)
+            .ToListAsync();
+
+        var orderDetails = query.SelectMany(o => o.OrderDetails).ToList();
+        foreach (var orderDetail in orderDetails)
+        {
+            if (orderDetail.Quantity > orderDetail.ShippedQuantity)
+            {
+                return false;
+            }
+        }
+        return true;           
     }
 }

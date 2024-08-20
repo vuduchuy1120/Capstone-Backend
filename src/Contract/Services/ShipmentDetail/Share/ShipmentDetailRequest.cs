@@ -2,8 +2,9 @@
 
 public record ShipmentDetailRequest(
     Guid ItemId,
-    Guid? PhaseId, 
-    int Quantity,
+    Guid? PhaseId,
+    double Quantity,
+    decimal MaterialPrice,
     KindOfShip KindOfShip,
     ProductPhaseType ProductPhaseType);
 

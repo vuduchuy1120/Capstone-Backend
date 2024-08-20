@@ -1,19 +1,25 @@
 ﻿using Contract.Services.ProductPhase.Creates;
+using Contract.Services.ProductPhase.ShareDto;
 using Contract.Services.ProductPhase.Updates;
 
 namespace Domain.Entities;
 
 public class ProductPhase
 {
-    public Guid ProductId { get; set; }
-    public Guid PhaseId { get; set; }
+    public Guid ProductId { get; private set; }
+    public Guid PhaseId { get; private set; }
     public int Quantity { get; set; } = 0;
-    public int ErrorQuantity { get; set; } = 0;
+    public int ErrorQuantity { get; private set; } = 0;
+    public int ErrorAvailableQuantity { get; private set; } = 0; // bên cty hợp tác làm lỗi
     public int AvailableQuantity { get; set; } = 0;
-    public Guid CompanyId { get; set; }
-    public Company Company { get; set; }
-    public Product Product { get; set; }
-    public Phase Phase { get; set; }
+    public int FailureQuantity { get; private set; } = 0;
+    public int FailureAvailabeQuantity { get; private set; } = 0; // bên mình làm lỗi
+    public int BrokenAvailableQuantity { get; private set; } = 0; // bên cty hợp tác làm lỗi và không sửa được, hỏng hẳn
+    public int BrokenQuantity { get; private set; } = 0;
+    public Guid CompanyId { get; private set; }
+    public Company Company { get; private set; }
+    public Product Product { get; private set; }
+    public Phase Phase { get; private set; }
 
     public static ProductPhase Create(CreateProductPhaseRequest request)
     {
@@ -22,19 +28,92 @@ public class ProductPhase
             ProductId = request.ProductId,
             PhaseId = request.PhaseId,
             Quantity = request.Quantity,
+            AvailableQuantity = request.Quantity,
             CompanyId = request.CompanyId
         };
+    }
+
+    public static ProductPhase Create(Guid productId, Guid phaseId, int quantity, QuantityType quantityType, Guid companyId)
+    {
+        var productPhase = new ProductPhase
+        {
+            ProductId = productId,
+            PhaseId = phaseId,
+            CompanyId = companyId
+        };
+
+        switch (quantityType)
+        {
+            case QuantityType.QUANTITY:
+                productPhase.Quantity = quantity;
+                productPhase.AvailableQuantity = quantity;
+                break;
+            case QuantityType.ERROR_QUANTITY:
+                productPhase.ErrorQuantity = quantity;
+                productPhase.ErrorAvailableQuantity = quantity;
+                break;
+            case QuantityType.FAILURE_QUANTITY:
+                productPhase.FailureQuantity = quantity;
+                productPhase.FailureAvailabeQuantity = quantity;
+                break;
+            case QuantityType.BROKEN_QUANTITY:
+                productPhase.BrokenQuantity = quantity;
+                productPhase.BrokenAvailableQuantity = quantity;
+                break;
+        }
+
+        return productPhase;
     }
 
     public void Update(UpdateProductPhaseRequest request)
     {
         Quantity = request.Quantity;
+        AvailableQuantity = request.Quantity;
         //SalaryPerProduct = request.SalaryPerProduct;
     }
 
     public void UpdateAvailableQuantity(int quantity)
     {
         AvailableQuantity = quantity;
+    }
+
+    public void UpdateQuantity(int quantity)
+    {
+        Quantity = quantity;
+    }
+
+    public void UpdateErrorQuantity(int quantity)
+    {
+        ErrorQuantity = quantity;
+    }
+
+    public void UpdateErrorAvailableQuantity(int quantity)
+    {
+        ErrorAvailableQuantity = quantity;
+    }
+
+    public void UpdateFailureQuantity(int quantity)
+    {
+        FailureQuantity = quantity;
+    }
+
+    public void UpdateFailureAvailableQuantity(int quantity)
+    {
+        FailureAvailabeQuantity = quantity;
+    }
+    public void UpdateBrokenAvailableQuantity(int quantity)
+    {
+        BrokenAvailableQuantity = quantity;
+    }
+    public void UpdateBrokenQuantity(int quantity)
+    {
+        BrokenQuantity = quantity;
+    }
+
+    public void UpdateQuantityPhase(int quantity, int availableQuantity)
+    {
+        Quantity = quantity;
+        AvailableQuantity = availableQuantity;
     }
 
 }

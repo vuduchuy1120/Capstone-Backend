@@ -11,7 +11,7 @@ namespace Domain.Exceptions.Common;
 public class WrongFormatDateException : MyException
 {
     public WrongFormatDateException() : base(
-        (int)HttpStatusCode.BadRequest, "Date is wrong format dd/MM/yyyy")
+        (int)HttpStatusCode.BadRequest, "Ngày tháng năm sai định dạng (dd/MM/yyyy) hoặc ngày tháng năm không tồn tại")
     {
     }
 }

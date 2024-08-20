@@ -23,7 +23,7 @@ public class GetMaterialByIdQueryHandlerTests
     public async Task Handler_ShouldReturnSuccess_WhenReceivedMaterialIsNotNull()
     {
         // Arrange
-        var getMaterialByIdQuery = new GetMaterialByIdQuery(1);
+        var getMaterialByIdQuery = new GetMaterialByIdQuery(Guid.NewGuid());
         var getMaterialByIdQueryHandler =
             new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
 
@@ -43,7 +43,7 @@ public class GetMaterialByIdQueryHandlerTests
     public async Task Handler_ShouldThrow_MaterialNotFoundException_WhenReceivedMaterialIsNull()
     {
         // Arrange
-        var getMaterialByIdQuery = new GetMaterialByIdQuery(1);
+        var getMaterialByIdQuery = new GetMaterialByIdQuery(Guid.NewGuid());
         var getMaterialByIdQueryHandler =
             new GetMaterialByIdQueryHandler(_materialRepositoryMock.Object, _mock.Object);
 

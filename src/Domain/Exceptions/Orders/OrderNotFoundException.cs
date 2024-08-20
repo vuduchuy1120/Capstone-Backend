@@ -5,12 +5,12 @@ namespace Domain.Exceptions.Orders;
 public class OrderNotFoundException : MyException
 {
     public OrderNotFoundException(Guid id)
-       : base(400, $"Can not found Order has id: {id}")
+       : base(400, $"Không tìm thấy đơn hàng có id: {id}")
     {
     }
 
     public OrderNotFoundException()
-        : base(400, $"Search Order not found")
+        : base(400, $"Không tìm thấy đơn hàng")
     {
     }
 }

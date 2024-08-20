@@ -5,5 +5,6 @@ public record CreateProductPhaseRequest
     Guid ProductId,
     Guid PhaseId,
     int Quantity,
+    int AvailableQuantity,
     Guid CompanyId
     );

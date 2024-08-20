@@ -35,24 +35,26 @@ public class CompanyRepository : ICompanyRepository
 
         if (!string.IsNullOrWhiteSpace(request.Name))
         {
-
-            query = query.Where(company => company.NameUnAccent.Contains(StringUtils.RemoveDiacritics(request.Name)));
+            query = query.Where(company => company.NameUnAccent.ToLower().Contains(StringUtils.RemoveDiacritics(request.Name.ToLower())));
         }
         if (!string.IsNullOrWhiteSpace(request.Address))
         {
-            query = query.Where(company => company.AddressUnAccent.Contains(StringUtils.RemoveDiacritics(request.Address)));
+            query = query.Where(company => company.AddressUnAccent.ToLower().Contains(StringUtils.RemoveDiacritics(request.Address.ToLower())));
         }
         if (!string.IsNullOrWhiteSpace(request.Email))
         {
-            query = query.Where(company => company.Email.Contains(request.Email));
+            query = query.Where(company => company.Email.ToLower().Contains(request.Email.ToLower()));
         }
         if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
         {
             query = query.Where(company => company.DirectorPhone.Contains(request.PhoneNumber));
         }
-        if (request.CompanyType != null)
+        if (!string.IsNullOrWhiteSpace(request.CompanyType))
         {
-            query = query.Where(company => company.CompanyType == request.CompanyType);
+            if (Enum.TryParse<CompanyType>(request.CompanyType, true, out var companyType))
+            {
+                query = query.Where(company => company.CompanyType == companyType);
+            }
         }
 
         var totalItems = await query.CountAsync();
@@ -90,5 +92,36 @@ public class CompanyRepository : ICompanyRepository
     {
         return await _context.Companies
             .AnyAsync(c => c.Id == Id && c.CompanyType == CompanyType.FACTORY);
+    }
+
+    public async Task<bool> IsCompanyNotCustomerCompanyAsync(Guid CompanyId)
+    {
+        return await _context.Companies
+            .AnyAsync(c => c.Id == CompanyId && c.CompanyType != CompanyType.CUSTOMER_COMPANY);
+    }
+
+    public async Task<bool> IsThirdPartyCompanyAsync(Guid CompanyId)
+    {
+        return await _context.Companies
+            .AnyAsync(c => c.Id == CompanyId && c.CompanyType == CompanyType.THIRD_PARTY_COMPANY);
+    }
+
+    public async Task<List<CompanyType>> GetCompanyTypeByCompanyIdsAsync(List<Guid> companyIds)
+    {
+        return await _context.Companies
+            .AsNoTracking()
+            .Where(c => companyIds.Contains(c.Id))
+            .Select(c => c.CompanyType)
+            .ToListAsync();
+    }
+
+    public async Task<bool> IsCompanyMainFactory(Guid companyId)
+    {
+        return await _context.Companies.AnyAsync(c => c.Id == companyId && c.Name == "Cơ sở chính" && c.CompanyType == CompanyType.FACTORY);
+    }
+
+    public async Task<List<Company>> GetThirdPartyCompany()
+    {
+        return await _context.Companies.Where(c => c.CompanyType == CompanyType.THIRD_PARTY_COMPANY).ToListAsync();
     }
 }

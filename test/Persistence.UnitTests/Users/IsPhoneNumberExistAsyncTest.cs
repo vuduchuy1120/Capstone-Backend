@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.Role.Create;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.BanUser;
 using Contract.Services.User.CreateUser;
 using Domain.Entities;
@@ -31,31 +32,33 @@ public class IsPhoneNumberExistAsyncTest : IDisposable
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );
-        var user = User.Create(createUserRequest, createUserRequest.Password, createUserRequest.Id);
+        var user = User.Create(createUserRequest, "SecurePassword123", createUserRequest.Id);
 
         var createUserRequest_2 = new CreateUserRequest(
             Id: "001201011092",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099352",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2001"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2001"),
             Guid.NewGuid(),
             RoleId: 1
         );
-        var user_2 = User.Create(createUserRequest_2, createUserRequest_2.Password, createUserRequest.Id);
+        var user_2 = User.Create(createUserRequest_2, "SecurePassword123", createUserRequest.Id);
         user_2.UpdateStatus(new ChangeUserStatusCommand(user.Id, user_2.Id, false));
 
         _context.Roles.Add(role);

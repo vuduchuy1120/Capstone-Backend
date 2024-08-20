@@ -5,7 +5,7 @@ namespace Domain.Exceptions.Files;
 
 public class UploadFileException : MyException
 {
-    public UploadFileException() : base((int) HttpStatusCode.BadRequest, "Upload file error")
+    public UploadFileException() : base((int) HttpStatusCode.BadRequest, "Đăng tải ảnh thất bại")
     {
     }
 }

@@ -12,6 +12,8 @@ namespace Application.UserCases.Commands.Products.CreateProduct;
 internal sealed class CreateProductCommandHandler(
     IProductRepository _productRepository,
     IProductImageRepository _productImageRepository,
+    IProductPhaseSalaryRepository _productPhaseSalaryRepository,
+    IPhaseRepository _phaseRepository,
     IUnitOfWork _unitOfWork,
     IValidator<CreateProductRequest> _validator) : ICommandHandler<CreateProductCommand>
 {
@@ -23,6 +25,8 @@ internal sealed class CreateProductCommandHandler(
 
         var productId = AddProduct(createProductRequest, request.CreatedBy);
         AddProductImages(createProductRequest.ImageRequests, productId);
+
+        await AddProductPhaseSalaries(productId, createProductRequest);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -55,5 +59,26 @@ internal sealed class CreateProductCommandHandler(
         if (productImages is null) return;
 
         _productImageRepository.AddRange(productImages);
+    }
+
+    private async Task AddProductPhaseSalaries(Guid productId, CreateProductRequest createProductRequest)
+    {
+        // Get all phases
+        var phases = await _phaseRepository.GetPhases();
+
+        //Get phase ids
+        var phase1 = phases.FirstOrDefault(x => x.Name == "PH_001").Id;
+        var phase2 = phases.FirstOrDefault(x => x.Name == "PH_002").Id;
+        var phase3 = phases.FirstOrDefault(x => x.Name == "PH_003").Id;
+
+        // Add product phase salaries
+        var productPhaseSalaries = new List<ProductPhaseSalary>
+            {
+                ProductPhaseSalary.Create(productId, phase1, createProductRequest.PricePhase1),
+                ProductPhaseSalary.Create(productId, phase2, createProductRequest.PricePhase2),
+                ProductPhaseSalary.Create(productId, phase3, createProductRequest.PriceFinished)
+            };
+
+        _productPhaseSalaryRepository.AddRange(productPhaseSalaries);
     }
 }

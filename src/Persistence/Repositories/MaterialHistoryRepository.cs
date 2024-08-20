@@ -19,9 +19,14 @@ public class MaterialHistoryRepository : IMaterialHistoryRepository
         _context.MaterialHistories.Add(materialHistory);
     }
 
+    public void DeleteMaterialHistory(MaterialHistory materialHistory)
+    {
+        _context.MaterialHistories.Remove(materialHistory);
+    }
+
     public async Task<(List<MaterialHistory>?, int)> GetMaterialHistoriesByMaterialNameAndDateAsync(GetMaterialHistoriesByMaterialQuery getMaterialHistories)
     {
-        var query = _context.MaterialHistories.Include(mh => mh.Material).AsNoTracking().AsQueryable();
+        var query = _context.MaterialHistories.Include(mh => mh.Material).AsQueryable();
         if (!string.IsNullOrEmpty(getMaterialHistories.SearchTerms))
         {
             var normalizedSearchTerms = StringUtils.RemoveDiacritics(getMaterialHistories.SearchTerms).ToLower();

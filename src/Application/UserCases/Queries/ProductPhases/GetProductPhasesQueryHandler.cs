@@ -5,14 +5,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Abstractions.Shared.Search;
 using Contract.Services.ProductPhase.Queries;
 using Contract.Services.ProductPhase.ShareDto;
-using Contract.Services.User.SharedDto;
 using Domain.Exceptions.ProductPhases;
-using Domain.Exceptions.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.UserCases.Queries.ProductPhases;
 

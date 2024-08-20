@@ -6,16 +6,12 @@ namespace Application.UserCases.Commands.Reports.Creates;
 
 public class CreateReportRequestValidator : AbstractValidator<CreateReportRequest>
 {
-    public CreateReportRequestValidator(IReportRepository _reportRepository, IUserRepository _userRepository)
+    public CreateReportRequestValidator()
     {
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required")
-            .MaximumLength(700).WithMessage("Description must not exceed 700 characters");
-        RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required")
-            .WithMessage("Status is invalid");
+            .NotEmpty().WithMessage("Bạn phải nhập nội dung báo cáo.")
+            .MaximumLength(700).WithMessage("Nội dung báo cáo không được vượt quá 700 kí tự");
         RuleFor(x => x.ReportType)
-            .NotEmpty().WithMessage("ReportType is required")
-            .WithMessage("ReportType is invalid");
+            .IsInEnum().WithMessage("Loại báo cáo chỉ có thể là 0,1,2,3.");
     }
 }

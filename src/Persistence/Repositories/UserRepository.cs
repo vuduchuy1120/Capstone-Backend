@@ -19,19 +19,43 @@ internal class UserRepository : IUserRepository
         _context.Users.Add(user);
     }
 
+    public Task<List<User>> GetAttendanceAndEmployeeProductAllUser(int month, int year)
+    {
+        var users = _context.Users
+            .Include(u => u.Attendances)
+            .Include(u => u.SalaryHistories)
+            .Include(u => u.EmployeeProducts)
+                .ThenInclude(e => e.Product)
+                .ThenInclude(p => p.ProductPhaseSalaries)
+            .Where(user => user.Attendances.Any(attendance => attendance.Date.Month == month && attendance.Date.Year == year) ||
+                           user.EmployeeProducts.Any(emp => emp.Date.Month == month && emp.Date.Year == year))
+            .ToListAsync();
+        return users;
+    }
+
     public async Task<User?> GetUserActiveByIdAsync(string id)
     {
         return await _context.Users
             .AsNoTracking()
             .Include(user => user.Role)
-            .FirstOrDefaultAsync(user => user.Id.Equals(id) && user.IsActive == true);
+            .Include(u => u.Company)
+            .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
+            .FirstOrDefaultAsync(user => (user.Id.Equals(id) || user.Phone == id) && user.IsActive == true);
+    }
+
+    public async Task<User> GetByPhoneOrIdAsync(string search)
+    {
+        return await _context.Users.SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive == true);
     }
 
     public async Task<User?> GetUserByIdAsync(string id)
     {
         return await _context.Users
-            .AsNoTracking()
             .Include(user => user.Role)
+            .Include(u => u.Company)
+            .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .SingleOrDefaultAsync(user => user.Id.Equals(id));
     }
 
@@ -39,6 +63,9 @@ internal class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(user => user.Role)
+            .Include(user => user.Company)
+            .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive);
     }
 
@@ -47,6 +74,9 @@ internal class UserRepository : IUserRepository
         return _context.Users
             .AsNoTracking()
             .Include(user => user.Role)
+            .Include(user => user.Company)
+            .Include(s => s.SalaryHistories)
+            .Include(u => u.PaidSalaries)
             .Where(user => user.CompanyId == companyId && user.IsActive == true)
             .ToListAsync();
     }
@@ -66,13 +96,20 @@ internal class UserRepository : IUserRepository
     public async Task<bool> IsPhoneNumberExistAsync(string phoneNumber)
     {
         return await _context.Users
-            .AnyAsync(u => u.Phone ==  phoneNumber);    
+            .AnyAsync(u => u.Phone == phoneNumber);
+    }
+
+    public async Task<bool> IsShipperExistAsync(string id)
+    {
+        return await _context.Users
+            .Include(u => u.Role)
+            .AnyAsync(u => u.Id == id && u.Role.RoleName == "DRIVER");
     }
 
     public async Task<bool> IsUpdatePhoneNumberExistAsync(string phone, string userId)
     {
         return await _context.Users
-            .AnyAsync (u => u.Phone == phone && u.Id != userId);
+            .AnyAsync(u => u.Phone == phone && u.Id != userId);
     }
 
     public async Task<bool> IsUserActiveAsync(string id)
@@ -92,7 +129,9 @@ internal class UserRepository : IUserRepository
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(user => user.Id.Contains(request.SearchTerm));
+            string searchTermLower = request.SearchTerm.ToLower();
+            query = query.Where(user => user.Phone.Contains(request.SearchTerm)
+                || (user.FirstName + " " + user.LastName).ToLower().Contains(searchTermLower));
         }
 
         var totalItems = await query.CountAsync();
@@ -100,6 +139,10 @@ internal class UserRepository : IUserRepository
         int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
 
         var users = await query
+            .Include(user => user.Role)
+            .Include(user => user.Company)
+            .Include(user => user.PaidSalaries)
+            .Include(s => s.SalaryHistories)
             .OrderBy(user => user.CreatedDate)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -112,5 +155,10 @@ internal class UserRepository : IUserRepository
     public void Update(User user)
     {
         _context.Users.Update(user);
+    }
+
+    public void UpdateRange(List<User> users)
+    {
+        _context.Users.UpdateRange(users);
     }
 }

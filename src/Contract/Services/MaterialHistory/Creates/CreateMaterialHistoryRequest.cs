@@ -2,7 +2,7 @@
 
 public record CreateMaterialHistoryRequest
 (
-    int MaterialId,
+    Guid MaterialId,
     double Quantity,
     decimal Price,
     string? Description,

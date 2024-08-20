@@ -1,10 +1,12 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Abstractions.Messages;
 using Contract.Abstractions.Shared.Results;
+using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.SharedDto;
 using Contract.Services.Product.UpdateProduct;
 using Domain.Abstractions.Exceptions;
 using Domain.Entities;
+using Domain.Exceptions.ProductPhaseSalaries;
 using Domain.Exceptions.Products;
 using FluentValidation;
 
@@ -13,9 +15,13 @@ namespace Application.UserCases.Commands.Products.UpdateProduct;
 internal sealed class UpdateProductCommandHandler(
     IProductRepository _productRepository,
     IProductImageRepository _productImageRepository,
+    IPhaseRepository _phaseRepository,
+    IProductPhaseSalaryRepository _productPhaseSalaryRepository,
     IUnitOfWork _unitOfWork,
     IValidator<UpdateProductCommand> _validator) : ICommandHandler<UpdateProductCommand>
 {
+    private bool IsImageValid;
+
     public async Task<Result.Success> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var updateProductRequest = request.UpdateProductRequest;
@@ -23,16 +29,58 @@ internal sealed class UpdateProductCommandHandler(
 
         var product = await FindAndValidateRequest(request, productId);
 
+        IsImageValid = true;
+
         await RemoveOldProductImages(updateProductRequest?.RemoveImageIds);
 
         AddNewProductImages(updateProductRequest?.AddImagesRequest, productId);
 
         product.Update(updateProductRequest, request.UpdatedBy);
+
+        if(!IsImageValid)
+        {
+            throw new ProductBadRequestException("Sản phẩm phải có 1 ảnh chính");
+        }
+
         _productRepository.Update(product);
+
+        await UpdateProductPhaseSalaries(productId, updateProductRequest);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success.Update();
+    }
+
+    private async Task UpdateProductPhaseSalaries(Guid productId, UpdateProductRequest updateProductRequest)
+    {
+        // Get all phases
+        var phases = await _phaseRepository.GetPhases();
+
+        //Get phase ids
+        var phase1 = phases.FirstOrDefault(x => x.Name == "PH_001").Id;
+        var phase2 = phases.FirstOrDefault(x => x.Name == "PH_002").Id;
+        var phase3 = phases.FirstOrDefault(x => x.Name == "PH_003").Id;
+
+        var productPhaseSalary1 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase1)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+        var productPhaseSalary2 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase2)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+        var productPhaseSalary3 = await _productPhaseSalaryRepository.GetByProductIdAndPhaseId(productId, phase3)
+            ?? throw new ProductPhaseSalaryNotFoundException();
+
+        // Add product phase salaries
+        productPhaseSalary1.Update(productId, phase1, updateProductRequest.PricePhase1);
+        productPhaseSalary2.Update(productId, phase2, updateProductRequest.PricePhase2);
+        productPhaseSalary3.Update(productId, phase3, updateProductRequest.PriceFinished);
+
+        var productPhaseSalaries = new List<ProductPhaseSalary>
+        {
+            productPhaseSalary1,
+            productPhaseSalary2,
+            productPhaseSalary3
+        };
+
+        _productPhaseSalaryRepository.UpdateRange(productPhaseSalaries);
     }
 
     private async Task<Product> FindAndValidateRequest(UpdateProductCommand request, Guid productId)
@@ -73,16 +121,19 @@ internal sealed class UpdateProductCommandHandler(
         if (productImages is not null && productImages.Count > 0)
         {
             _productImageRepository.DeleteRange(productImages);
+            IsImageValid = !productImages.Any(p => p.IsMainImage);
         }
+
     }
 
     private void AddNewProductImages(List<ImageRequest>? addProductImagesRequest, Guid productId)
     {
         var productImages = addProductImagesRequest?
             .Select(imageRequest => ProductImage.Create(productId, imageRequest));
-        if (productImages != null)
+        if (productImages != null && productImages.Count() > 0)
         {
             _productImageRepository.AddRange(productImages.ToList());
+            IsImageValid = productImages.Count(p => p.IsMainImage) == 1 ? !IsImageValid : IsImageValid;
         }
     }
 }

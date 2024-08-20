@@ -13,8 +13,10 @@ public class ShipmentMappingProfile : Profile
         CreateMap<Shipment, ShipmentResponse>()
             .ConstructUsing((src, context) =>
                 new ShipmentResponse(
+                    src.Id,
                     context.Mapper.Map<CompanyResponse>(src.FromCompany),
                     context.Mapper.Map<CompanyResponse>(src.ToCompany),
+                    src.IsAccepted,
                     src.ShipDate,
                     src.Status.GetDescription(),
                     src.Status

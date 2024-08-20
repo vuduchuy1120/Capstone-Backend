@@ -14,29 +14,29 @@ namespace WebApi.ApiEndpoints
         }
         public override void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost(string.Empty, async (
-                ISender sender,
-                CreatePhaseRequest createPhaseRequest) =>
-            {
-                var createPhaseCommand = new CreatePhaseCommand(createPhaseRequest);
-                var result = await sender.Send(createPhaseCommand);
-                return Results.Ok(result);
-            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-            {
-                Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
-            });
+            //app.MapPost(string.Empty, async (
+            //    ISender sender,
+            //    CreatePhaseRequest createPhaseRequest) =>
+            //{
+            //    var createPhaseCommand = new CreatePhaseCommand(createPhaseRequest);
+            //    var result = await sender.Send(createPhaseCommand);
+            //    return Results.Ok(result);
+            //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            //{
+            //    Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
+            //});
 
-            app.MapPut(string.Empty, async (
-                               ISender sender,
-                               UpdatePhaseRequest updatePhaseRequest) =>
-            {
-                var updatePhaseCommand = new UpdatePhaseCommand(updatePhaseRequest);
-                var result = await sender.Send(updatePhaseCommand);
-                return Results.Ok(result);
-            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-            {
-                Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
-            });
+            //app.MapPut(string.Empty, async (
+            //                   ISender sender,
+            //                   UpdatePhaseRequest updatePhaseRequest) =>
+            //{
+            //    var updatePhaseCommand = new UpdatePhaseCommand(updatePhaseRequest);
+            //    var result = await sender.Send(updatePhaseCommand);
+            //    return Results.Ok(result);
+            //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            //{
+            //    Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
+            //});
 
             app.MapGet(string.Empty, async (ISender sender) =>
             {
@@ -47,14 +47,14 @@ namespace WebApi.ApiEndpoints
                 Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
             });
             // getphasebyid
-            app.MapGet("{id}", async (ISender sender, Guid id) =>
-            {
-                var result = await sender.Send(new GetPhaseByIdQuery(id));
-                return Results.Ok(result);
-            }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
-            {
-                Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
-            });
+            //app.MapGet("{id}", async (ISender sender, Guid id) =>
+            //{
+            //    var result = await sender.Send(new GetPhaseByIdQuery(id));
+            //    return Results.Ok(result);
+            //}).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+            //{
+            //    Tags = new List<OpenApiTag> { new() { Name = "Phase api" } }
+            //});
 
         }
     }

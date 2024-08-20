@@ -5,7 +5,7 @@ namespace Domain.Entities;
 
 public class ProductImage : EntityBase<Guid>
 {
-    public string ImageUrl { get; private set; }
+    public string ImageUrl { get; set; }
     public bool IsBluePrint { get; private set; }
     public bool IsMainImage { get; private set; }
     public Guid ProductId { get; private set; }

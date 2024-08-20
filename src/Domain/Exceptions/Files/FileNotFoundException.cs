@@ -5,7 +5,7 @@ namespace Domain.Exceptions.Files;
 
 public class FileNotFoundException : MyException
 {
-    public FileNotFoundException() : base((int) HttpStatusCode.NotFound, "File not found")
+    public FileNotFoundException() : base((int) HttpStatusCode.NotFound, "Không tìm thấy file")
     {
     }
 }

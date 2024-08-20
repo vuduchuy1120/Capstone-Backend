@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Services;
 using Application.UserCases.Commands.Users.CreateUser;
+using Contract.Services.SalaryHistory.Creates;
 using Contract.Services.User.Command;
 using Contract.Services.User.CreateUser;
 using Domain.Abstractions.Exceptions;
@@ -14,9 +15,11 @@ public class CreateUserCommandHandlerTest
 {
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<ICompanyRepository> _companyRepositoryMock;
+    private readonly Mock<ISalaryHistoryRepository> _salaryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPasswordService> _passwordServiceMock;
     private readonly IValidator<CreateUserRequest> _validator;
+    private readonly Mock<ISpeedSMSAPI> _speedSMSAPIMock;
 
     public CreateUserCommandHandlerTest()
     {
@@ -24,6 +27,8 @@ public class CreateUserCommandHandlerTest
         _unitOfWorkMock = new();
         _companyRepositoryMock = new();
         _passwordServiceMock = new();
+        _salaryRepositoryMock = new();
+        _speedSMSAPIMock = new();
         _validator = new CreateUserValidator(_userRepositoryMock.Object, _companyRepositoryMock.Object);
     }
 
@@ -35,12 +40,13 @@ public class CreateUserCommandHandlerTest
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword@123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2021"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2021"),
             Guid.NewGuid(),
             RoleId: 2
         );
@@ -48,18 +54,21 @@ public class CreateUserCommandHandlerTest
 
         var createUserCommandHandler = new CreateUserCommandHandler(
             _userRepositoryMock.Object,
+            _salaryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _passwordServiceMock.Object,
+            _speedSMSAPIMock.Object,
             _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(createUserRequest.Id))
             .ReturnsAsync(false);
         _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
-        _passwordServiceMock.Setup(service => service.Hash(createUserRequest.Password))
+        _passwordServiceMock.Setup(service => service.Hash(It.IsAny<string>()))
             .Returns("hashed_password");
         _companyRepositoryMock.Setup(repo => repo.IsCompanyFactoryExistAsync(It.IsAny<Guid>()))
             .ReturnsAsync(true);
+        _speedSMSAPIMock.Setup(api => api.sendSMS(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>())).Returns("Send success");
 
         // Act
         var result = await createUserCommandHandler.Handle(command, default);
@@ -78,12 +87,13 @@ public class CreateUserCommandHandlerTest
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword@123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2021"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2021"),
             Guid.NewGuid(),
             RoleId: 2
         );
@@ -91,8 +101,10 @@ public class CreateUserCommandHandlerTest
 
         var createUserCommandHandler = new CreateUserCommandHandler(
             _userRepositoryMock.Object,
+            _salaryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _passwordServiceMock.Object,
+            _speedSMSAPIMock.Object,
             _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(createUserRequest.Id)).ReturnsAsync(true);
@@ -100,6 +112,7 @@ public class CreateUserCommandHandlerTest
             .ReturnsAsync(true);
         _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
+        _speedSMSAPIMock.Setup(api => api.sendSMS(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>())).Returns("Send success");
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
                 await createUserCommandHandler.Handle(command, default));
@@ -113,12 +126,13 @@ public class CreateUserCommandHandlerTest
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword@123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2021"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2021"),
             Guid.NewGuid(),
             RoleId: 2
         );
@@ -126,8 +140,10 @@ public class CreateUserCommandHandlerTest
 
         var createUserCommandHandler = new CreateUserCommandHandler(
             _userRepositoryMock.Object,
+            _salaryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _passwordServiceMock.Object,
+            _speedSMSAPIMock.Object,
             _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(createUserRequest.Id)).ReturnsAsync(false);
@@ -135,6 +151,7 @@ public class CreateUserCommandHandlerTest
             .ReturnsAsync(false);
         _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
+        _speedSMSAPIMock.Setup(api => api.sendSMS(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>())).Returns("Send success");
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
                 await createUserCommandHandler.Handle(command, default));
@@ -148,12 +165,13 @@ public class CreateUserCommandHandlerTest
             Id: "001201011091",
             FirstName: "John",
             LastName: "Doe",
+            Avatar: "image",
             Phone: "0976099351",
             Address: "123 Main St, Anytown, USA",
-            Password: "SecurePassword@123",
             Gender: "Male",
             DOB: "10/03/2001",
-            SalaryByDay: 150,
+            SalaryByDayRequest: new SalaryByDayRequest(150, "10/03/2021"),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(200, "10/03/2021"),
             Guid.NewGuid(),
             RoleId: 2
         );
@@ -161,8 +179,10 @@ public class CreateUserCommandHandlerTest
 
         var createUserCommandHandler = new CreateUserCommandHandler(
             _userRepositoryMock.Object,
+            _salaryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _passwordServiceMock.Object,
+            _speedSMSAPIMock.Object,
             _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(createUserRequest.Id)).ReturnsAsync(false);
@@ -170,58 +190,74 @@ public class CreateUserCommandHandlerTest
             .ReturnsAsync(true);
         _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
+        _speedSMSAPIMock.Setup(api => api.sendSMS(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>())).Returns("Send success");
 
         await Assert.ThrowsAsync<MyValidationException>(async () =>
                 await createUserCommandHandler.Handle(command, default));
     }
 
     [Theory]
-    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //firstName contains number or specification character is not valid
+    [InlineData("001201011091", "John1", "Doe", "0976099351", "123 Main St, Anytown, USA",
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // firstName contains number or special character is not valid
     [InlineData("001201011091", "", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //firstName empty is not valid
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // firstName empty is not valid
     [InlineData("001201011091", "John", "Doe1112", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //lastName contains number or specification character is not valid
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // lastName contains number or special character is not valid
     [InlineData("001201011091", "John", "", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //lastName empty is not valid
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // lastName empty is not valid
     [InlineData("001201011091", "John", "Doe", "0sdfsd976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //phone contains characters is not valid
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // phone contains characters is not valid
     [InlineData("001201011091", "John", "Doe", "", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", 150, 2)] //phone is empty is not valid
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // phone is empty is not valid
     [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10/03/2001", -150, 2)] //salary less than 0 is not valid
+    "", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // gender empty is not valid
     [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "", "10/03/2001", 150, 2)] //gender empty is not valid
+    "dfd", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // gender different from "Male" or "Female" is not valid
     [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "dfd", "10/03/2001", 150, 2)] //gender difference "Male" or "Female" is not valid
+    "Male", "", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // date empty is not valid
     [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "", 150, 2)] //date empty is not valid
+    "Male", "10-03-2001", 2, 150.00, "10/03/2021", 200.00, "10/03/2021")] // date wrong format dd/MM/yyyy is not valid
     [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
-        "SecurePassword123", "Male", "10-03-2001", 150, 2)] //date wrong format dd/MM/yyyy is not valid
+    "Male", "10/03/2001", 2, -150.00, "10/03/2021", 200.00, "10/03/2021")] // SalaryByDayRequest.Salary is less than 0
+    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
+    "Male", "10/03/2001", 2, 150.00, "", 200.00, "10/03/2021")] // SalaryByDayRequest.StartDate is empty
+    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
+    "Male", "10/03/2001", 2, 150.00, "10-03-2021", 200.00, "10/03/2021")] // SalaryByDayRequest.StartDate has wrong format
+    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", -200.00, "10/03/2021")] // SalaryOverTimeRequest.Salary is less than 0
+    [InlineData("001201011091", "John", "Doe", "0976099351", "123 Main St, Anytown, USA",
+    "Male", "10/03/2001", 2, 150.00, "10/03/2021", 200.00, "10-03-2021")] // SalaryOverTimeRequest.StartDate has wrong format
     public async Task Handler_Should_Throw_MyValidationException_WhenInputNotValid(
-        string id, string firstName, string lastName, string phone, string address, 
-        string password, string gender, string dob, int salaryByDay, int roleId)
+    string id, string firstName, string lastName, string phone, string address
+        , string gender, string dob, int roleId,
+    decimal salaryByDayRequestSalary, string salaryByDayRequestStartDate,
+    decimal salaryOverTimeRequestSalary, string salaryOverTimeRequestStartDate)
     {
         // Arrange
         var createUserRequest = new CreateUserRequest(
             Id: id,
             FirstName: firstName,
             LastName: lastName,
+            Avatar: "image",
             Phone: phone,
             Address: address,
-            Password: password,
             Gender: gender,
             DOB: dob,
-            SalaryByDay: salaryByDay,
-            Guid.NewGuid(),
+            SalaryByDayRequest: new SalaryByDayRequest(salaryByDayRequestSalary, salaryByDayRequestStartDate),
+            SalaryOverTimeRequest: new SalaryOverTimeRequest(salaryOverTimeRequestSalary, salaryOverTimeRequestStartDate),
+            CompanyId: Guid.NewGuid(),
             RoleId: roleId
         );
+
+
         var command = new CreateUserCommand(createUserRequest, createUserRequest.Id);
 
         var createUserCommandHandler = new CreateUserCommandHandler(
             _userRepositoryMock.Object,
+            _salaryRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _passwordServiceMock.Object,
+            _speedSMSAPIMock.Object,
             _validator);
 
         _userRepositoryMock.Setup(repo => repo.IsUserExistAsync(createUserRequest.Id)).ReturnsAsync(false);
@@ -229,6 +265,7 @@ public class CreateUserCommandHandlerTest
             .ReturnsAsync(true);
         _userRepositoryMock.Setup(repo => repo.IsPhoneNumberExistAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
+        _speedSMSAPIMock.Setup(api => api.sendSMS(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>())).Returns("Send success");
 
         // Act & Assert
         await Assert.ThrowsAsync<MyValidationException>(async () =>

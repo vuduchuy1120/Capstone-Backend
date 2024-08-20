@@ -48,18 +48,6 @@ public class FileEndpoints : CarterModule
         {
             Tags = new List<OpenApiTag> { new OpenApiTag { Name = "File API" } }
         }).DisableAntiforgery();
-
-        app.MapDelete("{fileName}", async (ISender sender, [FromRoute] string fileName) =>
-        {
-            var deleteFileCommand = new DeleteFileCommand(fileName);
-
-            var result = await sender.Send(deleteFileCommand);
-
-            return Results.Ok(result);
-        }).WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Tags = new List<OpenApiTag> { new OpenApiTag { Name = "File API" } }
-        });
     }
 
 }

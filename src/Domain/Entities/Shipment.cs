@@ -1,5 +1,6 @@
 ﻿using Contract.Services.Shipment.Create;
 using Contract.Services.Shipment.Share;
+using Contract.Services.Shipment.Update;
 using Domain.Abstractions.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,6 +14,7 @@ public class Shipment : EntityAuditBase<Guid>
     public User Shipper { get; set; }
     public DateTime ShipDate { get; set; }
     public Status Status { get; set; }
+    public bool IsAccepted { get; set; } = false;
     public Company FromCompany { get; set; }
     public Company ToCompany { get; set; }
     public List<ShipmentDetail>? ShipmentDetails { get; set; }
@@ -31,13 +33,32 @@ public class Shipment : EntityAuditBase<Guid>
             CreatedDate = DateTime.UtcNow,
             ShipperId = request.ShipperId,
             ShipDate = request.ShipDate,
+            IsAccepted = false
         };
     }
 
     public void UpdateStatus(string updateBy, Status status)
     {
+        Status = status;
         UpdatedBy = updateBy;
         UpdatedDate = DateTime.UtcNow;
-        Status = status;
+    }
+
+    public void Update(UpdateShipmentRequest request, string updatedBy, List<ShipmentDetail> newShipmentDetails)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        FromId = request.FromId;
+        ToId = request.ToId;
+        ShipperId = request.ShipperId;
+        ShipDate = request.ShipDate;
+        ShipmentDetails = newShipmentDetails;
+    }
+
+    public void UpdateAccepted(string updatedBy)
+    {
+        UpdatedBy = updatedBy;
+        UpdatedDate = DateTime.UtcNow;
+        IsAccepted = true;
     }
 }

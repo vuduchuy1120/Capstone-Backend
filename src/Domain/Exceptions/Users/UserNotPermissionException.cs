@@ -6,7 +6,7 @@ namespace Domain.Exceptions.Users;
 public class UserNotPermissionException : MyException
 {
     public UserNotPermissionException() : base(
-        (int)HttpStatusCode.Forbidden, "You don't have permission to perform this action")
+        (int)HttpStatusCode.Forbidden, "Bạn không có quyền để thực hiện hành động này")
     {
     }
 

@@ -1,7 +1,15 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.Shared.Utils;
+using Contract.Services.Company.Shared;
+using Contract.Services.Product.Search;
 using Contract.Services.ProductPhase.Queries;
+using Contract.Services.ProductPhase.SearchByThirdPartyCompany;
+using Contract.Services.ProductPhase.ShareDto;
 using Domain.Entities;
+using Domain.Exceptions.Companies;
+using Domain.Exceptions.Phases;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace Persistence.Repositories;
 
@@ -40,6 +48,27 @@ public class ProductPhaseRepository : IProductPhaseRepository
         return await _context.ProductPhases.SingleOrDefaultAsync(pp => pp.ProductId == productId && pp.PhaseId == phaseId);
     }
 
+    public async Task<List<ProductPhase>> GetProductPhaseByShipmentDetailAsync(List<ShipmentDetail> shipmentDetails, Guid companyId)
+    {
+        var queryRequests = shipmentDetails
+        .Select(s => new { s.ProductId, s.PhaseId })
+        .Distinct()
+        .ToList();
+
+        var query = _context.ProductPhases.AsQueryable();
+        foreach (var request in queryRequests)
+        {
+            query = query.Where(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == companyId);
+        }
+
+        var productPhases = await query.ToListAsync();
+
+        return productPhases;
+    }
+
     public async Task<(List<ProductPhase>?, int)> GetProductPhases(GetProductPhasesQuery request)
     {
         var query = _context.ProductPhases.Include(pp => pp.Phase).Include(pp => pp.Product).AsNoTracking().AsQueryable();
@@ -64,6 +93,54 @@ public class ProductPhaseRepository : IProductPhaseRepository
         return await _context.ProductPhases.Where(pp => pp.ProductId == productId).ToListAsync();
     }
 
+    public async Task<bool> IsAllShipDetailProductValid(List<CheckQuantityInstockEnoughRequest> requests)
+    {
+        var distinctRequests = requests
+        .Select(r => new { r.ProductId, r.PhaseId, r.FromCompanyId })
+        .Distinct()
+        .ToList();
+
+        var query = _context.ProductPhases.AsQueryable();
+
+        foreach (var request in distinctRequests)
+        {
+            query = query.Where(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == request.FromCompanyId);
+        }
+
+        var filteredProductPhases = await query.ToListAsync();
+
+        return distinctRequests.All(request =>
+            filteredProductPhases.Any(ph =>
+                ph.ProductId == request.ProductId &&
+                ph.PhaseId == request.PhaseId &&
+                ph.CompanyId == request.FromCompanyId));
+
+        //var productPhases = await query.ToListAsync();
+
+        //if (productPhases.Count != requests.Count)
+        //{
+        //    return false;
+        //}
+
+        //foreach (var request in requests)
+        //{
+        //    var productPhase = productPhases.SingleOrDefault(ph
+        //        => ph.ProductId == request.ProductId
+        //        && ph.PhaseId == request.PhaseId
+        //        && ph.CompanyId == request.FromCompanyId);
+
+        //    if (productPhase == null || productPhase.AvailableQuantity < request.Quantity)
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        //return true;
+    }
+
     public async Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId)
     {
         return await _context.ProductPhases.AnyAsync(pp => pp.ProductId == productId && pp.PhaseId == phaseId);
@@ -77,5 +154,148 @@ public class ProductPhaseRepository : IProductPhaseRepository
     public void UpdateProductPhaseRange(List<ProductPhase> productPhases)
     {
         _context.ProductPhases.UpdateRange(productPhases);
+    }
+
+    public async Task<List<ProductPhase>> GetProductPhaseOfMainFactoryDoneByProductIdsAsync(List<Guid> productIds)
+    {
+        var phase = await _context.Phases.FirstOrDefaultAsync(p => p.Name == "PH_003")
+            ?? throw new PhaseNotFoundException();
+        var mainFactory = await _context.Companies
+            .FirstOrDefaultAsync(c => c.CompanyType == CompanyType.FACTORY && c.Name == "Cơ sở chính")
+            ?? throw new CompanyNotFoundException();
+
+        return await _context.ProductPhases
+            .Where(ph => productIds.Contains(ph.ProductId)
+                && ph.PhaseId == phase.Id
+                && ph.CompanyId == mainFactory.Id).ToListAsync();
+    }
+
+    public async Task<ProductPhase> GetByProductIdPhaseIdAndCompanyIdAsync(Guid productId, Guid phaseId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .SingleOrDefaultAsync(ph => ph.ProductId == productId && ph.CompanyId == companyId && ph.PhaseId == phaseId);
+    }
+
+    public async Task<List<ProductPhase>> GetByProductIdAndCompanyIdAsync(Guid productId, Guid companyId)
+    {
+        return await _context.ProductPhases
+            .Where(ph => ph.ProductId == productId && ph.CompanyId == companyId)
+            .ToListAsync();
+    }
+
+    public async Task<List<ProductPhase>> GetByProductIdsAndCompanyIdAsync(List<Guid> productIds, Guid companyId)
+    {
+        var list = await _context.ProductPhases
+            .Where(ph => productIds.Contains(ph.ProductId) && ph.CompanyId == companyId)
+            .ToListAsync();
+        return list;
+    }
+
+    public async Task<(List<ProductPhase>, int)> SearchProductPhase(SearchProductPhaseQuery request)
+    {
+        var query = _context.ProductPhases
+            .Include(pp => pp.Product).ThenInclude(p => p.Images)
+            .Include(pp => pp.Phase)
+            .Include(pp => pp.Company)
+            .AsQueryable();
+        if (!string.IsNullOrEmpty(request.SearchCompany))
+        {
+            var searchCompanyRemoveAccent = StringUtils.RemoveDiacritics(request.SearchCompany);
+            query = query.Where(pp => pp.Company.NameUnAccent.ToLower().Trim().Contains(searchCompanyRemoveAccent.ToLower().Trim()) ||
+                                      pp.Company.Id.ToString().ToLower().Trim().Equals(request.SearchCompany.ToLower().Trim())
+            );
+        }
+        if (!string.IsNullOrEmpty(request.SearchProduct))
+        {
+            query = query.Where(pp => pp.Product.Name.ToLower().Trim().Contains(request.SearchProduct.ToLower().Trim()) ||
+                                        pp.Product.Code.ToLower().Trim().Contains(request.SearchProduct.ToLower().Trim()));
+        }
+        if (!string.IsNullOrEmpty(request.SearchPhase))
+        {
+            query = query.Where(pp => pp.Phase.Name.ToLower().Trim().Contains(request.SearchPhase.ToLower().Trim()));
+        }
+        var totalItems = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
+        var productphases = await query
+           .Skip((request.PageIndex - 1) * request.PageSize)
+           .Take(request.PageSize)
+           .AsNoTracking()
+           .ToListAsync();
+
+        return (productphases, totalPages);
+    }
+
+    public async Task<bool> IsProductPhaseExist(Guid productId, Guid phaseId, Guid companyId)
+    {
+        return await _context.ProductPhases.AnyAsync(pp => pp.ProductId == productId && pp.PhaseId == phaseId && pp.CompanyId == companyId);
+    }
+
+    public Task<ProductPhase> GetProductPhaseByProductIdPhaseIdAndCompanyId(Guid productId, Guid phaseId, Guid companyId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<(List<ProductPhase>, int)> SearchProductByPhaseAndCompanyAsync(SearchProductQuery request)
+    {
+        var query = _context.ProductPhases
+           .Include(pp => pp.Product)
+                .ThenInclude(p => p.Images)
+           .AsQueryable();
+
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            var search = request.Search.ToLower().Trim();
+            query = query.Where(pp => pp.Product.Name.ToLower().Contains(search) || pp.Product.Code.ToLower().Contains(search));
+        }
+
+        if(request.PhaseId != Guid.Empty)
+        {
+            query = query.Where(pp => pp.PhaseId == request.PhaseId);
+        }
+
+        if(request.CompanyId != Guid.Empty)
+        {
+            query = query.Where(pp => pp.CompanyId == request.CompanyId);
+        }
+
+        var totalItems = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
+        var productphases = await query
+           .Skip((request.PageIndex - 1) * request.PageSize)
+           .Take(request.PageSize)
+           .AsNoTracking()
+           .ToListAsync();
+
+        return (productphases, totalPages);
+    }
+
+    public async Task<(List<ProductPhase>, int)> SearchByProductAndThirdPartyCompany(SearchByThirdPartyCompanyQuery request)
+    {
+        var query = _context.ProductPhases
+            .Include(pp => pp.Company)
+            .Include(pp => pp.Product)
+               .ThenInclude(p => p.Images)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            var search = request.Search.ToLower().Trim();
+            query = query.Where(pp => pp.Product.Name.ToLower().Contains(search) || pp.Product.Code.ToLower().Contains(search));
+        }
+
+        if (request.CompanyId != Guid.Empty)
+        {
+            query = query.Where(pp => pp.CompanyId == request.CompanyId && pp.Company.CompanyType == CompanyType.THIRD_PARTY_COMPANY);
+        }
+
+        var totalItems = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling((double)totalItems / request.PageSize);
+        var productphases = await query
+           .Skip((request.PageIndex - 1) * request.PageSize)
+           .Take(request.PageSize)
+           .AsNoTracking()
+           .ToListAsync();
+
+        return (productphases, totalPages);
     }
 }

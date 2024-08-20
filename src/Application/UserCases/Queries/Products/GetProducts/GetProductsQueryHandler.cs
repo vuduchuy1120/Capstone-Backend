@@ -9,24 +9,35 @@ using Domain.Exceptions.Products;
 
 namespace Application.UserCases.Queries.Products.GetProducts;
 
-internal sealed class GetProductsQueryHandler(IProductRepository _productRepository, IMapper _mapper)
+internal sealed class GetProductsQueryHandler(IProductRepository _productRepository)
     : IQueryHandler<GetProductsQuery, SearchResponse<List<ProductResponse>>>
 {
     public async Task<Result.Success<SearchResponse<List<ProductResponse>>>> Handle(
-        GetProductsQuery request, 
+        GetProductsQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _productRepository.SearchProductAsync(request);
-
-        var products = result.Item1;
-        var totalPage = result.Item2;
+        var (products, totalPage) = await _productRepository.SearchProductAsync(request);
 
         if (products is null || products.Count <= 0 || totalPage <= 0)
         {
             throw new ProductNotFoundException();
         }
 
-        var data = products.ConvertAll(p => _mapper.Map<ProductResponse>(p));
+        var data = products.ConvertAll(p => new ProductResponse(
+            p.Id,
+            p.Name,
+            p.Code,
+            p.Price,
+            p.Size,
+            p.Description,
+            p.IsInProcessing,
+            p.Images.Select(image => new ImageResponse(
+                image.Id,
+                image.ImageUrl,
+                image.IsBluePrint,
+                image.IsMainImage
+            )).ToList()
+        ));
 
         var searchResponse = new SearchResponse<List<ProductResponse>>(request.PageIndex, totalPage, data);
 

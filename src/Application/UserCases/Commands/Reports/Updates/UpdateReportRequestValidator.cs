@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Contract.Services.Report.ShareDtos;
 using Contract.Services.Report.Updates;
 using FluentValidation;
 
@@ -9,20 +10,21 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
     public UpdateReportRequestValidator(IReportRepository _reportRepository)
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required")
+            .NotEmpty().WithMessage("Yêu cầu nhập id.")
             .MustAsync(async (Id, _) =>
             {
                 return await _reportRepository.IsReportExisted(Id);
-            }).WithMessage("Id is invalid");
+            }).WithMessage("Id không tồn tại hoặc không hợp lệ.");
 
         RuleFor(x => x.ReplyMessage)
-            .NotEmpty().WithMessage("ReplyMessage is required")
-            .MaximumLength(500).WithMessage("ReplyMessage must not exceed 500 characters");
+            .NotEmpty().WithMessage("Bạn cần nhập nội dung phản hồi.")
+            .MaximumLength(500).WithMessage("Nội dung không được vượt quá 500 kí tự.");
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required")
+            .NotEmpty().WithMessage("Trạng thái báo cáo cần phải được sửa đổi.")
             .Must(status =>
             {
-                return status == "Approved" || status == "Rejected";
-            }).WithMessage("Status must be either 'Approved' or 'Rejected'");
+                return status == StatusReport.Rejected || status == StatusReport.Accepted;
+            }).WithMessage("Chỉ có thể thay đổi trạng thái thành chấp nhận hoặc từ chối.");
+
     }
 }

@@ -1,19 +1,18 @@
 ﻿using Contract.Services.MaterialHistory.Create;
 using Contract.Services.MaterialHistory.Update;
 using Domain.Abstractions.Entities;
-using Domain.Abstractions.Exceptions;
+using Domain.Exceptions.Common;
 
 namespace Domain.Entities;
 
 public class MaterialHistory : EntityBase<Guid>
 {
-    public int MaterialId { get; private set; }
+    public Guid MaterialId { get; private set; }
     public double Quantity { get; private set; }
     public decimal Price { get; private set; }
     public string? Description { get; private set; }
     public DateOnly ImportDate { get; private set; }
     public Material? Material { get; private set; }
-    public List<ShipmentDetail>? ShipmentDetails { get; set; }
 
     public static MaterialHistory Create(CreateMaterialHistoryRequest createMaterialHistoryRequest)
     {
@@ -22,7 +21,7 @@ public class MaterialHistory : EntityBase<Guid>
             MaterialId = createMaterialHistoryRequest.MaterialId,
             Quantity = createMaterialHistoryRequest.Quantity,
             Price = createMaterialHistoryRequest.Price,
-            Description = createMaterialHistoryRequest.Description,
+            Description = createMaterialHistoryRequest.Description.Trim(),
             ImportDate = ConvertStringToDateTimeOnly(createMaterialHistoryRequest.ImportDate)
         };
     }
@@ -31,7 +30,7 @@ public class MaterialHistory : EntityBase<Guid>
         MaterialId = updateMaterialHistoryRequest.MaterialId;
         Quantity = updateMaterialHistoryRequest.Quantity;
         Price = updateMaterialHistoryRequest.Price;
-        Description = updateMaterialHistoryRequest.Description;
+        Description = updateMaterialHistoryRequest.Description.Trim();
         ImportDate = ConvertStringToDateTimeOnly(updateMaterialHistoryRequest.ImportDate);
     }
     public static DateOnly ConvertStringToDateTimeOnly(string dateString)
@@ -45,7 +44,7 @@ public class MaterialHistory : EntityBase<Guid>
         }
         else
         {
-            throw new MyValidationException("Date is wrong format");
+            throw new WrongFormatDateException();
         }
     }
 

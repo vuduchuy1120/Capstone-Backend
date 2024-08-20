@@ -42,7 +42,6 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
             SlotId: 2,
-            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
             Date: "01/01/2001",
             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
             {
@@ -91,7 +90,6 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                         SlotId: -1,
-                        CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                         Date: "01/01/2001",
                         CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                         {
@@ -127,7 +125,6 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                     SlotId: 1,
-                    CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                     Date: "01/01/2001",
                     CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                     {
@@ -162,7 +159,6 @@ public class CreateAttendanceDefaultCommandHandlerTests
         // Arrange
         var request = new CreateAttendanceDefaultRequest(
                             SlotId: 1,
-                            CompanyId: Guid.Parse("b9fb1c8d-b84d-42db-8f5f-cb8583de4286"),
                             Date: "01/01/2001",
                             CreateAttendances: new List<CreateAttendanceWithoutSlotIdRequest>
                             {

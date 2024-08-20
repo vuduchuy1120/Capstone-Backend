@@ -43,7 +43,7 @@ public class UpdateMaterialTests : IDisposable
 
         var updateMaterialRequest = new UpdateMaterialRequest
         (
-            Id: 1,
+            Id: Guid.NewGuid(),
             Name: "Material 2",
             Description: "Description 2",
             Unit: "Unit 2",

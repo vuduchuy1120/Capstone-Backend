@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contract.Services.Product.SharedDto;
+using Contract.Services.ProductPhaseSalary.ShareDtos;
 using Domain.Entities;
 
 namespace Application.Mappers;

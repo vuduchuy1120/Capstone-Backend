@@ -2,7 +2,7 @@
 
 public record UpdateMaterialRequest
 (
-    int Id,
+    Guid Id,
     string Name,
     string? Description,
     string Unit,

@@ -15,4 +15,9 @@ public interface ICompanyRepository
     Task<List<Company>> GetCompanyByNameAsync(string name);
     Task<List<Company>> GetCompanyFactory(CompanyType CompanyType);
     Task<bool> IsCompanyFactoryExistAsync(Guid Id);
+    Task<bool> IsCompanyNotCustomerCompanyAsync(Guid CompanyId);
+    Task<bool> IsThirdPartyCompanyAsync(Guid CompanyId);
+    Task<List<CompanyType>> GetCompanyTypeByCompanyIdsAsync(List<Guid> companyIds);
+    Task<bool> IsCompanyMainFactory(Guid companyId);
+    Task<List<Company>> GetThirdPartyCompany();
 }

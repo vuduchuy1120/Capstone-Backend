@@ -50,7 +50,7 @@ namespace Persistence.UnitTests.Materials
         public async Task GetMaterialByIdAsync_WithNonExistingMaterialId_ShouldReturnNull()
         {
             // Act
-            var result = await _materialRepository.GetMaterialByIdAsync(999); // ID that does not exist
+            var result = await _materialRepository.GetMaterialByIdAsync(Guid.NewGuid()); // ID that does not exist
 
             // Assert
             Assert.Null(result);

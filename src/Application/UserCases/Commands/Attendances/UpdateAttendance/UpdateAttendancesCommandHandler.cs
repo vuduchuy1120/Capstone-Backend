@@ -6,6 +6,8 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.Attendance.Update;
 using Domain.Exceptions.Attendances;
 using FluentValidation;
+using Domain.Exceptions.Users;
+using Contract.Services.Attendance.Create;
 
 namespace Application.UserCases.Commands.Attendances.UpdateAttendance;
 
@@ -24,24 +26,15 @@ internal sealed class UpdateAttendancesCommandHandler(
             throw new MyValidationException(validationResult.ToDictionary());
         }
 
+
         var formattedDate = DateUtil.ConvertStringToDateTimeOnly(request.UpdateAttendanceRequest.Date);
         var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
         var roleName = request.RoleNameClaim;
         var companyId = request.CompanyIdClaim;
 
-        if(roleName != "MAIN_ADMIN")
-        {
-            var isCanUpdateAttendance = await _attendanceRepository.IsAllCanUpdateAttendance(userIds, request.UpdateAttendanceRequest.SlotId, formattedDate);
-            if (!isCanUpdateAttendance)
-            {
-                throw new MyValidationException("Can not update because over 2 days!");
-            }
-            var isUpdate = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
-            if (!isUpdate)
-            {
-                throw new MyValidationException("You dont have permission update attendance of other user companyID");
-            }
-        }
+        await CheckPermissionAsync(request, formattedDate, DateOnly.FromDateTime(DateTime.Now));
+        await CheckSalaryCalculatedAsync(formattedDate);
+
         var attendances = await _attendanceRepository.GetAttendancesByKeys(request.UpdateAttendanceRequest.SlotId, formattedDate, userIds);
 
         var updateRequests = request.UpdateAttendanceRequest.UpdateAttendances;
@@ -60,4 +53,40 @@ internal sealed class UpdateAttendancesCommandHandler(
         await _unitOfWork.SaveChangesAsync();
         return Result.Success.Update();
     }
+
+
+    private bool IsOverTwoDays(DateOnly DateRequest, DateOnly DateNow)
+    {
+        var daysDifference = DateNow.ToDateTime(TimeOnly.MinValue) - DateRequest.ToDateTime(TimeOnly.MinValue);
+
+        return daysDifference.TotalDays > 2;
+    }
+    private async Task CheckPermissionAsync(UpdateAttendancesCommand request, DateOnly formattedDate, DateOnly dateNow)
+    {
+        var userIds = request.UpdateAttendanceRequest.UpdateAttendances.Select(x => x.UserId).ToList();
+        var roleName = request.RoleNameClaim;
+        var companyId = request.CompanyIdClaim;
+        if (roleName != "MAIN_ADMIN")
+        {
+            var check = await _userRepository.IsAllUserActiveByCompanyId(userIds, companyId);
+            if (!check)
+            {
+                throw new UserNotPermissionException("Bạn không có quyền tạo điểm danh cho user của công ty này.");
+            }
+
+            if (IsOverTwoDays(formattedDate, dateNow))
+            {
+                throw new UserNotPermissionException("Bạn không thể tạo hoặc sửa điểm danh do đã quá 2 ngày.");
+            }
+        }
+    }
+    private async Task CheckSalaryCalculatedAsync(DateOnly formattedDate)
+    {
+        var isSalaryCalculated = await _attendanceRepository.IsSalaryCalculatedForMonth(formattedDate.Month, formattedDate.Year);
+        if (isSalaryCalculated)
+        {
+            throw new AttendanceCannotCreateOrUpdateException();
+        }
+    }
+
 }

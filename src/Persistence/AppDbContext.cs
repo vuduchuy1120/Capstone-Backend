@@ -27,15 +27,29 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<OrderDetail> OrderDetails { get; set; }
     public DbSet<ShipOrder> ShipOrders { get; set; }
     public DbSet<ShipmentDetail> ShipmentDetails { get; set; }
+    public DbSet<ShipOrderDetail> ShipOrderDetails { get; set; }
     public DbSet<Shipment> Shipments { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
+    public DbSet<ProductPhaseSalary> ProductPhaseSalaries { get; set; }
+    public DbSet<PaidSalary> PaidSalaries { get; set; }
+    public DbSet<SalaryHistory> SalaryHistories { get; set; }
+    public DbSet<MonthlyEmployeeSalary> MonthlyEmployeeSalaries { get; set; }
+    public DbSet<MonthlyCompanySalary> MonthlyCompanySalaries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Phone)
+            .IsUnique(true);
+
+        modelBuilder.Entity<Set>()
+            .HasIndex(s => s.Code)
+            .IsUnique(true);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Code)
             .IsUnique(true);
 
         modelBuilder.Entity<Role>()
@@ -136,6 +150,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasOne(o => o.Company)
             .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CompanyId);
+
         modelBuilder.Entity<Shipment>()
            .HasOne(s => s.FromCompany)
            .WithMany()
@@ -147,5 +162,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             .WithMany()
             .HasForeignKey(s => s.ToId)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProductPhaseSalary>()
+            .HasKey(s => new { s.ProductId, s.PhaseId });
     }
 }

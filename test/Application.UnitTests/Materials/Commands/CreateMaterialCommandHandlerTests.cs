@@ -38,10 +38,10 @@ public class CreateMaterialCommandHandlerTests
                        QuantityPerUnit: 1,
                        Image: "No Image",
                        QuantityInStock: 1);
+        _materialRepositoryMock.Setup(x => x.IsMaterialNameExistedAsync(It.IsAny<string>())).ReturnsAsync(false);
 
         // Act
         var result = await _handler.Handle(new CreateMaterialCommand(request), CancellationToken.None);
-
         // Assert
         result.Should().BeOfType<Result.Success>();
     }
@@ -72,6 +72,7 @@ public class CreateMaterialCommandHandlerTests
 
         // Act
         Func<Task> act = async () => await _handler.Handle(new CreateMaterialCommand(request), CancellationToken.None);
+        _materialRepositoryMock.Setup(x => x.IsMaterialNameExistedAsync(It.IsAny<string>())).ReturnsAsync(false);
 
         // Assert
         await act.Should().ThrowAsync<MyValidationException>();

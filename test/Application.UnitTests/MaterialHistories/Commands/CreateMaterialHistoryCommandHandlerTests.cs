@@ -23,10 +23,10 @@ public class CreateMaterialHistoryCommandHandlerTests
         _materialRepositoryMock = new Mock<IMaterialRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _validator = new CreateMaterialHistoryRequestValidator(
-            _materialHistoryRepositoryMock.Object,
             _materialRepositoryMock.Object);
         _handler = new CreateMaterialHistoryCommandHandler(
                                     _materialHistoryRepositoryMock.Object,
+                                    _materialRepositoryMock.Object,
                                     _unitOfWorkMock.Object,
                                     _validator);
     }
@@ -36,15 +36,17 @@ public class CreateMaterialHistoryCommandHandlerTests
     {
         // Arrange
         var request = new CreateMaterialHistoryRequest(
-                        MaterialId: 1,
+                        MaterialId: Guid.NewGuid(),
                         Quantity: 1,
                         Price: 50000,
                         Description: "Description",
                         ImportDate: "03/06/2024");
         // Act
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
 
+        _materialRepositoryMock.Setup(x => x.GetMaterialByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new Domain.Entities.Material());
         var result = await _handler.Handle(new CreateMaterialHistoryCommand(request), default);
 
         // Assert
@@ -52,11 +54,11 @@ public class CreateMaterialHistoryCommandHandlerTests
     }
 
     [Theory]
-    [InlineData(1, 0, 50000, "Description", "03/06/2024")] // error quantity
-    [InlineData(1, -1, 50000, "Description", "03/06/2024")]
-    [InlineData(1, 1, 50000, "Description", "")]
+    [InlineData(0, 50000, "Description", "03/06/2024")] // error quantity
+    [InlineData(-1, 50000, "Description", "03/06/2024")]
+    [InlineData(1, 50000, "Description", "")]
     public async Task Handle_Should_Throw_ValidationException(
-        int materialId,
+        
         int quantity,
         int price,
         string description,
@@ -64,13 +66,13 @@ public class CreateMaterialHistoryCommandHandlerTests
     {
         // Arrange
         var request = new CreateMaterialHistoryRequest(
-                            MaterialId: materialId,
+                            MaterialId: Guid.NewGuid(),
                             Quantity: quantity,
                             Price: price,
                             Description: description,
                             ImportDate: importDate);
 
-        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<int>()))
+        _materialRepositoryMock.Setup(x => x.IsMaterialExist(It.IsAny<Guid>()))
             .ReturnsAsync(true);
 
         // Act

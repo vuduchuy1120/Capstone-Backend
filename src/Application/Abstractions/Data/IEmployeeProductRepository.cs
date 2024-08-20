@@ -11,4 +11,6 @@ public interface IEmployeeProductRepository
     Task<List<EmployeeProduct>> GetEmployeeProductsByEmployeeIdDateAndSlotId
         (string userId, int slotId, DateOnly date, Guid companyId);
     Task<List<EmployeeProduct>> GetEmployeeProductsByDateAndSlotId(int slotId, DateOnly date, Guid companyId);
+    Task<List<EmployeeProduct>> GetEmployeeProductsByMonthAndYearAndUserId(int month, int year,string userId);
+    Task<bool> IsSalaryCalculatedForMonth(int month, int year);
 }

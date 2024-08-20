@@ -41,7 +41,13 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
-
+        services.AddScoped<IShipOrderRepository, ShipOrderRepository>();
+        services.AddScoped<IShipOrderDetailRepository, ShipOrderDetailRepository>();
+        services.AddScoped<ISalaryHistoryRepository, SalaryHistoryRepository>();
+        services.AddScoped<IProductPhaseSalaryRepository, ProductPhaseSalaryRepository>();
+        services.AddScoped<IMonthlyEmployeeSalaryRepository, MonthlyEmployeeSalaryRepository>();
+        services.AddScoped<IPaidSalaryRepository, PaidSalaryRepository>();
+        services.AddScoped<IMonthlyCompanySalaryRepository, MonthlyCompanySalaryRepository>();
         return services;
     }
 }

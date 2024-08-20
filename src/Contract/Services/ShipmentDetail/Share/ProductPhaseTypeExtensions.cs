@@ -2,7 +2,7 @@
 
 public static class ProductPhaseTypeExtensions
 {
-    private static readonly Dictionary<ProductPhaseType, string> _phaseDescriptions = new Dictionary<ProductPhaseType, string>
+    private static readonly Dictionary<ProductPhaseType, string> _phaseDescriptions = new()
     {
         { ProductPhaseType.NO_PROBLEM, "Sản phẩm không lỗi" },
         { ProductPhaseType.FACTORY_ERROR, "Sản phẩm lỗi do bên xưởng" },

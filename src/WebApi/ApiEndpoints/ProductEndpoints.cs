@@ -4,6 +4,7 @@ using Contract.Services.Product.CreateProduct;
 using Contract.Services.Product.GetProduct;
 using Contract.Services.Product.GetProducts;
 using Contract.Services.Product.Search;
+using Contract.Services.Product.SearchWithSearchTerm;
 using Contract.Services.Product.UpdateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -63,18 +64,27 @@ public class ProductEndpoints : CarterModule
             var result = await sender.Send(getProductsQuery);
 
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
         });
 
-        app.MapGet("search", async (ISender sender, [FromQuery] string search) =>
+        app.MapGet("search", async (ISender sender, [AsParameters] SearchProductQuery searchProductQuery) =>
         {
-            var searchProductQuery = new SearchProductQuery(search);
             var result = await sender.Send(searchProductQuery);
 
             return Results.Ok(result);
-        }).RequireAuthorization("Require-Admin").WithOpenApi(x => new OpenApiOperation(x)
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
+        {
+            Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
+        });
+
+        app.MapGet("search-for-set", async (ISender sender, [AsParameters] GetWithSearchTermQuery request) =>
+        {
+            var result = await sender.Send(request);
+
+            return Results.Ok(result);
+        }).RequireAuthorization().WithOpenApi(x => new OpenApiOperation(x)
         {
             Tags = new List<OpenApiTag> { new() { Name = "Product api" } }
         });

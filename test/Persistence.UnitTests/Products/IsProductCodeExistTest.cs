@@ -24,7 +24,7 @@ public class IsProductCodeExistTest : IDisposable
     public async Task IsProductCodeExist_CodeExists_ShouldReturnTrue()
     {
         // Arrange
-        var createProductRequest = new CreateProductRequest("Code", 3434, "Size", "Description",
+        var createProductRequest = new CreateProductRequest("Code", 123, 10, 10, "Size", "Description",
                 "Name", null);
         var product = Product.Create(createProductRequest, "001201011091");
 
