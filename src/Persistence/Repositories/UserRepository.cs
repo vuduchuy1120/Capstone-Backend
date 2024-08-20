@@ -44,6 +44,11 @@ internal class UserRepository : IUserRepository
             .FirstOrDefaultAsync(user => (user.Id.Equals(id) || user.Phone == id) && user.IsActive == true);
     }
 
+    public async Task<User> GetByPhoneOrIdAsync(string search)
+    {
+        return await _context.Users.SingleOrDefaultAsync(user => (user.Phone == search || user.Id == search) && user.IsActive == true);
+    }
+
     public async Task<User?> GetUserByIdAsync(string id)
     {
         return await _context.Users
