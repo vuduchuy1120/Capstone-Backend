@@ -112,6 +112,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setRepositoryMock.Setup(repo => repo.GetByIdWithoutSetProductAsync(setId))
                 .ReturnsAsync(new Set());
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await _updateSetCommandHandler.Handle(updateSetCommand, default);
@@ -150,6 +152,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setRepositoryMock.Setup(repo => repo.GetByIdWithoutSetProductAsync(setId))
                 .ReturnsAsync(new Set());
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await _updateSetCommandHandler.Handle(updateSetCommand, default);
@@ -185,6 +189,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setRepositoryMock.Setup(repo => repo.GetByIdWithoutSetProductAsync(setId))
                 .ReturnsAsync(new Set());
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await _updateSetCommandHandler.Handle(updateSetCommand, default);
@@ -209,6 +215,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setRepositoryMock.Setup(repo => repo.GetByIdWithoutSetProductAsync(setId))
                 .ReturnsAsync((Set)null);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<SetNotFoundException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -231,6 +239,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setProductRepositoryMock.Setup(repo => repo.GetByProductIdsAndSetId(remove, setId))
                 .ReturnsAsync((List<SetProduct>)null);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<SetProductNotFoundException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -257,6 +267,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setProductRepositoryMock.Setup(repo => repo.GetByProductIdsAndSetId(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
                 .ReturnsAsync((List<SetProduct>)null);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<SetProductNotFoundException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -312,6 +324,8 @@ namespace Application.UnitTests.Sets.Command
 
             _productRepositoryMock.Setup(repo => repo.IsAllSubProductIdsExist(It.IsAny<List<Guid>>()))
                 .ReturnsAsync(false);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<MyValidationException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -335,6 +349,8 @@ namespace Application.UnitTests.Sets.Command
                 .ReturnsAsync(true);
             _setProductRepositoryMock.Setup(repo => repo.IsAnyIdExistAsync(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
                 .ReturnsAsync(true);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<MyValidationException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -356,6 +372,8 @@ namespace Application.UnitTests.Sets.Command
 
             _setProductRepositoryMock.Setup(repo => repo.DoProductIdsExistAsync(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
                 .ReturnsAsync(false);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsAsync<MyValidationException>(() => _updateSetCommandHandler.Handle(updateSetCommand, default));
@@ -376,6 +394,8 @@ namespace Application.UnitTests.Sets.Command
             var updateSetCommand = new UpdateSetCommand(updateSetRequest, "UpdatedBy", setId);
 
             _setProductRepositoryMock.Setup(repo => repo.DoProductIdsExistAsync(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
+                .ReturnsAsync(false);
+            _setRepositoryMock.Setup(repo => repo.IsCodeExistAsync(It.IsAny<string>()))
                 .ReturnsAsync(false);
 
             // Act & Assert

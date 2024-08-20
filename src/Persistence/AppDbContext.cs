@@ -44,6 +44,14 @@ public class AppDbContext : DbContext, IUnitOfWork
             .HasIndex(u => u.Phone)
             .IsUnique(true);
 
+        modelBuilder.Entity<Set>()
+            .HasIndex(s => s.Code)
+            .IsUnique(true);
+
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Code)
+            .IsUnique(true);
+
         modelBuilder.Entity<Role>()
             .HasIndex(role => role.RoleName)
             .IsUnique(true);
