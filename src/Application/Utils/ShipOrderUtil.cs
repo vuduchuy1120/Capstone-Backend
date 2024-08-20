@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Contract.Services.ShipOrder.Share;
 using Domain.Entities;
+using Domain.Exceptions.OrderDetails;
 using Domain.Exceptions.SetProducts;
 using Domain.Exceptions.Sets;
 using Domain.Exceptions.ShipOrder;
@@ -105,6 +106,10 @@ public class ShipOrderUtil
         List<ShipOrderDetailRequest> shipOrderDetails, Guid orderId, IOrderDetailRepository orderDetailRepository)
     {
         var orderDetails = await orderDetailRepository.GetOrderDetailsByOrderIdAsync(orderId);
+        if (orderDetails == null || orderDetails.Count == 0)
+        {
+            throw new OrderDetailNotFoundException();
+        }
 
         foreach (var shipOrderDetailRequest in shipOrderDetails)
         {

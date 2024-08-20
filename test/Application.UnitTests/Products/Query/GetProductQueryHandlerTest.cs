@@ -28,7 +28,7 @@ public class GetProductQueryHandlerTest
     //public async Task Handle_Should_ReturnSuccessResult_WithProductResponse_WhenProductExists()
     //{
     //    // Arrange
-        
+
     //    // create phases
     //    var phase1 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_001", "Phase 1"));
     //    var phase2 = Phase.Create(new Contract.Services.Phase.Creates.CreatePhaseRequest("PH_002", "Phase 2"));
@@ -36,17 +36,23 @@ public class GetProductQueryHandlerTest
     //    var product = Product.Create(new CreateProductRequest("P001", 100, 10, 10, "M", "Test Description",
     //        "Test Product", null), "TestUser");
 
-    //    var expectedProductResponse = new ProductResponse( 
-    //        product.Id, product.Name,product.Code,product.Price,
+    //    var expectedProductResponse = new ProductWithTotalQuantityResponse(
+    //        product.Id,
+    //        product.Name, 
+    //        product.Code, 
+    //        product.Price,
     //        null,
-    //         product.Size,product.Description,product.IsInProcessing, null);
+    //        null,
+    //         product.Size, product.Description, product.IsInProcessing, null);
 
-    //    _productRepositoryMock.Setup(repo => repo.GetProductById(product.Id)).ReturnsAsync(product);
+    //    _productRepositoryMock.Setup(repo => repo.GetProductByIdWithProductPhase(product.Id)).ReturnsAsync(product);
 
     //    // Act
     //    var result = await _getProductQueryHandler.Handle(new GetProductQuery(product.Id), CancellationToken.None);
 
     //    // Assert
+    //    Assert.NotNull(result);
+    //    Assert.True(result.isSuccess);
     //}
 
     [Fact]

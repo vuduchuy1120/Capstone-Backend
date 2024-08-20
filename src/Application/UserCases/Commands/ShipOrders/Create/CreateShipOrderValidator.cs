@@ -90,6 +90,7 @@ public class CreateShipOrderValidator : AbstractValidator<CreateShipOrderRequest
            }).WithMessage("Trong các bộ có bộ không nằm trong đơn hàng đã đặt");
 
         RuleFor(req => req.ShipOrderDetailRequests)
+           .NotEmpty().WithMessage("Đơn hàng phải có ít nhất 1 sản phẩm hoặc bộ")
            .Must((ShipOrderDetailRequests) =>
            {
                var setIdsDistinct = ShipOrderDetailRequests
