@@ -21,15 +21,15 @@ public class CreateShipmentValidator : AbstractValidator<CreateShipmentRequest>
                 return await companyRepository.IsCompanyNotCustomerCompanyAsync(fromId);
             }).WithMessage("Cơ sở hay công ty bên thứ 3 không tồn tại");
 
-        RuleFor(req => req.ToId)
-            .Must((req, toId) => req.FromId != toId)
-            .WithMessage("Công ty gửi phải khác công ty nhận")
-            .MustAsync(async (req, toId, _) =>
-            {
-                var companyTypes = await companyRepository.GetCompanyTypeByCompanyIdsAsync(new List<Guid> { toId, req.FromId });
-                if (companyTypes.Count != 2) return false;
-                return companyTypes[0] != companyTypes[1];
-            }).WithMessage("Công ty nhận không được cùng loại với công ty gửi");
+        //RuleFor(req => req.ToId)
+        //    .Must((req, toId) => req.FromId != toId)
+        //    .WithMessage("Công ty gửi phải khác công ty nhận")
+        //    .MustAsync(async (req, toId, _) =>
+        //    {
+        //        var companyTypes = await companyRepository.GetCompanyTypeByCompanyIdsAsync(new List<Guid> { toId, req.FromId });
+        //        if (companyTypes.Count != 2) return false;
+        //        return companyTypes[0] != companyTypes[1];
+        //    }).WithMessage("Công ty nhận không được cùng loại với công ty gửi");
 
         RuleFor(req => req.ToId)
             .MustAsync(async (ToId, _) =>
