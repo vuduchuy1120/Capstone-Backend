@@ -26,12 +26,12 @@ public sealed class UpdateQuantityStatusCommandHandler
         var productPhaseFrom = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
            request.updateQuantityStatusRequest.ProductId,
            request.updateQuantityStatusRequest.PhaseIdFrom,
-           request.updateQuantityStatusRequest.CompanyId);
+           request.updateQuantityStatusRequest.CompanyIdFrom);
 
         var productPhaseTo = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
             request.updateQuantityStatusRequest.ProductId,
             request.updateQuantityStatusRequest.PhaseIdTo,
-            request.updateQuantityStatusRequest.CompanyId);
+            request.updateQuantityStatusRequest.CompanyIdTo);
 
 
         var quantity = request.updateQuantityStatusRequest.Quantity;
@@ -81,7 +81,7 @@ public sealed class UpdateQuantityStatusCommandHandler
                 request.updateQuantityStatusRequest.PhaseIdTo,
                 quantity,
                 request.updateQuantityStatusRequest.To,
-                request.updateQuantityStatusRequest.CompanyId
+                request.updateQuantityStatusRequest.CompanyIdTo
             );
             _productPhaseRepository.AddProductPhase(productPhaseTo);
         }

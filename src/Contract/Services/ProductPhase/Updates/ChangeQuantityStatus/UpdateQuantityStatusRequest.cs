@@ -11,5 +11,6 @@ public record UpdateQuantityStatusRequest
     Guid ProductId,
     Guid PhaseIdFrom,
     Guid PhaseIdTo,
-    Guid CompanyId
+    Guid CompanyIdFrom,
+    Guid CompanyIdTo
     );
