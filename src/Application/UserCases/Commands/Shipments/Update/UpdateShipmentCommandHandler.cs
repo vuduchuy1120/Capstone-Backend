@@ -261,55 +261,59 @@ namespace Application.UseCases.Commands.Shipments.Update
 
         private async Task UpdateShipmentWithoutSameFromCompany(Shipment shipment, UpdateShipmentRequest updateShipmentRequest, string updatedBy)
         {
-            var shipmentDetails = shipment.ShipmentDetails ?? throw new ShipmentDetailNotFoundException();
+            
 
-            var allMaterialIds = GetAllMaterialIds(updateShipmentRequest, shipmentDetails);
-            if (allMaterialIds is not null && allMaterialIds.Count > 0)
-            {
-                var materials = await materialRepository.GetMaterialsByIdsAsync(allMaterialIds);
 
-                foreach (var detail in shipmentDetails)
-                {
-                    if (detail.MaterialId is not null)
-                    {
-                        var material = materials.SingleOrDefault(material => material.Id == detail.MaterialId)
-                            ?? throw new MaterialNotFoundException();
 
-                        material.UpdateAvailableQuantity(material.AvailableQuantity + detail.Quantity);
-                    }
-                }
 
-                materialRepository.UpdateRange(materials);
-            }
 
-            var allProductIds = GetAllProductIds(updateShipmentRequest, shipmentDetails);
-            if (allProductIds is not null && allProductIds.Count > 0)
-            {
-                var productPhases = await productPhaseRepository.GetByProductIdsAndCompanyIdAsync(allProductIds, shipment.FromId);
+            //var allMaterialIds = GetAllMaterialIds(updateShipmentRequest, shipmentDetails);
+            //if (allMaterialIds is not null && allMaterialIds.Count > 0)
+            //{
+            //    var materials = await materialRepository.GetMaterialsByIdsAsync(allMaterialIds);
 
-                foreach (var detail in shipmentDetails)
-                {
-                    if (detail.ProductId is not null)
-                    {
-                        var productPhase = productPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == detail.PhaseId)
-                            ?? throw new ProductPhaseNotFoundException();
+            //    foreach (var detail in shipmentDetails)
+            //    {
+            //        if (detail.MaterialId is not null)
+            //        {
+            //            var material = materials.SingleOrDefault(material => material.Id == detail.MaterialId)
+            //                ?? throw new MaterialNotFoundException();
 
-                        switch (detail.ProductPhaseType)
-                        {
-                            case ProductPhaseType.NO_PROBLEM:
-                                productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
-                                break;
-                            case ProductPhaseType.THIRD_PARTY_ERROR:
-                                productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
-                                break;
-                            default:
-                                throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
-                        }
-                    }
-                }
+            //            material.UpdateAvailableQuantity(material.AvailableQuantity + detail.Quantity);
+            //        }
+            //    }
 
-                productPhaseRepository.UpdateProductPhaseRange(productPhases);
-            }
+            //    materialRepository.UpdateRange(materials);
+            //}
+
+            //var allProductIds = GetAllProductIds(updateShipmentRequest, shipmentDetails);
+            //if (allProductIds is not null && allProductIds.Count > 0)
+            //{
+            //    var productPhases = await productPhaseRepository.GetByProductIdsAndCompanyIdAsync(allProductIds, shipment.FromId);
+
+            //    foreach (var detail in shipmentDetails)
+            //    {
+            //        if (detail.ProductId is not null)
+            //        {
+            //            var productPhase = productPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == detail.PhaseId)
+            //                ?? throw new ProductPhaseNotFoundException();
+
+            //            switch (detail.ProductPhaseType)
+            //            {
+            //                case ProductPhaseType.NO_PROBLEM:
+            //                    productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
+            //                    break;
+            //                case ProductPhaseType.THIRD_PARTY_ERROR:
+            //                    productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
+            //                    break;
+            //                default:
+            //                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
+            //            }
+            //        }
+            //    }
+
+            //    productPhaseRepository.UpdateProductPhaseRange(productPhases);
+            //}
         }
 
         private int UpdateQuantity(ProductPhase productPhase, int remainingQuantity)
