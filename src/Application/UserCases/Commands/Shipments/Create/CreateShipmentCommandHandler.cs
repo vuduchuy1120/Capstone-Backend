@@ -83,27 +83,30 @@ internal sealed class CreateShipmentCommandHandler(
                 .Distinct()
                 .ToList();
 
-            var productPhasesTasks = uniqueItemIds
-            .Select(uniqueItem => _productPhaseRepository.GetByProductIdAndCompanyIdAsync(uniqueItem, fromCompany))
-            .ToList();
+            var productPhasesResults = await _productPhaseRepository.GetByProductIdsAndCompanyIdAsync(uniqueItemIds, fromCompany);
 
-            var productPhasesResults = await Task.WhenAll(productPhasesTasks);
+            //var productPhasesTasks = uniqueItemIds
+            //.Select(uniqueItem => _productPhaseRepository.GetByProductIdAndCompanyIdAsync(uniqueItem, fromCompany))
+            //.ToList();
 
-            var productDictionary = uniqueItemIds
-                .Zip(productPhasesResults, (itemId, productPhases) =>
-                {
-                    if (productPhases is null || productPhases.Count == 0)
-                    {
-                        throw new ProductPhaseNotFoundException();
-                    }
-                    return new { itemId, productPhases };
-                })
-                .ToDictionary(x => x.itemId, x => x.productPhases);
+            //var productPhasesResults = await Task.WhenAll(productPhasesTasks);
+
+            //var productDictionary = uniqueItemIds
+            //    .Zip(productPhasesResults, (itemId, productPhases) =>
+            //    {
+            //        if (productPhases is null || productPhases.Count == 0)
+            //        {
+            //            throw new ProductPhaseNotFoundException();
+            //        }
+            //        return new { itemId, productPhases };
+            //    })
+            //    .ToDictionary(x => x.itemId, x => x.productPhases);
 
             var shipmentDetails = shipmentDetailRequests.Select(detailRequest =>
             {
-                var productPhases = productDictionary.GetValueOrDefault(detailRequest.ItemId) ?? throw new ProductPhaseNotFoundException();
-                return CreateShipmentDetailFromThirdPartyCompany(detailRequest, shipmentId, productPhases);
+                var productPhases = productPhasesResults.Where(p => p.ProductId == detailRequest.ItemId) 
+                    ?? throw new ProductPhaseNotFoundException();
+                return CreateShipmentDetailFromThirdPartyCompany(detailRequest, shipmentId, productPhases.ToList());
             });
 
             return shipmentDetails.ToList();

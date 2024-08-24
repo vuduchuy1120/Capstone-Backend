@@ -10,7 +10,6 @@ using Domain.Exceptions.Materials;
 using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
-using System.Collections.Generic;
 
 namespace Application.UserCases.Commands.Shipments.UpdateAccepted;
 
@@ -227,6 +226,7 @@ internal sealed class UpdateAcceptedCommandHandler(
     private async Task UpdateQuantityOfProductPhaseWhenSendFromThirdPartyCompany(List<ShipmentDetail> shipmentDetails, Guid toId, Guid fromId)
     {
         var _productsPhases = new List<ProductPhase>();
+        var _newProductPhases = new List<ProductPhase>();
 
         foreach (var detail in shipmentDetails)
         {
@@ -301,35 +301,56 @@ internal sealed class UpdateAcceptedCommandHandler(
                     productPhaseToCompany = await _productPhaseRepository.GetByProductIdPhaseIdAndCompanyIdAsync(
                         (Guid)detail.ProductId,
                         (Guid)detail.PhaseId,
-                        toId) ?? throw new ProductPhaseNotFoundException();
+                        toId);
+
+                    if(productPhaseToCompany == null)
+                    {
+                        productPhaseToCompany = ProductPhase.Create(new CreateProductPhaseRequest((Guid)detail.ProductId, (Guid)detail.PhaseId, 0, 0, toId));
+                        _newProductPhases.Add(productPhaseToCompany);
+                    }
 
                     _productsPhases.Add(productPhaseToCompany);
                 }
 
-                if (detail.ProductPhaseType == ProductPhaseType.NO_PROBLEM)
+                switch (detail.ProductPhaseType)
                 {
-                    productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
-                    productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
-                }
-                else if (detail.ProductPhaseType == ProductPhaseType.FACTORY_ERROR)
-                {
-                    productPhaseToCompany.UpdateFailureQuantity(productPhaseToCompany.FailureQuantity + (int)detail.Quantity);
-                    productPhaseToCompany.UpdateFailureAvailableQuantity(productPhaseToCompany.FailureAvailabeQuantity + (int)detail.Quantity);
-                }
-                else if (detail.ProductPhaseType == ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR)
-                {
-                    productPhaseToCompany.UpdateBrokenQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
-                    productPhaseToCompany.UpdateBrokenAvailableQuantity(productPhaseToCompany.BrokenAvailableQuantity + (int)detail.Quantity);
-                }
-                else
-                {
-                    throw new ShipmentBadRequestException("Bên thứ 3 chỉ được gửi sản phẩm bình thường, " +
-                        "sản phẩm lỗi do cơ sở hoặc sản phẩm hỏng hằn");
+                    case ProductPhaseType.NO_PROBLEM:
+                        productPhaseToCompany.UpdateQuantity(productPhaseToCompany.Quantity + (int)detail.Quantity);
+                        productPhaseToCompany.UpdateAvailableQuantity(productPhaseToCompany.AvailableQuantity + (int)detail.Quantity);
+                        break;
+
+                    case ProductPhaseType.FACTORY_ERROR:
+                        productPhaseToCompany.UpdateFailureQuantity(productPhaseToCompany.FailureQuantity + (int)detail.Quantity);
+                        productPhaseToCompany.UpdateFailureAvailableQuantity(productPhaseToCompany.FailureAvailabeQuantity + (int)detail.Quantity);
+                        break;
+
+                    case ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR:
+                        productPhaseToCompany.UpdateBrokenQuantity(productPhaseToCompany.BrokenQuantity + (int)detail.Quantity);
+                        productPhaseToCompany.UpdateBrokenAvailableQuantity(productPhaseToCompany.BrokenAvailableQuantity + (int)detail.Quantity);
+                        break;
+
+                    case ProductPhaseType.THIRD_PARTY_ERROR:
+                        productPhaseToCompany.UpdateErrorQuantity(productPhaseToCompany.ErrorQuantity + (int)detail.Quantity);
+                        productPhaseToCompany.UpdateErrorAvailableQuantity(productPhaseToCompany.ErrorAvailableQuantity + (int)detail.Quantity);
+                        break;
+
+                    default:
+                        throw new ShipmentBadRequestException("Bên thứ 3 chỉ được gửi sản phẩm bình thường, " +
+                            "sản phẩm lỗi do cơ sở hoặc sản phẩm hỏng hẳn");
                 }
             }
         }
 
-        _productPhaseRepository.UpdateProductPhaseRange(_productsPhases);
+        if(_newProductPhases.Count > 0)
+        {
+            _productsPhases.RemoveAll(p => _newProductPhases.Contains(p));
+            _productPhaseRepository.UpdateProductPhaseRange(_productsPhases);
+            _productPhaseRepository.AddProductPhaseRange(_newProductPhases);
+        }
+        else
+        {
+            _productPhaseRepository.UpdateProductPhaseRange(_productsPhases);
+        }
     }
 
     private async Task UpdateQuantityOfMaterial(List<ShipmentDetail> shipmentDetails, bool isFromCompanyThirdParty, bool isShipSuccess)

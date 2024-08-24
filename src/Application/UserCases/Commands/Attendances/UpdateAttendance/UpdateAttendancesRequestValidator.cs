@@ -30,12 +30,12 @@ public sealed class UpdateAttendancesRequestValidator : AbstractValidator<Update
             return true;
         }).WithMessage("Ngày phải là ngày hợp lệ ở định dạng dd/MM/yyyy");
 
-        RuleFor(x => x.UpdateAttendances)
-            .MustAsync(async (updateAttendances, cancellationToken) =>
-            {
-                var userIds = updateAttendances.Select(x => x.UserId).ToList();
-                return await userRepository.IsAllUserActiveAsync(userIds);
-            }).WithMessage("Một hoặc nhiều UserId không hợp lệ hoặc không tồn tại!");
+        //RuleFor(x => x.UpdateAttendances)
+        //    .MustAsync(async (updateAttendances, cancellationToken) =>
+        //    {
+        //        var userIds = updateAttendances.Select(x => x.UserId).ToList();
+        //        return await userRepository.IsAllUserActiveAsync(userIds);
+        //    }).WithMessage("Một hoặc nhiều UserId không hợp lệ hoặc không tồn tại!");
 
         RuleFor(x => x.UpdateAttendances)
             .MustAsync(async (request, updateAttendances, _) =>

@@ -48,7 +48,7 @@ internal sealed class CreateUserCommandHandler(
 
         await _unitOfWork.SaveChangesAsync();
 
-        _speedSMSAPI.sendSMS([user.Phone], $"Bạn đã được tạo tài khoản đăng nhập hệ thống TienHuyBamboo với mật khẩu: {password}", 5);
+        _speedSMSAPI.sendSMS([user.Phone], $"Bạn đã được tạo tài khoản đăng nhập hệ thống TienHuyBamboo với mật khẩu: {password}\nVui lòng truy cập trang web https://tienhuybamboo.online/sign-in để tiến hành đăng nhập ", 5);
 
         return Result.Success.Create();
     }

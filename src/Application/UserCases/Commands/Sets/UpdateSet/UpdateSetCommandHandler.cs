@@ -51,6 +51,15 @@ internal sealed class UpdateSetCommandHandler(
         var updateSet = await _setRepository.GetByIdWithoutSetProductAsync(setId) ??
             throw new SetNotFoundException(setId);
 
+        if(updateSetRequest.Code != updateSet.Code)
+        {
+            var isCodeExist = await _setRepository.IsCodeExistAsync(updateSetRequest.Code);
+            if (isCodeExist)
+            {
+                throw new SetBadRequestException($"Bộ sản phẩm có mã: {updateSetRequest.Code} đã tồn tại");
+            }
+        }
+
         return updateSet;
     }
 

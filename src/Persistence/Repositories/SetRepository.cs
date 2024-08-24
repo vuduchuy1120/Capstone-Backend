@@ -65,7 +65,7 @@ internal class SetRepository : ISetRepository
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(s => s.Name.Contains(request.SearchTerm) || s.Code.Contains(request.SearchTerm));
+            query = query.Where(s => s.Name.ToLower().Contains(request.SearchTerm.ToLower()) || s.Code.ToLower().Contains(request.SearchTerm.ToLower()));
         }
 
         var totalItems = await query.CountAsync();
@@ -99,7 +99,7 @@ internal class SetRepository : ISetRepository
             .Include(s => s.SetProducts)
                 .ThenInclude(sp => sp.Product)
                 .ThenInclude(p => p.Images)
-            .Where(s => s.Name.Contains(searchTerm) || s.Code.Contains(searchTerm))
+            .Where(s => s.Name.ToLower().Contains(searchTerm.ToLower()) || s.Code.ToLower().Contains(searchTerm.ToLower()))
             .ToListAsync();
     }
 }

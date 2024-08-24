@@ -65,28 +65,32 @@ public class CreateProductCommandHandlerTest
     }
 
     [Fact]
-    public async Task Handler_Should_ThrowMyValidationException_WhenProductImageNull()
+    public async Task Handler_Should_ThrowMyValidationException_WhenCodeExist()
     {
         var createProductRequest = new CreateProductRequest("CD123", 100, 10, 10, "Size", "Description", "Name", null);
         var createProductCommand = new CreateProductCommand(createProductRequest, "CreatedBy");
 
-        _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync(default)).ReturnsAsync(1);
+        _productRepositoryMock.Setup(repo => repo.IsProductCodeExist(It.IsAny<string>())).ReturnsAsync(true);
 
         await Assert.ThrowsAsync<MyValidationException>(() =>
         _createProductCommandHandler.Handle(createProductCommand, default));
     }
 
     [Theory]
-    [InlineData("", 123, 100, 150, "Size", "Description", "Name")] // Empty code
-    [InlineData("CD123", -10, 100, 150, "Size", "Description", "Name")] // Negative price
-    [InlineData("CD123", 100, -10, 150, "Size", "Description", "Name")] // Negative price phase1
-    [InlineData("CD123", 100, 150, -10, "Size", "Description", "Name")] // Negative price phase2
-    [InlineData("CD123", 100, 50, 150, "Size", "Description", "Name")] // Price phase2 greater than price phase1
-    [InlineData("CD123", 123, 100, 150, "", "Description", "Name")] // Empty size
-    [InlineData("CD123", 123, 100, 150, "Size", "", "Name")] // Empty description
-    [InlineData("CD123", 123, 100, 150, "Size", "Description", "")] // Empty name
-    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { false, false })] // No main image
-    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, true })] // Multiple main images
+    [InlineData("", 300, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })] 
+    [InlineData("CD", 300, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })] 
+    [InlineData("CDD123", 300, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("C123", 300, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("CD123", 0, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("CD123", 300, 0, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("CD123", 300, 100, 0, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("CD123", 300, 100, 150, "", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })]
+    [InlineData("CD123", 300, 100, 150, "Size", "Description", "", new string[] { "Image1", "Image2" }, new bool[] { true, false })] 
+    [InlineData("CD123", 300, 100, 150, "Size", "Description", "Name")] 
+    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, false })] 
+    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { false, false })] 
+    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { "Image1", "Image2" }, new bool[] { true, true })] 
+    [InlineData("CD123", 123, 100, 150, "Size", "Description", "Name", new string[] { }, new bool[] { })]
     public async Task Handler_Should_ThrowValidationException_ForInvalidRequests(
         string code,
         decimal priceFinished,
@@ -104,7 +108,7 @@ public class CreateProductCommandHandlerTest
             imagesRequest = new List<ImageRequest>();
             for (int i = 0; i < imageUrls.Length; i++)
             {
-                imagesRequest.Add(new ImageRequest(imageUrls[i], isMainImages[i], false));
+                imagesRequest.Add(new ImageRequest(imageUrls[i], false, isMainImages[i]));
             }
         }
         _phaseRepository.Setup(p => p.GetPhases()).ReturnsAsync(new List<Phase>

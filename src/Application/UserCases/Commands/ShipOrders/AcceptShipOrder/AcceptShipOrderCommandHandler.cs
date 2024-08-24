@@ -135,7 +135,7 @@ internal sealed class AcceptShipOrderCommandHandler(
         }
         else
         {
-            throw new QuantityNotValidException("Không tìm thấy loại giao hàng phù hợp");
+            //throw new QuantityNotValidException("Không tìm thấy loại giao hàng phù hợp");
         }
     }
 
@@ -180,8 +180,11 @@ internal sealed class AcceptShipOrderCommandHandler(
             var productDetailRequest = shipProductDetails.SingleOrDefault(s => s.ProductId == product.ProductId)
                 ?? throw new ShipOrderDetailNotFoundException();
 
-            product.UpdateErrorQuantity(product.ErrorQuantity + productDetailRequest.Quantity);
-            product.UpdateErrorAvailableQuantity(product.ErrorAvailableQuantity + productDetailRequest.Quantity);
+            product.UpdateFailureQuantity(product.FailureQuantity + productDetailRequest.Quantity);
+            product.UpdateFailureAvailableQuantity(product.FailureAvailabeQuantity + productDetailRequest.Quantity);
+
+            //product.UpdateErrorQuantity(product.ErrorQuantity + productDetailRequest.Quantity);
+            //product.UpdateErrorAvailableQuantity(product.ErrorAvailableQuantity + productDetailRequest.Quantity);
         }
 
         _productPhaseRepository.UpdateProductPhaseRange(productPhases);

@@ -61,6 +61,6 @@ internal sealed class RefreshTokenCommandHandler(
 
     private async Task CacheLoginResponseAsync(string userId, LoginResponse loginResponse, CancellationToken cancellationToken)
     {
-        await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse);
+        await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, TimeSpan.FromMinutes(100));
     }
 }
