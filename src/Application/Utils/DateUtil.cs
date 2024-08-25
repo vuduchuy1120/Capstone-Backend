@@ -1,5 +1,6 @@
 ﻿using Contract.Services.Attendance.Create;
 using Domain.Abstractions.Exceptions;
+using System.Globalization;
 
 namespace Application.Utils;
 
@@ -19,6 +20,7 @@ public class DateUtil
             throw new MyValidationException("Date is wrong format dd/MM/yyy or invalid");
         }
     }
+
     public static DateTime GetNow()
     {
         return DateTime.UtcNow.AddHours(7);
