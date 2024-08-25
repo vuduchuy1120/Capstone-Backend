@@ -16,6 +16,8 @@ internal sealed class LoginCommandHandler(
     IJwtService _jwtService,
     IPasswordService _passwordService,
     IMapper _mapper,
+    ITokenRepository _tokenRepository,
+    IUnitOfWork _unitOfWork,
     IRedisService _redisService)
     : ICommandHandler<LoginCommand, LoginResponse>
 {
@@ -58,6 +60,19 @@ internal sealed class LoginCommandHandler(
 
     private async Task CacheLoginResponseAsync(string userId, LoginResponse loginResponse, CancellationToken cancellationToken)
     {
-        await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, TimeSpan.FromMinutes(100));
+        var token = await _tokenRepository.GetByUserIdAsync(userId);
+        if (token == null)
+        {
+            token = Token.Create(userId, loginResponse.AccessToken, loginResponse.RefreshToken);
+            _tokenRepository.Add(token);
+        }
+        else
+        {
+            token.Update(loginResponse.AccessToken, loginResponse.RefreshToken);
+            _tokenRepository.Update(token);
+        }
+        await _unitOfWork.SaveChangesAsync();
+        
+        //await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, TimeSpan.FromMinutes(100));
     }
 }

@@ -48,6 +48,8 @@ public static class DependencyInjection
         services.AddScoped<IMonthlyEmployeeSalaryRepository, MonthlyEmployeeSalaryRepository>();
         services.AddScoped<IPaidSalaryRepository, PaidSalaryRepository>();
         services.AddScoped<IMonthlyCompanySalaryRepository, MonthlyCompanySalaryRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
+
         return services;
     }
 }

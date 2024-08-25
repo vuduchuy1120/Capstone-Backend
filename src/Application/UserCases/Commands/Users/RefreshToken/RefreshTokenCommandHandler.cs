@@ -15,24 +15,27 @@ namespace Application.UserCases.Commands.Users.RefreshToken;
 internal sealed class RefreshTokenCommandHandler(
     IRedisService _redisService, 
     IJwtService _jwtService,
+    ITokenRepository _tokenRepository,
+    IUnitOfWork _unitOfWork,
     IUserRepository _userRepository,
     IMapper _mapper) : ICommandHandler<RefreshTokenCommand, LoginResponse>
 {
     public async Task<Result.Success<LoginResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var userIdFromToken = await CheckRefreshTokenAndGetUserIdFromToken(request);
+        var token = await CheckRefreshTokenAndGetToken(request);
+        var userId = request.userId;
 
-        var user = await _userRepository.GetUserActiveByIdAsync(userIdFromToken)
-            ?? throw new UserNotFoundException(userIdFromToken);
+        var user = await _userRepository.GetUserActiveByIdAsync(userId)
+            ?? throw new UserNotFoundException(userId);
 
         var loginResponse = await CreateLoginResponseAsync(user);
 
-        await CacheLoginResponseAsync(userIdFromToken, loginResponse, cancellationToken);
+        await CacheLoginResponseAsync(token, loginResponse, cancellationToken);
 
         return Result.Success<LoginResponse>.Login(loginResponse);
     }
 
-    private  async Task<string> CheckRefreshTokenAndGetUserIdFromToken(RefreshTokenCommand request)
+    private async Task<Token> CheckRefreshTokenAndGetToken(RefreshTokenCommand request)
     {
         //var userIdFromToken = _jwtService.GetUserIdFromToken(request.refreshToken);
 
@@ -41,14 +44,16 @@ internal sealed class RefreshTokenCommandHandler(
         //    throw new RefreshTokenNotValidException();
         //}
 
-        var loginResponse = await _redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + request.userId);
+        var token = await _tokenRepository.GetByUserIdAsync(request.userId);
 
-        if (loginResponse is null || loginResponse.RefreshToken != request.refreshToken)
+        //var loginResponse = await _redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + request.userId);
+
+        if (token is null || token.RefreshToken != request.refreshToken)
         {
             throw new RefreshTokenNotValidException("Không tìm thấy thông tin đăng nhập hoặc sai token");
         }
 
-        return request.userId;
+        return token;
     }
 
     private async Task<LoginResponse> CreateLoginResponseAsync(User user)
@@ -61,8 +66,11 @@ internal sealed class RefreshTokenCommandHandler(
         return new LoginResponse(userResponse, accessToken, refreshToken);
     }
 
-    private async Task CacheLoginResponseAsync(string userId, LoginResponse loginResponse, CancellationToken cancellationToken)
+    private async Task CacheLoginResponseAsync(Token token, LoginResponse loginResponse, CancellationToken cancellationToken)
     {
-        await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, TimeSpan.FromMinutes(100));
+        token.Update(loginResponse.AccessToken, loginResponse.RefreshToken);
+        _tokenRepository.Update(token);
+        await _unitOfWork.SaveChangesAsync();
+        //await _redisService.SetAsync($"{ConstantUtil.User_Redis_Prefix}{userId}", loginResponse, TimeSpan.FromMinutes(100));
     }
 }
