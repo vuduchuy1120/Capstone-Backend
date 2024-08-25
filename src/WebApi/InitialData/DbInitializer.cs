@@ -58,10 +58,10 @@ public class DbInitializer
             SeedPhaseData(context);
         }
 
-        if (!context.ProductPhases.Any())
-        {
-            SeedProductPhaseData(context);
-        }
+        //if (!context.ProductPhases.Any())
+        //{
+        //    SeedProductPhaseData(context);
+        //}
 
     }
 
