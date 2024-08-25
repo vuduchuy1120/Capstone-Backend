@@ -6,6 +6,7 @@ using Contract.Abstractions.Shared.Results;
 using Contract.Services.User.ConfirmVerifyCode;
 using Contract.Services.User.ForgetPassword;
 using Domain.Abstractions.Exceptions;
+using Domain.Entities;
 using Domain.Exceptions.Users;
 using FluentValidation;
 
@@ -20,11 +21,14 @@ internal sealed class ConfirmVerifyCodeCommandHandler(
 {
     public async Task<Result.Success> Handle(ConfirmVerifyCodeCommand request, CancellationToken cancellationToken)
     {
-        await CheckVerifyCodeWithCodeInRedis(request.VerifyCode, request.UserId, cancellationToken);
+        var user = await _userRepository.GetByPhoneOrIdAsync(request.UserId) ??
+            throw new UserNotFoundException();
+
+        await CheckVerifyCodeWithCodeInRedis(request.VerifyCode, user.Id, cancellationToken);
 
         CheckPasswordValid(request);
 
-        await FindAndUpdatePassword(request.UserId, request.Password);
+        await UpdatePassword(user, request.Password);
 
         await RemoveVerifyCodeInRedis(request.UserId);
 
@@ -64,11 +68,8 @@ internal sealed class ConfirmVerifyCodeCommandHandler(
         }
     }
 
-    private async Task FindAndUpdatePassword(string userId, string password)
+    private async Task UpdatePassword(User user, string password)
     {
-        var user = await _userRepository.GetUserActiveByIdAsync(userId)
-        ?? throw new UserNotFoundException();
-
         var hashPassword = _passwordService.Hash(password);
         user.UpdatePassword(hashPassword);
 

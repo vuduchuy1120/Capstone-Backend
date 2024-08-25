@@ -11,6 +11,7 @@ using Domain.Exceptions.ProductPhases;
 using Domain.Exceptions.ShipmentDetails;
 using Domain.Exceptions.Shipments;
 using FluentValidation;
+using MediatR;
 
 namespace Application.UseCases.Commands.Shipments.Update
 {
@@ -54,14 +55,14 @@ namespace Application.UseCases.Commands.Shipments.Update
             }
         }
 
-        private List<Guid> GetAllProductIds(UpdateShipmentRequest updateShipmentRequest, List<ShipmentDetail> shipmentDetails)
+        private List<Guid> GetAllProductIds(UpdateShipmentRequest? updateShipmentRequest, List<ShipmentDetail>? shipmentDetails)
         {
-            var oldIds = shipmentDetails
+            var oldIds = shipmentDetails?
                 .Where(detail => detail.ProductId != null && detail.ProductId != Guid.Empty)
                 .Select(detail => (Guid)detail.ProductId)
                 .ToList() ?? new List<Guid>();
 
-            var newIds = updateShipmentRequest.ShipmentDetailRequests
+            var newIds = updateShipmentRequest?.ShipmentDetailRequests?
                 .Where(req => req.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT)
                 .Select(req => req.ItemId)
                 .ToList() ?? new List<Guid>();
@@ -69,14 +70,14 @@ namespace Application.UseCases.Commands.Shipments.Update
             return oldIds.Union(newIds).ToList();
         }
 
-        private List<Guid> GetAllMaterialIds(UpdateShipmentRequest updateShipmentRequest, List<ShipmentDetail> shipmentDetails)
+        private List<Guid> GetAllMaterialIds(UpdateShipmentRequest? updateShipmentRequest, List<ShipmentDetail>? shipmentDetails)
         {
-            var oldIds = shipmentDetails
+            var oldIds = shipmentDetails?
                 .Where(detail => detail.MaterialId != null && detail.MaterialId != Guid.Empty)
                 .Select(detail => (Guid)detail.MaterialId)
                 .ToList() ?? new List<Guid>();
 
-            var newIds = updateShipmentRequest.ShipmentDetailRequests
+            var newIds = updateShipmentRequest?.ShipmentDetailRequests?
                 .Where(req => req.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
                 .Select(req => req.ItemId)
                 .ToList() ?? new List<Guid>();
@@ -125,7 +126,7 @@ namespace Application.UseCases.Commands.Shipments.Update
             var allMaterialIds = GetAllMaterialIds(updateShipmentRequest, shipmentDetails);
             if (isFromCompanyThirdParty && allMaterialIds is not null && allMaterialIds.Count > 0)
             {
-                throw new ShipmentBadRequestException("Third-party companies cannot send materials.");
+                throw new ShipmentBadRequestException("Công ty bên thứ 3 không được gửi nguyên liệu.");
             }
 
             if (allMaterialIds is not null && allMaterialIds.Count > 0)
@@ -261,59 +262,167 @@ namespace Application.UseCases.Commands.Shipments.Update
 
         private async Task UpdateShipmentWithoutSameFromCompany(Shipment shipment, UpdateShipmentRequest updateShipmentRequest, string updatedBy)
         {
+            var isUpdateFromCompanyThirdParty = await companyRepository.IsThirdPartyCompanyAsync(updateShipmentRequest.FromId);
+            var isFromCompanyThirdParty = await companyRepository.IsThirdPartyCompanyAsync(updateShipmentRequest.FromId);
+
+            var shipmentDetails = shipment.ShipmentDetails ?? throw new ShipmentDetailNotFoundException();
+
+            List<Material> materials = new List<Material>();
+            if (isFromCompanyThirdParty)
+            {
+                // add material for old company
+                foreach ( var detail in shipmentDetails )
+                {
+                    if(detail.ProductId == null && detail.MaterialId != null)
+                    {
+                        var material = materials.SingleOrDefault(m => m.Id == detail.MaterialId);
+                        if(material == null)
+                        {
+                            material = await materialRepository.GetMaterialByIdAsync((Guid)detail.MaterialId);
+                            if (material == null)
+                            {
+                                throw new ShipmentBadRequestException("Có nguyên liệu không tồn tại");
+                            }
+                            materials.Add(material);
+                        }
+                        material.UpdateAvailableQuantity(material.AvailableQuantity + detail.Quantity);
+                    }
+                }
+            }
+
+            if(isUpdateFromCompanyThirdParty)
+            {
+                // add material for new company
+                foreach (var request in updateShipmentRequest.ShipmentDetailRequests)
+                {
+                    if (request.KindOfShip == KindOfShip.SHIP_FACTORY_MATERIAL)
+                    {
+                        var material = materials.SingleOrDefault(m => m.Id == request.ItemId);
+                        if (material == null)
+                        {
+                            material = await materialRepository.GetMaterialByIdAsync(request.ItemId);
+                            if (material == null)
+                            {
+                                throw new ShipmentBadRequestException("Có nguyên liệu không tồn tại");
+                            }
+                            materials.Add(material);
+                        }
+                        material.UpdateAvailableQuantity(material.AvailableQuantity + request.Quantity);
+                    }
+                }
+            }
+
+            // add product for old company 
+            List<ProductPhase> oldProductPhases = new List<ProductPhase>();
+            var allOldProductIds = GetAllProductIds(null, shipmentDetails);
+            if(allOldProductIds.Count > 0)
+            {
+                oldProductPhases = await productPhaseRepository.GetByProductIdsAndCompanyIdAsync(allOldProductIds, shipment.FromId);
+                if (isFromCompanyThirdParty)
+                {
+                    var phase = await phaseRepository.GetPhaseByName("PH_001") ?? throw new PhaseNotFoundException();
+                    foreach (var detail in shipmentDetails)
+                    {
+                        if (detail.ProductId is not null && detail.PhaseId is not null)
+                        {
+                            var productPhase = oldProductPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == phase.Id)
+                                 ?? throw new ProductPhaseNotFoundException();
+
+                            productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var detail in shipmentDetails)
+                    {
+                        if (detail.ProductId is not null)
+                        {
+                            var productPhase = oldProductPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == detail.PhaseId)
+                                ?? throw new ProductPhaseNotFoundException();
+
+                            switch (detail.ProductPhaseType)
+                            {
+                                case ProductPhaseType.NO_PROBLEM:
+                                    productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
+                                    break;
+                                case ProductPhaseType.THIRD_PARTY_ERROR:
+                                    productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
+                                    break;
+                                default:
+                                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // add product for new company
+            List<ProductPhase> newProductPhases = new List<ProductPhase>();
+            var allNewProductIds = GetAllProductIds(updateShipmentRequest, null);
+            if(allNewProductIds != null && allNewProductIds.Count > 0)
+            {
+                newProductPhases = await productPhaseRepository.GetByProductIdsAndCompanyIdAsync(allNewProductIds, updateShipmentRequest.FromId);
+                if (isUpdateFromCompanyThirdParty)
+                {
+                    foreach (var request in updateShipmentRequest.ShipmentDetailRequests)
+                    {
+                        if (request.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT)
+                        {
+                            var products = newProductPhases.Where(ph => ph.ProductId == request.ItemId).ToList();
+
+                            var totalQuantity = products.Sum(ph => ph.AvailableQuantity + ph.ErrorAvailableQuantity);
+
+                            if (request.Quantity > totalQuantity)
+                            {
+                                throw new ItemAvailableNotEnoughException();
+                            }
+
+                            int remainingQuantity = (int)request.Quantity;
+
+                            foreach (var ph in products)
+                            {
+                                remainingQuantity = UpdateQuantity(ph, remainingQuantity);
+                                if (remainingQuantity == 0)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var request in updateShipmentRequest.ShipmentDetailRequests)
+                    {
+                        if (request.KindOfShip == KindOfShip.SHIP_FACTORY_PRODUCT)
+                        {
+                            var productPhase = newProductPhases.SingleOrDefault(p => p.ProductId == request.ItemId && p.PhaseId == request.PhaseId)
+                                 ?? throw new ProductPhaseNotFoundException();
+
+                            switch (request.ProductPhaseType)
+                            {
+                                case ProductPhaseType.NO_PROBLEM:
+                                    int availableQuantity = productPhase.AvailableQuantity - (int)request.Quantity;
+                                    if (availableQuantity < 0) throw new ShipmentBadRequestException($"Không có đủ sản phẩm có id: {request.ItemId} của giai đoạn {request.PhaseId} trong kho.");
+                                    productPhase.UpdateAvailableQuantity(availableQuantity);
+                                    break;
+                                case ProductPhaseType.THIRD_PARTY_ERROR:
+                                    int errorAvailableQuantity = productPhase.ErrorAvailableQuantity - (int)request.Quantity;
+                                    if (errorAvailableQuantity < 0) throw new ShipmentBadRequestException($"Không có đủ sản phẩm lỗi có id: {request.ItemId} của giai đoạn {request.PhaseId} trong kho.");
+                                    productPhase.UpdateErrorAvailableQuantity(errorAvailableQuantity);
+                                    break;
+                                default:
+                                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
+                            }
+                        }
+                    }
+                }
+            }
             
-
-
-
-
-
-            //var allMaterialIds = GetAllMaterialIds(updateShipmentRequest, shipmentDetails);
-            //if (allMaterialIds is not null && allMaterialIds.Count > 0)
-            //{
-            //    var materials = await materialRepository.GetMaterialsByIdsAsync(allMaterialIds);
-
-            //    foreach (var detail in shipmentDetails)
-            //    {
-            //        if (detail.MaterialId is not null)
-            //        {
-            //            var material = materials.SingleOrDefault(material => material.Id == detail.MaterialId)
-            //                ?? throw new MaterialNotFoundException();
-
-            //            material.UpdateAvailableQuantity(material.AvailableQuantity + detail.Quantity);
-            //        }
-            //    }
-
-            //    materialRepository.UpdateRange(materials);
-            //}
-
-            //var allProductIds = GetAllProductIds(updateShipmentRequest, shipmentDetails);
-            //if (allProductIds is not null && allProductIds.Count > 0)
-            //{
-            //    var productPhases = await productPhaseRepository.GetByProductIdsAndCompanyIdAsync(allProductIds, shipment.FromId);
-
-            //    foreach (var detail in shipmentDetails)
-            //    {
-            //        if (detail.ProductId is not null)
-            //        {
-            //            var productPhase = productPhases.SingleOrDefault(p => p.ProductId == detail.ProductId && p.PhaseId == detail.PhaseId)
-            //                ?? throw new ProductPhaseNotFoundException();
-
-            //            switch (detail.ProductPhaseType)
-            //            {
-            //                case ProductPhaseType.NO_PROBLEM:
-            //                    productPhase.UpdateAvailableQuantity(productPhase.AvailableQuantity + (int)detail.Quantity);
-            //                    break;
-            //                case ProductPhaseType.THIRD_PARTY_ERROR:
-            //                    productPhase.UpdateErrorAvailableQuantity(productPhase.ErrorAvailableQuantity + (int)detail.Quantity);
-            //                    break;
-            //                default:
-            //                    throw new ShipmentBadRequestException("Các lô hàng từ cơ sở phải là sản phẩm không bị lỗi hoặc sản phẩm bị lỗi của bên thứ ba.");
-            //            }
-            //        }
-            //    }
-
-            //    productPhaseRepository.UpdateProductPhaseRange(productPhases);
-            //}
+            var updatedProductPhases = oldProductPhases.Union(newProductPhases).ToList();
+            productPhaseRepository.UpdateProductPhaseRange(updatedProductPhases);
+            materialRepository.UpdateRange(materials);
         }
 
         private int UpdateQuantity(ProductPhase productPhase, int remainingQuantity)

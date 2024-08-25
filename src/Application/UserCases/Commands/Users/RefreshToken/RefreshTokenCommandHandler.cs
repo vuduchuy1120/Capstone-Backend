@@ -34,27 +34,29 @@ internal sealed class RefreshTokenCommandHandler(
 
     private  async Task<string> CheckRefreshTokenAndGetUserIdFromToken(RefreshTokenCommand request)
     {
-        var userIdFromToken = _jwtService.GetUserIdFromToken(request.refreshToken);
+        //var userIdFromToken = _jwtService.GetUserIdFromToken(request.refreshToken);
 
-        if (userIdFromToken is null || userIdFromToken != request.userId)
-        {
-            throw new RefreshTokenNotValidException();
-        }
+        //if (userIdFromToken is null || userIdFromToken != request.userId)
+        //{
+        //    throw new RefreshTokenNotValidException();
+        //}
 
-        var loginResponse = await _redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + userIdFromToken);
+        var loginResponse = await _redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + request.userId);
 
         if (loginResponse is null || loginResponse.RefreshToken != request.refreshToken)
         {
-            throw new RefreshTokenNotValidException();
+            throw new RefreshTokenNotValidException("Không tìm thấy thông tin đăng nhập hoặc sai token");
         }
 
-        return userIdFromToken;
+        return request.userId;
     }
 
     private async Task<LoginResponse> CreateLoginResponseAsync(User user)
     {
         var accessToken = await _jwtService.CreateAccessToken(user);
-        var refreshToken = await _jwtService.CreateRefreshToken(user);
+        //var refreshToken = await _jwtService.CreateRefreshToken(user);
+        var refreshToken = PasswordGenerator.GenerateRandomPassword(20);
+
         var userResponse = _mapper.Map<UserResponse>(user);
         return new LoginResponse(userResponse, accessToken, refreshToken);
     }

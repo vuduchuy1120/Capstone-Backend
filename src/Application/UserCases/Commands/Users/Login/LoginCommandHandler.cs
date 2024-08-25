@@ -49,7 +49,9 @@ internal sealed class LoginCommandHandler(
     private async Task<LoginResponse> CreateLoginResponseAsync(User user)
     {
         var accessToken = await _jwtService.CreateAccessToken(user);
-        var refreshToken = await _jwtService.CreateRefreshToken(user);
+        //var refreshToken = await _jwtService.CreateRefreshToken(user);
+        var refreshToken = PasswordGenerator.GenerateRandomPassword(20);
+
         var userResponse = _mapper.Map<UserResponse>(user);
         return new LoginResponse(userResponse, accessToken, refreshToken);
     }
