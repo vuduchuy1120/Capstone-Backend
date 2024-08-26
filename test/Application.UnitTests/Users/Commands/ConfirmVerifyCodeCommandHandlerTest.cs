@@ -39,6 +39,8 @@ public class ConfirmVerifyCodeCommandHandlerTest
             _redisServiceMock.Object, 
             _validator);
 
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync((ForgetPasswordRedis)null);
 
@@ -59,6 +61,8 @@ public class ConfirmVerifyCodeCommandHandlerTest
             _redisServiceMock.Object,
             _validator);
 
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync(ForgetPasswordRedis.CreateInstacneForTest(4, DateTime.Now.AddMinutes(4), confirmVerifyCodeCommand.VerifyCode));
 
@@ -78,6 +82,8 @@ public class ConfirmVerifyCodeCommandHandlerTest
             _passwordServiceMock.Object,
             _redisServiceMock.Object,
             _validator);
+
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync(ForgetPasswordRedis.CreateInstacneForTest(1, DateTime.Now.AddMinutes(-10), confirmVerifyCodeCommand.VerifyCode));
@@ -104,6 +110,8 @@ public class ConfirmVerifyCodeCommandHandlerTest
             _redisServiceMock.Object,
             _validator);
 
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync(ForgetPasswordRedis.CreateInstacneForTest(1, DateTime.Now.AddMinutes(5), confirmVerifyCodeCommand.VerifyCode));
 
@@ -126,7 +134,7 @@ public class ConfirmVerifyCodeCommandHandlerTest
 
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync(ForgetPasswordRedis.CreateInstacneForTest(1, DateTime.Now.AddMinutes(5), confirmVerifyCodeCommand.VerifyCode));
-        _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync((User) null);
 
         await Assert.ThrowsAsync<UserNotFoundException>(async () =>
         {
@@ -147,7 +155,7 @@ public class ConfirmVerifyCodeCommandHandlerTest
 
         _redisServiceMock.Setup(redis => redis.GetAsync<ForgetPasswordRedis>(It.IsAny<string>(), default))
             .ReturnsAsync(ForgetPasswordRedis.CreateInstacneForTest(1, DateTime.Now.AddMinutes(5), confirmVerifyCodeCommand.VerifyCode));
-        _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+        _userRepositoryMock.Setup(repo => repo.GetByPhoneOrIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
         var result = await confirmVerifyCodeCommandHandler.Handle(confirmVerifyCodeCommand, default);
 

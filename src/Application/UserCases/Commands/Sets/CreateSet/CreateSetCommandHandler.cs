@@ -8,7 +8,7 @@ using FluentValidation;
 
 namespace Application.UserCases.Commands.Sets.CreateSet;
 
-internal sealed class CreateSetCommandHandler(
+public sealed class CreateSetCommandHandler(
     ISetRepository _setRepository,
     IUnitOfWork _unitOfWork,
     IValidator<CreateSetRequest> _validator) : ICommandHandler<CreateSetCommand>

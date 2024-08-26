@@ -18,6 +18,8 @@ public class RefreshTokenCommandHandlerTest
     private readonly Mock<IPasswordService> _passwordServiceMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IRedisService> _redisServiceMock;
+    private readonly Mock<ITokenRepository> _tokenRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     public RefreshTokenCommandHandlerTest()
     {
         _userRepositoryMock = new();
@@ -25,6 +27,8 @@ public class RefreshTokenCommandHandlerTest
         _passwordServiceMock = new();
         _mapperMock = new();
         _redisServiceMock = new();
+        _tokenRepositoryMock = new();
+        _unitOfWorkMock = new();
     }
 
     [Fact]
@@ -34,10 +38,14 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object, 
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
         _jwtServiceMock.Setup(jwt => jwt.GetUserIdFromToken(It.IsAny<string>())).Returns((string) null);
+        _tokenRepositoryMock.Setup(repo => repo.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((Token)null);
 
         await Assert.ThrowsAsync<RefreshTokenNotValidException>(async () =>
         {
@@ -52,6 +60,8 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object,
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
@@ -70,11 +80,15 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object,
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
         _jwtServiceMock.Setup(jwt => jwt.GetUserIdFromToken(It.IsAny<string>())).Returns("UserId");
         _redisServiceMock.Setup(redis => redis.GetAsync<LoginResponse>(It.IsAny<string>(), default)).ReturnsAsync((LoginResponse)null);
+        _tokenRepositoryMock.Setup(repo => repo.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((Token)null);
 
         await Assert.ThrowsAsync<RefreshTokenNotValidException>(async () =>
         {
@@ -89,12 +103,16 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object,
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
         _jwtServiceMock.Setup(jwt => jwt.GetUserIdFromToken(It.IsAny<string>())).Returns("UserId");
         _redisServiceMock.Setup(redis => redis.GetAsync<LoginResponse>(It.IsAny<string>(), default))
             .ReturnsAsync(new LoginResponse(null, "AccessToken", "RefreshTokenDifferent"));
+        _tokenRepositoryMock.Setup(repo => repo.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(Token.Create("userId", "AccessToken", "Refreshtoken"));
 
         await Assert.ThrowsAsync<RefreshTokenNotValidException>(async () =>
         {
@@ -109,12 +127,16 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object,
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
         _jwtServiceMock.Setup(jwt => jwt.GetUserIdFromToken(It.IsAny<string>())).Returns("UserId");
         _redisServiceMock.Setup(redis => redis.GetAsync<LoginResponse>(It.IsAny<string>(), default))
             .ReturnsAsync(new LoginResponse(null, "AccessToken", "RefreshToken"));
+        _tokenRepositoryMock.Setup(repo => repo.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(Token.Create("userId", "AccessToken", "RefreshToken"));
         _userRepositoryMock.Setup(repo => repo.GetUserActiveByIdAsync(It.IsAny<string>())).ReturnsAsync((User)null);
 
         await Assert.ThrowsAsync<UserNotFoundException>(async () =>
@@ -130,6 +152,8 @@ public class RefreshTokenCommandHandlerTest
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(
             _redisServiceMock.Object,
             _jwtServiceMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _mapperMock.Object);
 
@@ -140,6 +164,8 @@ public class RefreshTokenCommandHandlerTest
         _jwtServiceMock.Setup(jwt => jwt.CreateAccessToken(It.IsAny<User>())).ReturnsAsync("accessToken");
         _jwtServiceMock.Setup(jwt => jwt.CreateRefreshToken(It.IsAny<User>())).ReturnsAsync("refreshToken");
         _mapperMock.Setup(mapper => mapper.Map<UserResponse>(It.IsAny<User>())).Returns(It.IsAny<UserResponse>());
+        _tokenRepositoryMock.Setup(repo => repo.GetByUserIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(Token.Create("UserId", "AccessToken", "RefreshToken"));
 
         var result = await refreshTokenCommandHandler.Handle(refreshTokenCommand, default);
 

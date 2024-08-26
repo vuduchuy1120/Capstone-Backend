@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Services;
+﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using Application.Utils;
 using Contract.Services.User.Login;
 using System.Net;
@@ -24,10 +25,13 @@ public class CheckTokenMiddleware
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             var redisService = context.RequestServices.GetRequiredService<IRedisService>();
+            var tokenRepository = context.RequestServices.GetRequiredService<ITokenRepository>();
 
-            var loginResponse = await redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + userId);
+            var tokenDb = await tokenRepository.GetByUserIdAsync(userId);
 
-            if(loginResponse is null || !loginResponse.AccessToken.Equals(token))
+            //var loginResponse = await redisService.GetAsync<LoginResponse>(ConstantUtil.User_Redis_Prefix + userId);
+
+            if(tokenDb is null || !tokenDb.AccessToken.Equals(token))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return;

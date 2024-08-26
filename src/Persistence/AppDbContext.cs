@@ -37,11 +37,17 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<MonthlyEmployeeSalary> MonthlyEmployeeSalaries { get; set; }
     public DbSet<MonthlyCompanySalary> MonthlyCompanySalaries { get; set; }
 
+    public DbSet<Token> Tokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Phone)
+            .IsUnique(true);
+
+        modelBuilder.Entity<Token>()
+            .HasIndex(t => t.UserId)
             .IsUnique(true);
 
         modelBuilder.Entity<Set>()

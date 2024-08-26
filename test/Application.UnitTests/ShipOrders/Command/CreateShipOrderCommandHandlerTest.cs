@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Application.UserCases.Commands.ShipOrders.Create;
+using Contract.Services.Order.Creates;
+using Contract.Services.Order.ShareDtos;
 using Contract.Services.OrderDetail.Creates;
 using Contract.Services.ProductPhase.Creates;
 using Contract.Services.Set.CreateSet;
@@ -335,6 +337,25 @@ public class CreateShipOrderCommandHandlerTest
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year -1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -343,6 +364,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(true);
         _IOrderDetailRepositoryMock.Setup(repo => repo.GetOrderDetailsByOrderIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new List<OrderDetail> { });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await Assert.ThrowsAsync<OrderDetailNotFoundException>(async () =>
         {
@@ -366,6 +389,25 @@ public class CreateShipOrderCommandHandlerTest
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -374,6 +416,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(true);
         _IOrderDetailRepositoryMock.Setup(repo => repo.GetOrderDetailsByOrderIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await Assert.ThrowsAsync<QuantityNotValidException>(async () =>
         {
@@ -425,7 +469,26 @@ public class CreateShipOrderCommandHandlerTest
                 new ShipOrderDetailRequest(itemId, 5, ItemKind.SET)
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
-       
+
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -435,6 +498,8 @@ public class CreateShipOrderCommandHandlerTest
         _IOrderDetailRepositoryMock.Setup(repo => repo.IsAllOrderDetailSetIdsExistedAsync(It.IsAny<Guid>(), It.IsAny<List<Guid>>()))
             .ReturnsAsync(true);
         _ISetRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Set)null);
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         var ex = await Assert.ThrowsAsync<SetNotFoundException>(async () =>
         {
@@ -459,6 +524,25 @@ public class CreateShipOrderCommandHandlerTest
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
         var set = Set.Create(new CreateSetCommand(new CreateSetRequest("SE123", "Bộ", "Miêu tả", "Image", new List<SetProductRequest> { new SetProductRequest(itemId, 5) }), "0000000001"));
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -470,6 +554,8 @@ public class CreateShipOrderCommandHandlerTest
         _ISetRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Set)set);
         _IOrderDetailRepositoryMock.Setup(repo => repo.GetOrderDetailsByOrderIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await Assert.ThrowsAsync<QuantityNotValidException>(async () =>
         {
@@ -493,6 +579,25 @@ public class CreateShipOrderCommandHandlerTest
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -503,6 +608,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
         _IProductPhaseRepositoryMock.Setup(repo => repo.GetProductPhaseOfMainFactoryDoneByProductIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<ProductPhase>{});
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await Assert.ThrowsAsync<QuantityNotValidException>(async () =>
         {
@@ -528,6 +635,25 @@ public class CreateShipOrderCommandHandlerTest
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -538,6 +664,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
         _IProductPhaseRepositoryMock.Setup(repo => repo.GetProductPhaseOfMainFactoryDoneByProductIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<ProductPhase> { productPhase });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await Assert.ThrowsAsync<QuantityNotValidException>(async () =>
         {
@@ -563,6 +691,25 @@ public class CreateShipOrderCommandHandlerTest
             });
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -573,6 +720,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
         _IProductPhaseRepositoryMock.Setup(repo => repo.GetProductPhaseOfMainFactoryDoneByProductIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<ProductPhase> { productPhase });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await _handler.Handle(createShipOrderCommand, default);
 
@@ -599,6 +748,25 @@ public class CreateShipOrderCommandHandlerTest
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
         var set = Set.Create(new CreateSetCommand(new CreateSetRequest("SE123", "Bộ", "Miêu tả", "Image", new List<SetProductRequest> { new SetProductRequest(itemId, 5) }), "0000000001"));
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -612,6 +780,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(new List<OrderDetail> { orderDetail });
         _IProductPhaseRepositoryMock.Setup(repo => repo.GetProductPhaseOfMainFactoryDoneByProductIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<ProductPhase> { productPhase });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await _handler.Handle(createShipOrderCommand, default);
 
@@ -641,6 +811,25 @@ public class CreateShipOrderCommandHandlerTest
         var createShipOrderCommand = new CreateShipOrderCommand("001201011091", createShipOrderRequest);
         var set = Set.Create(new CreateSetCommand(new CreateSetRequest("SE123", "Bộ", "Miêu tả", "Image", new List<SetProductRequest> { new SetProductRequest(productId, 5) }), "0000000001"));
 
+        var year = DateTime.Now.Year;
+        var request = new CreateOrderRequest(
+                CompanyId: Guid.NewGuid(),
+                Status: StatusOrder.INPROGRESS,
+                StartOrder: $"01/02/{year - 1}",
+                EndOrder: $"01/01/{year + 1}", // End date before start date
+                VAT: 10,
+                OrderDetailRequests: new List<OrderDetailRequest>
+                {
+                    new OrderDetailRequest(
+                        ProductIdOrSetId: Guid.NewGuid(),
+                        Quantity: 100,
+                        UnitPrice: 10,
+                        Note: "Note",
+                        isProductId: true
+                    )
+                });
+        var order = Order.Create(request, "dihson103");
+
         _IUserRepositoryMock.Setup(repo => repo.IsShipperExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         _IOrderRepositoryMock.Setup(repo => repo.IsOrderIdValidToShipAsync(It.IsAny<Guid>()))
@@ -654,6 +843,8 @@ public class CreateShipOrderCommandHandlerTest
             .ReturnsAsync(new List<OrderDetail> { productOrderDetail, setOrderDetail });
         _IProductPhaseRepositoryMock.Setup(repo => repo.GetProductPhaseOfMainFactoryDoneByProductIdsAsync(It.IsAny<List<Guid>>()))
             .ReturnsAsync(new List<ProductPhase> { productPhase });
+        _IOrderRepositoryMock.Setup(repo => repo.GetOrderByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(order);
 
         await _handler.Handle(createShipOrderCommand, default);
 

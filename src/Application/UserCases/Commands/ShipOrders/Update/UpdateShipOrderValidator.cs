@@ -25,7 +25,19 @@ public class UpdateShipOrderValidator : AbstractValidator<UpdateShipOrderRequest
             .MustAsync(async (orderId, _) =>
             {
                 return await orderRepository.IsOrderIdValidToShipAsync(orderId);
-            }).WithMessage("Không tìm thấy đơn đặt hàng phù hợp");
+            }).WithMessage("Không tìm thấy đơn đặt hàng phù hợp")
+            .MustAsync(async (req, orderId, _) =>
+            {
+                var order = await orderRepository.GetOrderByIdAsync(orderId);
+
+                if (order == null) return false;
+
+                var shipDate = req.ShipDate.ToString("dd/MM/yyyy");
+
+                var date = DateUtil.ConvertStringToDateTimeOnly(shipDate);
+
+                return order.StartOrder <= date && order.EndOrder >= date;
+            }).WithMessage("Ngày giao hàng phải lớn hoặc ngày bắt đầu và nhỏ hơn hoặc bằng ngày kết thúc");
 
         RuleFor(req => req.ShipperId)
             .NotEmpty().WithMessage("Người giao hàng không được để trống")
@@ -35,14 +47,14 @@ public class UpdateShipOrderValidator : AbstractValidator<UpdateShipOrderRequest
                 return await userRepository.IsShipperExistAsync(id);
             }).WithMessage("Người giao hàng không tồn tại");
 
-        RuleFor(req => req.ShipDate)
-            .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
-            .Must((req, shipDate) =>
-            {
-                var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
-                var now = DateTime.UtcNow;
-                return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
-            }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
+        //RuleFor(req => req.ShipDate)
+        //    .NotEmpty().WithMessage("Không được để trống ngày giao hàng")
+        //    .Must((req, shipDate) =>
+        //    {
+        //        var clientDate = DateUtil.FromDateTimeClientToDateTimeUtc(shipDate);
+        //        var now = DateTime.UtcNow;
+        //        return DateUtil.FromDateTimeClientToDateTimeUtc(shipDate) >= DateTime.UtcNow;
+        //    }).WithMessage("Ngày giao hàng không được trước ngày hiện tại");
 
         RuleFor(req => req.KindOfShipOrder)
             .Must((req, kind) => Enum.IsDefined(typeof(DeliveryMethod), kind))
