@@ -39,23 +39,31 @@ public sealed class UpdateQuantityStatusRequestValidator : AbstractValidator<Upd
                 return await _phaseRepository.IsExistById(phaseId);
             })
             .WithMessage("PhaseIdTo không tồn tại.");
-        RuleFor(x => x.CompanyId)
+        RuleFor(x => x.CompanyIdFrom)
             .MustAsync(async (companyId, cancellationToken) =>
             {
                 return await _companyRepository.IsCompanyFactoryExistAsync(companyId);
             }).WithMessage("Công ty không tồn tại.");
-        RuleFor(x => new { x.ProductId, x.PhaseIdFrom, x.CompanyId })
+        RuleFor(x => x.CompanyIdTo)
+            .MustAsync(async (companyId, cancellationToken) =>
+            {
+                return await _companyRepository.IsCompanyFactoryExistAsync(companyId);
+            }).WithMessage("Công ty không tồn tại.");
+        RuleFor(x => new { x.ProductId, x.PhaseIdFrom, x.CompanyIdFrom })
             .MustAsync(async (x, cancellationToken) =>
             {
-                return await _productPhaseRepository.IsProductPhaseExist(x.ProductId, x.PhaseIdFrom, x.CompanyId);
+                return await _productPhaseRepository.IsProductPhaseExist(x.ProductId, x.PhaseIdFrom, x.CompanyIdFrom);
             })
             .WithMessage("ProductPhase không tồn tại.");
-        RuleFor(x => new { x.From, x.To, x.PhaseIdFrom, x.PhaseIdTo })
+        RuleFor(x => new { x.From, x.To, x.PhaseIdFrom, x.PhaseIdTo, x.CompanyIdFrom, x.CompanyIdTo })
             .Must(x =>
             {
-                if (x.PhaseIdFrom == x.PhaseIdTo)
+                if(x.CompanyIdFrom == x.CompanyIdTo)
                 {
-                    return x.From != x.To;
+                    if (x.PhaseIdFrom == x.PhaseIdTo)
+                    {
+                        return x.From != x.To;
+                    }                
                 }
                 return true;
             })

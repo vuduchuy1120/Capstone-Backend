@@ -46,7 +46,7 @@ internal sealed class GetAttendancesQueryHandler
                     ep.Product.Name,
                     ep.Product.Id,
                     ep.Phase.Id,
-                    ep.Phase.Name,
+                    ep.Product.Code,
                     ep.Quantity))
                 .ToList();
 

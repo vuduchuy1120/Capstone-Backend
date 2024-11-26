@@ -58,10 +58,10 @@ public class DbInitializer
             SeedPhaseData(context);
         }
 
-        if (!context.ProductPhases.Any())
-        {
-            SeedProductPhaseData(context);
-        }
+        //if (!context.ProductPhases.Any())
+        //{
+        //    SeedProductPhaseData(context);
+        //}
 
     }
 
@@ -239,7 +239,7 @@ public class DbInitializer
             companyId,
             adminRole.Id
             );
-        var hash = passwordService.Hash("Password123@");
+        var hash = passwordService.Hash("Dihson103@");
         var user = User.Create(userCreateRequest, hash, userCreateRequest.Id);
 
         context.Users.Add(user);

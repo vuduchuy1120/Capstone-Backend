@@ -18,6 +18,8 @@ public class LoginCommandHandlerTest
     private readonly Mock<IPasswordService> _passwordServiceMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IRedisService> _redisServiceMock;
+    private readonly Mock<ITokenRepository> _tokenRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     public LoginCommandHandlerTest()
     {
         _userRepositoryMock = new();
@@ -25,6 +27,8 @@ public class LoginCommandHandlerTest
         _passwordServiceMock = new();
         _mapperMock = new();
         _redisServiceMock = new();
+        _tokenRepositoryMock = new();
+        _unitOfWorkMock = new();
     }
 
     [Fact]
@@ -38,6 +42,8 @@ public class LoginCommandHandlerTest
             _jwtServiceMock.Object,
             _passwordServiceMock.Object,
             _mapperMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _redisServiceMock.Object);
 
         await Assert.ThrowsAsync<UserNotFoundException>(async () =>
@@ -59,6 +65,8 @@ public class LoginCommandHandlerTest
             _jwtServiceMock.Object,
             _passwordServiceMock.Object,
             _mapperMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _redisServiceMock.Object);
 
         await Assert.ThrowsAsync<WrongIdOrPasswordException>(async () =>
@@ -83,6 +91,8 @@ public class LoginCommandHandlerTest
             _jwtServiceMock.Object,
             _passwordServiceMock.Object,
             _mapperMock.Object,
+            _tokenRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _redisServiceMock.Object);
 
         var result = await loginCommandHandler.Handle(loginCommand, default);

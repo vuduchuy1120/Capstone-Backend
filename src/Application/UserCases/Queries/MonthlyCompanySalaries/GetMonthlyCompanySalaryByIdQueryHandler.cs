@@ -58,11 +58,11 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
         var productExportResponses = new List<ProductExportResponse>();
         if (receivedShipments != null)
         {
-            productExportResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.NO_PROBLEM,phaseId2);
+            productExportResponses = await GetProductExportResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.NO_PROBLEM, phaseId2);
             totalProduct = productExportResponses.Sum(pe => pe.Quantity);
             totalSalaryProduct = productExportResponses.Sum(pe => Decimal.Multiply((decimal)pe.Quantity, pe.Price));
 
-            productBrokenResponses = await GetProductBrokenResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR,phaseId1);
+            productBrokenResponses = await GetProductBrokenResponses(receivedShipments, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR, phaseId1);
             totalBroken = productBrokenResponses.Sum(pb => pb.Quantity);
         }
         var materialResponses = new List<MaterialExportReponse>();
@@ -96,13 +96,13 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
         double totalBrokenPre = 0;
 
 
-        var productExportResponsesPre = await GetProductExportResponses(receivedShipmentsPre, productPhaseSalaries, ProductPhaseType.NO_PROBLEM,phaseId2);
+        var productExportResponsesPre = await GetProductExportResponses(receivedShipmentsPre, productPhaseSalaries, ProductPhaseType.NO_PROBLEM, phaseId2);
         if (productExportResponsesPre.Count > 0)
         {
             totalProductPre = productExportResponsesPre.Sum(pe => pe.Quantity);
         }
 
-        var productBrokenResponsesPre = await GetProductBrokenResponses(sendShipmentsPre, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR,phaseId1);
+        var productBrokenResponsesPre = await GetProductBrokenResponses(sendShipmentsPre, productPhaseSalaries, ProductPhaseType.THIRD_PARTY_NO_FIX_ERROR, phaseId1);
         if (productBrokenResponsesPre.Count > 0)
         {
             totalBrokenPre = productBrokenResponsesPre.Sum(pb => pb.Quantity);
@@ -161,9 +161,20 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
                 })
             .ToList();
 
+        // Nhóm theo ProductId và PhaseId và tính tổng Quantity
+        var groupedShipmentDetails = shipmentDetails
+            .GroupBy(sd => new { sd.ShipmentDetail.ProductId, sd.ShipmentDetail.PhaseId })
+            .Select(g => new
+            {
+                ShipmentDetail = g.First().ShipmentDetail, // Lấy thông tin từ mục đầu tiên trong nhóm
+                ProductPhaseSalary = g.First().ProductPhaseSalary, // Lấy thông tin từ mục đầu tiên trong nhóm
+                TotalQuantity = g.Sum(sd => sd.ShipmentDetail.Quantity) // Tính tổng số lượng
+            })
+            .ToList();
+
         var productExportResponses = new List<ProductExportResponse>();
 
-        foreach (var item in shipmentDetails)
+        foreach (var item in groupedShipmentDetails)
         {
             var sd = item.ShipmentDetail;
             var pps = item.ProductPhaseSalary;
@@ -180,7 +191,7 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
                 ProductImage: productImage,
                 PhaseId: sd.PhaseId.Value,
                 PhaseName: sd.Phase.Name,
-                Quantity: sd.Quantity,
+                Quantity: item.TotalQuantity, // Sử dụng tổng số lượng đã tính ở trên
                 Price: pps.SalaryPerProduct
             ));
         }
@@ -190,8 +201,6 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
 
     private async Task<List<ProductExportResponse>> GetProductBrokenResponses(List<Shipment> shipments, List<ProductPhaseSalary> productPhaseSalaries, ProductPhaseType phaseType, Guid phaseIdForPricing)
     {
-
-        // Lấy thông tin các chi tiết giao hàng kèm giá
         var shipmentDetails = shipments
             .SelectMany(sh => sh.ShipmentDetails)
             .Where(sd => sd.ProductPhaseType == phaseType)
@@ -203,6 +212,13 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
                     ShipmentDetail = sd,
                     ProductPhaseSalary = pps
                 })
+            .GroupBy(x => new { x.ShipmentDetail.ProductId, x.ShipmentDetail.PhaseId })
+            .Select(g => new
+            {
+                ShipmentDetail = g.First().ShipmentDetail,
+                ProductPhaseSalary = g.First().ProductPhaseSalary,
+                TotalQuantity = g.Sum(x => x.ShipmentDetail.Quantity)
+            })
             .ToList();
 
         var priceForPhaseId = productPhaseSalaries
@@ -230,9 +246,9 @@ internal sealed class GetMonthlyCompanySalaryByIdQueryHandler
                 ProductCode: sd.Product.Code,
                 ProductName: sd.Product.Name,
                 ProductImage: productImage,
-                PhaseId: sd.PhaseId.Value, // Giữ nguyên PhaseId
-                PhaseName: sd.Phase.Name, // Giữ nguyên PhaseName
-                Quantity: sd.Quantity,
+                PhaseId: sd.PhaseId.Value,
+                PhaseName: sd.Phase.Name,
+                Quantity: item.TotalQuantity, // Sử dụng số lượng đã tổng hợp
                 Price: price // Sử dụng giá từ PhaseId đặc biệt hoặc giá gốc nếu không có
             ));
         }

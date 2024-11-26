@@ -61,7 +61,7 @@ internal sealed class SearchByThirdPartyCompanyQueryHandler(
                 totalAvailableQuantity);
         }));
 
-        var result = new SearchResponse<List<ProductWithTotalQuantityResponse>>(request.PageIndex, 0, data.ToList());
+        var result = new SearchResponse<List<ProductWithTotalQuantityResponse>>(request.PageIndex, totalPages, data.ToList());
         return Result.Success<SearchResponse<List<ProductWithTotalQuantityResponse>>>.Get(result);
     }
 }
